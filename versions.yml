@@ -1,0 +1,15 @@
+# =============================================================================
+# Source of truth for package versions.
+# To update: change the version field and push to main.
+# The CI detects changes and builds only affected packages.
+#
+# Fields:
+#   version     — version to build and publish
+#   depends_on  — list of custom packages (keys in this file) that must be
+#                 published before this package can be built.
+#                 Leave empty [] if no custom dependencies.
+# =============================================================================
+
+rofi:
+  version: "2.0.0"
+  depends_on: []

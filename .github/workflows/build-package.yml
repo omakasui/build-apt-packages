@@ -1,0 +1,317 @@
+# =============================================================================
+# Generic workflow: handles any package defined in versions.yml.
+#
+# Triggers:
+#   - Push to main that modifies versions.yml
+#     Detects which packages changed and builds each one (supports multi-package
+#     commits via a dynamic matrix)
+#   - workflow_dispatch: enter package name; version is read from versions.yml
+# =============================================================================
+
+name: Build package
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'versions.yml'
+
+  workflow_dispatch:
+    inputs:
+      package:
+        description: 'Package to build (must exist in versions.yml)'
+        required: true
+        type: string
+
+jobs:
+
+  detect:
+    name: Detect package
+    runs-on: ubuntu-latest
+    outputs:
+      # JSON array of objects: [{package, version, depends_on, matrix}, ...]
+      # One entry per changed package. In practice usually just one.
+      builds: ${{ steps.resolve.outputs.builds }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Install yq
+        run: |
+          sudo wget -qO /usr/local/bin/yq \
+            https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+      # On push:     detect ALL changed package keys in versions.yml (not just the first)
+      # On dispatch: use the provided input
+      - name: Resolve packages and versions
+        id: resolve
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            PACKAGES="${{ inputs.package }}"
+          else
+            # Extract every top-level key that was added or modified (+key:)
+            # grep '^+[a-z]' matches lines like "+rofi:" or "+walker:"
+            # This correctly handles multi-package commits
+            PACKAGES=$(git diff HEAD~1 HEAD -- versions.yml \
+              | grep '^+[a-z]' \
+              | grep -v '^+++' \
+              | sed 's/^+//' \
+              | cut -d: -f1 \
+              | tr -d ' ' \
+              | tr '\n' ' ')
+          fi
+
+          if [[ -z "$PACKAGES" ]]; then
+            echo "No package changes detected, nothing to build."
+            echo 'builds=[]' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Build the JSON array consumed by the next jobs
+          BUILDS='[]'
+          for PKG in $PACKAGES; do
+            # Validate the package exists in versions.yml
+            if ! yq e ".${PKG}.version" versions.yml | grep -qv 'null'; then
+              echo "WARNING: ${PKG} not found in versions.yml, skipping."
+              continue
+            fi
+
+            VERSION=$(yq e ".${PKG}.version" versions.yml)
+            DEPENDS=$(yq e ".${PKG}.depends_on | join(\",\")" versions.yml)
+
+            # Read distros supported by this package from package.yml
+            PKG_DISTROS=$(yq e '.distros[]' packages/${PKG}/package.yml)
+
+            MATRIX_INCLUDES='[]'
+            while IFS= read -r distro; do
+              BASE=$(yq e ".distros.${distro}.base_image" build-matrix.yml)
+              SUITE=$(yq e ".distros.${distro}.suite"     build-matrix.yml)
+              while IFS= read -r arch; do
+                MATRIX_INCLUDES=$(echo "$MATRIX_INCLUDES" | \
+                  yq e ". += [{\"distro\":\"${distro}\",\"base\":\"${BASE}\",\"suite\":\"${SUITE}\",\"arch\":\"${arch}\"}]")
+              done < <(yq e ".distros.${distro}.architectures[]" build-matrix.yml)
+            done <<< "$PKG_DISTROS"
+
+            ENTRY=$(yq e -n \
+              ".package = \"${PKG}\" | \
+               .version = \"${VERSION}\" | \
+               .depends_on = \"${DEPENDS}\" | \
+               .matrix = {\"include\": ${MATRIX_INCLUDES}}")
+
+            BUILDS=$(echo "$BUILDS" | yq e ". += [${ENTRY}]")
+            echo "==> Queued: ${PKG} ${VERSION}"
+          done
+
+          echo "builds=$(echo "$BUILDS" | yq e -o=json -I=0 .)" >> "$GITHUB_OUTPUT"
+
+  build:
+    name: Build ${{ matrix.package }} / ${{ matrix.distro }} / ${{ matrix.arch }}
+    needs: detect
+    if: needs.detect.outputs.builds != '[]'
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      # The matrix is the union of all per-package matrices, with the package
+      # name injected into each entry so the job knows what to build.
+      matrix:
+        include: ${{ fromJson(needs.detect.outputs.builds)[*].matrix.include }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup QEMU (arm64)
+        if: matrix.arch == 'arm64'
+        uses: docker/setup-qemu-action@v3
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Install yq
+        run: |
+          sudo wget -qO /usr/local/bin/yq \
+            https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+      - name: Resolve package metadata for this job
+        id: meta
+        run: |
+          PKG="${{ matrix.package }}"
+          VERSION=$(yq e ".${PKG}.version" versions.yml)
+          DEPENDS=$(yq e ".${PKG}.depends_on | join(\",\")" versions.yml)
+          echo "package=${PKG}"       >> "$GITHUB_OUTPUT"
+          echo "version=${VERSION}"   >> "$GITHUB_OUTPUT"
+          echo "depends_on=${DEPENDS}" >> "$GITHUB_OUTPUT"
+
+      # Download custom dependency .deb files into packages/<pkg>/deps/
+      # These are then COPYed into the Docker build context and installed
+      # inside the container before the actual build starts.
+      - name: Download custom dependencies
+        if: steps.meta.outputs.depends_on != ''
+        env:
+          GH_TOKEN: ${{ secrets.APT_PKG_DISPATCH_TOKEN }}
+        run: |
+          PKG="${{ steps.meta.outputs.package }}"
+          DISTRO="${{ matrix.distro }}"
+          ARCH="${{ matrix.arch }}"
+          mkdir -p "packages/${PKG}/deps"
+
+          IFS=',' read -ra DEPS <<< "${{ steps.meta.outputs.depends_on }}"
+          for dep in "${DEPS[@]}"; do
+            DEP_VERSION=$(yq e ".${dep}.version" versions.yml)
+            echo "Downloading dep: ${dep} ${DEP_VERSION} for ${DISTRO}/${ARCH}..."
+            gh release download "${dep}-${DEP_VERSION}" \
+              --repo omakasui/build-apt-packages \
+              --pattern "${dep}_${DEP_VERSION}_${DISTRO}_${ARCH}.deb" \
+              --output "packages/${PKG}/deps/${dep}_${DEP_VERSION}_${ARCH}.deb"
+          done
+
+      - name: Build Docker image
+        run: |
+          PKG="${{ steps.meta.outputs.package }}"
+          VERSION="${{ steps.meta.outputs.version }}"
+          # ARG name is uppercased package name + _VERSION (e.g. ROFI_VERSION)
+          BUILD_ARG="$(echo "${PKG}" | tr '[:lower:]' '[:upper:]')_VERSION=${VERSION}"
+
+          docker buildx build \
+            --platform "linux/${{ matrix.arch }}" \
+            --load \
+            --build-arg "BASE_IMAGE=${{ matrix.base }}" \
+            --build-arg "${BUILD_ARG}" \
+            --tag "omakasui-build-${PKG}:local" \
+            "packages/${PKG}/"
+
+      - name: Extract staged files and assemble .deb
+        run: |
+          PKG="${{ steps.meta.outputs.package }}"
+          VERSION="${{ steps.meta.outputs.version }}"
+          ARCH="${{ matrix.arch }}"
+          DISTRO="${{ matrix.distro }}"
+
+          # Extract compiled files from the container
+          CID=$(docker create --platform "linux/${ARCH}" "omakasui-build-${PKG}:local")
+          mkdir -p /tmp/staged
+          docker cp "${CID}:/output/staged/." /tmp/staged/
+          docker rm "$CID"
+
+          # Read metadata from package.yml
+          SECTION=$(yq e '.section'   "packages/${PKG}/package.yml")
+          PRIORITY=$(yq e '.priority' "packages/${PKG}/package.yml")
+          HOMEPAGE=$(yq e '.homepage' "packages/${PKG}/package.yml")
+
+          # Description: first line is short desc, rest is long desc (indented with one space)
+          DESC_SHORT=$(yq e '.description' "packages/${PKG}/package.yml" | head -1)
+          DESC_LONG=$(yq e '.description'  "packages/${PKG}/package.yml" \
+            | tail -n +2 | sed 's/^/ /')
+
+          # Runtime dependencies from official mirrors
+          RUNTIME_DEPS=$(yq e '.runtime_depends | join(", ")' "packages/${PKG}/package.yml")
+
+          # Append custom dependency versions
+          if [[ -n "${{ steps.meta.outputs.depends_on }}" ]]; then
+            IFS=',' read -ra DEPS <<< "${{ steps.meta.outputs.depends_on }}"
+            for dep in "${DEPS[@]}"; do
+              DEP_VERSION=$(yq e ".${dep}.version" versions.yml)
+              RUNTIME_DEPS="${RUNTIME_DEPS}, ${dep} (>= ${DEP_VERSION})"
+            done
+          fi
+
+          # Assemble .deb directory structure
+          DEB_ROOT="/tmp/deb/${PKG}_${VERSION}_${ARCH}"
+          mkdir -p "${DEB_ROOT}/DEBIAN"
+          cp -r /tmp/staged/* "${DEB_ROOT}/"
+          SIZE=$(du -sk "${DEB_ROOT}" | cut -f1)
+
+          # Write control file without leading whitespace (Bug #8 fix).
+          # Using a temp file + printf avoids heredoc indentation issues inside
+          # a bash-in-YAML context.
+          CONTROL_FILE="${DEB_ROOT}/DEBIAN/control"
+          printf "Package: %s\n"        "${PKG}"           > "$CONTROL_FILE"
+          printf "Version: %s\n"        "${VERSION}"       >> "$CONTROL_FILE"
+          printf "Architecture: %s\n"   "${ARCH}"          >> "$CONTROL_FILE"
+          printf "Maintainer: %s\n"     "omakasui <packages@omakasui.org>" >> "$CONTROL_FILE"
+          printf "Installed-Size: %s\n" "${SIZE}"          >> "$CONTROL_FILE"
+          printf "Depends: %s\n"        "${RUNTIME_DEPS}"  >> "$CONTROL_FILE"
+          printf "Section: %s\n"        "${SECTION}"       >> "$CONTROL_FILE"
+          printf "Priority: %s\n"       "${PRIORITY}"      >> "$CONTROL_FILE"
+          printf "Homepage: %s\n"       "${HOMEPAGE}"      >> "$CONTROL_FILE"
+          printf "Description: %s\n"    "${DESC_SHORT}"    >> "$CONTROL_FILE"
+          printf "%s\n"                 "${DESC_LONG}"      >> "$CONTROL_FILE"
+
+          echo "==> control file:"
+          cat "$CONTROL_FILE"
+
+          mkdir -p output
+          fakeroot dpkg-deb --build "${DEB_ROOT}" \
+            "output/${PKG}_${VERSION}_${DISTRO}_${ARCH}.deb"
+
+          echo "==> Created: output/${PKG}_${VERSION}_${DISTRO}_${ARCH}.deb"
+          ls -lh output/
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.meta.outputs.package }}-${{ matrix.distro }}-${{ matrix.arch }}
+          path: output/*.deb
+          retention-days: 1
+
+  release:
+    name: Create GitHub Release — ${{ matrix.package_entry.package }}
+    needs: [detect, build]
+    if: needs.detect.outputs.builds != '[]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    strategy:
+      matrix:
+        package_entry: ${{ fromJson(needs.detect.outputs.builds) }}
+
+    steps:
+      - name: Download artifacts for this package
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+          pattern: ${{ matrix.package_entry.package }}-*
+          merge-multiple: true
+
+      - name: Create or update Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ matrix.package_entry.package }}-${{ matrix.package_entry.version }}
+          name: "${{ matrix.package_entry.package }} v${{ matrix.package_entry.version }}"
+          # overwrite: true ensures rebuilds without a version bump replace assets cleanly
+          files: artifacts/*.deb
+          fail_on_unmatched_files: true
+          make_latest: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  trigger-apt-update:
+    name: Trigger apt-packages — ${{ matrix.package_entry.package }}
+    needs: [detect, release]
+    if: needs.detect.outputs.builds != '[]'
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        package_entry: ${{ fromJson(needs.detect.outputs.builds) }}
+
+    steps:
+      - name: Dispatch to omakasui/apt-packages
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.APT_PKG_DISPATCH_TOKEN }}
+          repository: omakasui/apt-packages
+          event-type: package-updated
+          client-payload: |
+            {
+              "package": "${{ matrix.package_entry.package }}",
+              "version": "${{ matrix.package_entry.version }}"
+            }

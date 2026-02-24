@@ -1,0 +1,8 @@
+# Local build output
+output/
+
+# Downloaded dependency .deb files (populated by CI, not committed)
+packages/*/deps/*.deb
+
+# Keep the deps directory itself tracked
+!packages/*/deps/.gitkeep

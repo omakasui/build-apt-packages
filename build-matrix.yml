@@ -1,0 +1,18 @@
+# =============================================================================
+# Supported distros and architectures.
+# =============================================================================
+
+distros:
+  debian13:
+    base_image: debian:trixie
+    suite: trixie
+    architectures:
+      - amd64
+      - arm64
+
+  ubuntu2404:
+    base_image: ubuntu:24.04
+    suite: noble
+    architectures:
+      - amd64
+      - arm64

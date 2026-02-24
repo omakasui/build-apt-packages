@@ -1,0 +1,40 @@
+# =============================================================================
+# Metadata for rofi package.
+# Version is always read from versions.yml — do not set it here.
+# =============================================================================
+
+name: rofi
+section: x11
+priority: optional
+homepage: https://github.com/davatorium/rofi
+description: |
+  Window switcher, application launcher and dmenu replacement
+  Rofi is a window switcher, run dialog, ssh-launcher and dmenu replacement
+  that focuses on being fast to use and easily configurable.
+  Supports both X11 and Wayland backends.
+
+# Runtime dependencies from official Debian mirrors.
+# Custom dependencies (other packages in this repo) go in versions.yml → depends_on
+runtime_depends:
+  - libglib2.0-0t64
+  - libcairo2
+  - libpango-1.0-0
+  - libpangocairo-1.0-0
+  - libgdk-pixbuf2.0-0
+  - libstartup-notification0
+  - libxcb1
+  - libxcb-util1
+  - libxcb-ewmh2
+  - libxcb-icccm4
+  - libxcb-xkb1
+  - libxcb-randr0
+  - libxcb-xinerama0
+  - libxcb-cursor0
+  - libxkbcommon0
+  - libxkbcommon-x11-0
+  - libwayland-client0
+
+# Distros to build for — must match keys in build-matrix.yml
+distros:
+  - debian13
+  - ubuntu2404
