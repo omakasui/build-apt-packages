@@ -50,7 +50,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Install custom dependency .deb files if present.
 # For rofi this is currently unused, but the structure is here for future packages.
 COPY deps/ /tmp/deps/
-RUN if ls /tmp/deps/*.deb &>/dev/null 2>&1; then \
+RUN if ls /tmp/deps/*.deb >/dev/null 2>&1; then \
       apt-get update && \
       apt-get install -y --no-install-recommends /tmp/deps/*.deb && \
       rm -rf /tmp/deps /var/lib/apt/lists/*; \
