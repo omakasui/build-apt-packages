@@ -29,7 +29,9 @@ RUN if [ -f /etc/apt/sources.list.d/ubuntu.sources ]; then \
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
+    bison \
     ca-certificates \
+    flex \
     meson \
     ninja-build \
     pkg-config \
@@ -42,9 +44,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxcb-ewmh-dev \
     libxcb-icccm4-dev \
     libxcb-cursor-dev \
+    libxcb-keysyms1-dev \
     libxkbcommon-dev \
     libxkbcommon-x11-dev \
     libwayland-dev \
+    libwayland-bin \
     wayland-protocols \
     libglib2.0-dev \
     libcairo2-dev \

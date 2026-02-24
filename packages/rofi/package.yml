@@ -30,6 +30,7 @@ runtime_depends:
   - libxcb-randr0
   - libxcb-xinerama0
   - libxcb-cursor0
+  - libxcb-keysyms1
   - libxkbcommon0
   - libxkbcommon-x11-0
   - libwayland-client0
