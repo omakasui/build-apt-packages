@@ -29,9 +29,8 @@ jobs:
     name: Detect package
     runs-on: ubuntu-latest
     outputs:
-      # JSON array of objects: [{package, version, depends_on, matrix}, ...]
-      # One entry per changed package. In practice usually just one.
       builds: ${{ steps.resolve.outputs.builds }}
+      build_matrix: ${{ steps.resolve.outputs.build_matrix }}
 
     steps:
       - name: Checkout
@@ -45,17 +44,12 @@ jobs:
             https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
           sudo chmod +x /usr/local/bin/yq
 
-      # On push:     detect ALL changed package keys in versions.yml (not just the first)
-      # On dispatch: use the provided input
       - name: Resolve packages and versions
         id: resolve
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             PACKAGES="${{ inputs.package }}"
           else
-            # Extract every top-level key that was added or modified (+key:)
-            # grep '^+[a-z]' matches lines like "+rofi:" or "+walker:"
-            # This correctly handles multi-package commits
             PACKAGES=$(git diff HEAD~1 HEAD -- versions.yml \
               | grep '^+[a-z]' \
               | grep -v '^+++' \
@@ -66,15 +60,16 @@ jobs:
           fi
 
           if [[ -z "$PACKAGES" ]]; then
-            echo "No package changes detected, nothing to build."
+            echo "No package changes detected."
             echo 'builds=[]' >> "$GITHUB_OUTPUT"
+            echo 'build_matrix={"include":[]}' >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          # Build the JSON array consumed by the next jobs
           BUILDS='[]'
+          FLAT_MATRIX='[]'
+
           for PKG in $PACKAGES; do
-            # Validate the package exists in versions.yml
             if ! yq e ".${PKG}.version" versions.yml | grep -qv 'null'; then
               echo "WARNING: ${PKG} not found in versions.yml, skipping."
               continue
@@ -82,11 +77,8 @@ jobs:
 
             VERSION=$(yq e ".${PKG}.version" versions.yml)
             DEPENDS=$(yq e ".${PKG}.depends_on | join(\",\")" versions.yml)
-
-            # Read distros supported by this package from package.yml
             PKG_DISTROS=$(yq e '.distros[]' packages/${PKG}/package.yml)
 
-            # Use jq for JSON construction
             MATRIX_INCLUDES='[]'
             while IFS= read -r distro; do
               BASE=$(yq e ".distros.${distro}.base_image" build-matrix.yml)
@@ -95,10 +87,14 @@ jobs:
                 MATRIX_INCLUDES=$(echo "$MATRIX_INCLUDES" | \
                   jq --arg d "$distro" --arg b "$BASE" --arg s "$SUITE" --arg a "$arch" \
                      '. += [{"distro": $d, "base": $b, "suite": $s, "arch": $a}]')
+
+                # Add to flattened matrix with package name
+                FLAT_MATRIX=$(echo "$FLAT_MATRIX" | \
+                  jq --arg pkg "$PKG" --arg d "$distro" --arg b "$BASE" --arg s "$SUITE" --arg a "$arch" \
+                     '. += [{"package": $pkg, "distro": $d, "base": $b, "suite": $s, "arch": $a}]')
               done < <(yq e ".distros.${distro}.architectures[]" build-matrix.yml)
             done <<< "$PKG_DISTROS"
 
-            # Build entry using jq
             ENTRY=$(jq -n \
               --arg pkg "$PKG" \
               --arg ver "$VERSION" \
@@ -110,8 +106,8 @@ jobs:
             echo "==> Queued: ${PKG} ${VERSION}"
           done
 
-          # Output compact JSON
           echo "builds=$(echo "$BUILDS" | jq -c .)" >> "$GITHUB_OUTPUT"
+          echo "build_matrix=$(echo "{\"include\": $FLAT_MATRIX}" | jq -c .)" >> "$GITHUB_OUTPUT"
 
   build:
     name: Build ${{ matrix.package }} / ${{ matrix.distro }} / ${{ matrix.arch }}
@@ -121,10 +117,7 @@ jobs:
 
     strategy:
       fail-fast: false
-      # The matrix is the union of all per-package matrices, with the package
-      # name injected into each entry so the job knows what to build.
-      matrix:
-        include: ${{ fromJson(needs.detect.outputs.builds)[*].matrix.include }}
+      matrix: ${{ fromJson(needs.detect.outputs.build_matrix) }}
 
     steps:
       - name: Checkout
