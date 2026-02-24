@@ -33,6 +33,7 @@ runtime_depends:
   - libxkbcommon0
   - libxkbcommon-x11-0
   - libwayland-client0
+  - libxcb-imdkit1
 
 # Distros to build for — must match keys in build-matrix.yml
 distros:

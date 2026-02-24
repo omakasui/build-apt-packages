@@ -19,6 +19,14 @@ ARG ROFI_VERSION=2.0.0
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+# Enable the universe repository on Ubuntu images (needed for libxcb-imdkit-dev,
+# libstartup-notification0-dev and others that live outside main+restricted).
+# On Debian, /etc/apt/sources.list.d/ubuntu.sources does not exist, so this is a no-op.
+RUN if [ -f /etc/apt/sources.list.d/ubuntu.sources ]; then \
+      sed -i 's/^Components: main$/Components: main universe/' \
+        /etc/apt/sources.list.d/ubuntu.sources; \
+    fi
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     ca-certificates \
@@ -44,8 +52,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgdk-pixbuf-2.0-dev \
     libstartup-notification0-dev \
     libxcb-imdkit-dev \
-    dpkg-dev \
-    fakeroot \
     && rm -rf /var/lib/apt/lists/*
 
 # Install custom dependency .deb files if present.
@@ -70,7 +76,7 @@ RUN cd rofi-${ROFI_VERSION} \
     && meson setup build \
         --prefix=/usr \
         --buildtype=release \
-        -Dcheck=false \
+        -Dcheck=disabled \
     && ninja -C build \
     && DESTDIR=/output/staged ninja -C build install
 

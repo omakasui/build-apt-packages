@@ -50,13 +50,17 @@ jobs:
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             PACKAGES="${{ inputs.package }}"
           else
-            PACKAGES=$(git diff HEAD~1 HEAD -- versions.yml \
-              | grep '^+[a-z]' \
-              | grep -v '^+++' \
-              | sed 's/^+//' \
-              | cut -d: -f1 \
-              | tr -d ' ' \
-              | tr '\n' ' ')
+            git show HEAD~1:versions.yml > /tmp/old_versions.yml 2>/dev/null \
+              || echo "---" > /tmp/old_versions.yml
+            PACKAGES=""
+            while IFS= read -r pkg; do
+              OLD_VER=$(yq e ".${pkg}.version // \"\"" /tmp/old_versions.yml)
+              NEW_VER=$(yq e ".${pkg}.version // \"\"" versions.yml)
+              if [[ "$OLD_VER" != "$NEW_VER" ]]; then
+                PACKAGES="$PACKAGES $pkg"
+              fi
+            done < <(yq e 'keys | .[]' versions.yml)
+            PACKAGES=$(echo "$PACKAGES" | xargs)
           fi
 
           if [[ -z "$PACKAGES" ]]; then
