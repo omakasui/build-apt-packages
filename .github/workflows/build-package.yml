@@ -209,7 +209,7 @@ jobs:
           # Description: first line is short desc, rest is long desc (indented with one space)
           DESC_SHORT=$(yq e '.description' "packages/${PKG}/package.yml" | head -1)
           DESC_LONG=$(yq e '.description'  "packages/${PKG}/package.yml" \
-            | tail -n +2 | sed 's/^/ /')
+            | tail -n +2 | sed 's/^[[:space:]]*$/./' | sed 's/^/ /')
 
           # Runtime dependencies from official mirrors
           RUNTIME_DEPS=$(yq e '.runtime_depends | join(", ")' "packages/${PKG}/package.yml")
@@ -227,7 +227,8 @@ jobs:
           DEB_ROOT="/tmp/deb/${PKG}_${VERSION}_${ARCH}"
           mkdir -p "${DEB_ROOT}/DEBIAN"
           cp -r /tmp/staged/* "${DEB_ROOT}/"
-          SIZE=$(du -sk "${DEB_ROOT}" | cut -f1)
+          # Measure only installed content (Debian policy: excludes DEBIAN/ dir)
+          SIZE=$(du -sk /tmp/staged | cut -f1)
 
           # Write control file without leading whitespace (Bug #8 fix).
           # Using a temp file + printf avoids heredoc indentation issues inside
@@ -243,7 +244,9 @@ jobs:
           printf "Priority: %s\n"       "${PRIORITY}"      >> "$CONTROL_FILE"
           printf "Homepage: %s\n"       "${HOMEPAGE}"      >> "$CONTROL_FILE"
           printf "Description: %s\n"    "${DESC_SHORT}"    >> "$CONTROL_FILE"
-          printf "%s\n"                 "${DESC_LONG}"      >> "$CONTROL_FILE"
+          # Only write long description if present (avoids a bare blank line
+          # immediately after the short description, which dpkg-deb rejects)
+          [[ -n "${DESC_LONG}" ]] && printf "%s\n" "${DESC_LONG}" >> "$CONTROL_FILE"
 
           echo "==> control file:"
           cat "$CONTROL_FILE"
