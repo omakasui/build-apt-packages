@@ -25,7 +25,6 @@ on:
         type: string
 
 jobs:
-
   detect:
     name: Detect package
     runs-on: ubuntu-latest
@@ -87,27 +86,32 @@ jobs:
             # Read distros supported by this package from package.yml
             PKG_DISTROS=$(yq e '.distros[]' packages/${PKG}/package.yml)
 
+            # Use jq for JSON construction
             MATRIX_INCLUDES='[]'
             while IFS= read -r distro; do
               BASE=$(yq e ".distros.${distro}.base_image" build-matrix.yml)
               SUITE=$(yq e ".distros.${distro}.suite"     build-matrix.yml)
               while IFS= read -r arch; do
                 MATRIX_INCLUDES=$(echo "$MATRIX_INCLUDES" | \
-                  yq e ". += [{\"distro\":\"${distro}\",\"base\":\"${BASE}\",\"suite\":\"${SUITE}\",\"arch\":\"${arch}\"}]")
+                  jq --arg d "$distro" --arg b "$BASE" --arg s "$SUITE" --arg a "$arch" \
+                     '. += [{"distro": $d, "base": $b, "suite": $s, "arch": $a}]')
               done < <(yq e ".distros.${distro}.architectures[]" build-matrix.yml)
             done <<< "$PKG_DISTROS"
 
-            ENTRY=$(yq e -n \
-              ".package = \"${PKG}\" | \
-               .version = \"${VERSION}\" | \
-               .depends_on = \"${DEPENDS}\" | \
-               .matrix = {\"include\": ${MATRIX_INCLUDES}}")
+            # Build entry using jq
+            ENTRY=$(jq -n \
+              --arg pkg "$PKG" \
+              --arg ver "$VERSION" \
+              --arg deps "$DEPENDS" \
+              --argjson matrix "{\"include\": $MATRIX_INCLUDES}" \
+              '{package: $pkg, version: $ver, depends_on: $deps, matrix: $matrix}')
 
-            BUILDS=$(echo "$BUILDS" | yq e ". += [${ENTRY}]")
+            BUILDS=$(echo "$BUILDS" | jq ". += [$ENTRY]")
             echo "==> Queued: ${PKG} ${VERSION}"
           done
 
-          echo "builds=$(echo "$BUILDS" | yq e -o=json -I=0 .)" >> "$GITHUB_OUTPUT"
+          # Output compact JSON
+          echo "builds=$(echo "$BUILDS" | jq -c .)" >> "$GITHUB_OUTPUT"
 
   build:
     name: Build ${{ matrix.package }} / ${{ matrix.distro }} / ${{ matrix.arch }}
