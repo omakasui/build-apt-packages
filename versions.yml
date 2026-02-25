@@ -8,8 +8,11 @@
 #   depends_on  — list of custom packages (keys in this file) that must be
 #                 published before this package can be built.
 #                 Leave empty [] if no custom dependencies.
+#
+# Example:
+#   my-package:
+#     version: 1.2.3
+#     depends_on: [other-package]
+#
 # =============================================================================
 
-rofi:
-  version: "2.0.0"
-  depends_on: []
