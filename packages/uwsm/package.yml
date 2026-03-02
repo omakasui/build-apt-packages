@@ -1,5 +1,5 @@
 name: uwsm
-type: build
+type: repackage
 arch: all
 section: x11
 description: >
