@@ -280,7 +280,7 @@ jobs:
           files: artifacts/*.deb
           fail_on_unmatched_files: true
           make_latest: true
-          # overwrite ensures rebuilds without a version bump replace assets cleanly
+          overwrite: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
