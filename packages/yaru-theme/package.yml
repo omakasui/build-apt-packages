@@ -1,13 +1,3 @@
-# =============================================================================
-# Metadata for yaru-theme package.
-#
-# Repackages four upstream Ubuntu Yaru packages under the omakasui- namespace.
-# All four are arch:all — no compiled code, single build output for all arches.
-# Version is always read from versions.yml — do not set it here.
-#
-# Upstream source: https://launchpad.net/ubuntu/+source/yaru-theme
-# =============================================================================
-
 name: yaru-theme
 type: repackage
 arch: all
@@ -17,14 +7,13 @@ description: >
   Repackaged from Ubuntu upstream with omakasui- namespace prefix.
   Installs and replaces the official yaru-theme-* packages.
 
-# The four output packages produced by this build.
-# Used by the workflow to know which assets to upload to the GitHub Release.
+# Packages emitted by the Dockerfile into /output/ (used by the release step).
 produces:
   - omakasui-yaru-theme-gtk
   - omakasui-yaru-theme-icon
   - omakasui-yaru-theme-sound
   - omakasui-yaru-theme-gnome-shell
 
-# Only Trixie for now. Noble has Yaru in its official mirrors.
-suites:
-  - trixie
+# Noble has Yaru in its official mirrors; Trixie does not.
+distros:
+  - debian13

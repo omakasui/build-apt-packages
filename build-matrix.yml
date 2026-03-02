@@ -1,6 +1,4 @@
-# =============================================================================
-# Supported distros and architectures.
-# =============================================================================
+# Supported distros and architectures. Keys must match distros[] in package.yml files.
 
 distros:
   debian13:

@@ -1,78 +1,67 @@
 # omakasui/build-apt-packages
 
-Repository for building [APT packages](https://github.com/omakasui/apt-packages) to be distributed via Omakasui.
+Builds and publishes APT packages distributed via [omakasui/apt-packages](https://github.com/omakasui/apt-packages).
 
-## Current packages
+## Repository layout
 
-- ...
-
-## Adding a new package
-
-1. Add entry to `versions.yml`:
-```yaml
-package:
-  version: "1234"
-  depends_on: []
+```
+versions.yml          — source of truth for versions
+build-matrix.yml      — supported distros and architectures
+packages/<name>/
+  Dockerfile          — build environment (receives ARG VERSION)
+  package.yml         — package metadata
+  deps/               — pre-downloaded custom .deb dependencies (gitkeep)
 ```
 
-2. Create `packages/package/`:
-   - `Dockerfile` — build environment
-   - `package.yml` — runtime deps, section, description
-   - `deps/.gitkeep` — keeps directory in Git
+## Package types
 
-3. Push — the workflow is generic and handles new packages automatically.
+### `type: build` (default)
+
+The Dockerfile compiles or installs files and places them under `/output/staged/`.
+The workflow assembles the final `.deb` using metadata from `package.yml`.
+
+Required `package.yml` fields: `section`, `priority`, `homepage`, `description`, `runtime_depends`, `distros`.
+
+### `type: repackage`
+
+The Dockerfile produces complete, ready-to-install `.deb` files directly in `/output/`.
+The workflow picks them up and injects the distro tag into the filename.
+
+Required `package.yml` fields: `produces` (list of package names), `distros`.
+
+In both cases the workflow passes `--build-arg VERSION=<version>` — declare `ARG VERSION` at the top of every Dockerfile.
+
+## Dockerfile contract
+
+| Type | Dockerfile must write to |
+|------|--------------------------|
+| `build` | `/output/staged/` (staged file tree, no DEBIAN/) |
+| `repackage` | `/output/<name>_<version>_all.deb` (complete debs) |
+
+`BASE_IMAGE` is also passed as a build-arg if the Dockerfile needs it.
+
+## versions.yml
+
+```yaml
+package-name:
+  version: "1.2.3"
+  depends_on: []          # list of other packages in this repo required at build time
+```
+
+Pushing a change here triggers a build for the affected packages only.
+Multi-package commits are supported.
+
+## Adding a package
+
+1. Add an entry to `versions.yml`.
+2. Create `packages/<name>/Dockerfile` and `packages/<name>/package.yml`.
+3. Push — the workflow detects the new entry automatically.
 
 ## Custom dependencies
 
-If package A depends on custom package B (also in this repo):
+List sibling packages in `depends_on`. The workflow downloads their release assets and places them in `packages/<name>/deps/` before the Docker build starts, so the Dockerfile can `COPY deps/ /deps/` and install them.
 
-```yaml
-package1:
-  version: "1.0.0"
-  depends_on: ["package1"]
+## Manual rebuild
 
-package1:
-  version: "2.0.0"
-  depends_on: []
-```
-
-The CI downloads `package2` .deb and installs it inside the Docker build container
-for `package1` before compilation starts.
-
-## Updating a package version
-
-Edit `versions.yml` and push to `main`. The CI builds only changed packages automatically.
-
-```yaml
-# versions.yml
-package:
-  version: "12345"
-  depends_on: ["package_deps"]
-```
-
-```bash
-git add versions.yml
-git commit -m "package: bump to 12345"
-git push origin main
-```
-
-Multi-package commits are supported.
-
-## Manual rebuild (no version bump)
-
-GitHub → Actions → **Build package** → Run workflow → enter package name.
-Version is read from `versions.yml` automatically.
-
-## Repository structure
-
-```
-build-pkg/
-├── versions.yml              ← source of truth
-├── build-matrix.yml          ← supported distros
-├── .gitignore
-└── packages/
-    └── package/
-        ├── Dockerfile        ← parametric: BASE_IMAGE, PACKAGE_VERSION
-        ├── package.yml       ← runtime deps, metadata
-        └── deps/.gitkeep     ← for custom dependencies
-```
+GitHub > Actions > **Build package** > Run workflow > enter the package name.
+Version is always read from `versions.yml`.
