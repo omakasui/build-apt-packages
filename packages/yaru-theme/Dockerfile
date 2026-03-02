@@ -27,6 +27,11 @@ RUN set -e; \
       \
       CTRL="extracted/${pkg}/DEBIAN/control"; \
       sed -i "s/^Package: ${pkg}$/Package: omakasui-${pkg}/" "$CTRL"; \
+      \
+      # Strip Ubuntu-only deps that don't exist on Debian (e.g. session-migration). \
+      # Handles: "session-migration, …", "…, session-migration", "…, session-migration, …" \
+      sed -i -E '/^Depends:/s/(,\s*)?session-migration(\s*,)?//g' "$CTRL"; \
+      \
       grep -q "^Conflicts:" "$CTRL" || printf "Conflicts: %s\n" "$pkg" >> "$CTRL"; \
       grep -q "^Replaces:"  "$CTRL" || printf "Replaces: %s\n"  "$pkg" >> "$CTRL"; \
       grep -q "^Provides:"  "$CTRL" || printf "Provides: %s\n"  "$pkg" >> "$CTRL"; \
