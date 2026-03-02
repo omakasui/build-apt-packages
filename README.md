@@ -43,6 +43,7 @@ In both cases the workflow passes `--build-arg VERSION=<version>` — declare `A
 ## versions.yml
 
 ```yaml
+# Package names are top-level keys — do NOT nest under a parent key.
 package-name:
   version: "1.2.3"
   depends_on: []          # list of other packages in this repo required at build time
