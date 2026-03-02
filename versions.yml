@@ -16,3 +16,10 @@
 #
 # =============================================================================
 
+packages:
+  # Yaru GNOME theme — repackaged from Ubuntu upstream (arch:all, trixie only)
+  # Upstream version format: YY.MM.PATCH-0ubuntuN
+  yaru-theme:
+    version: "25.04.1-0ubuntu1"
+    depends_on: []
+
