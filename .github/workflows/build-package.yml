@@ -1,13 +1,4 @@
-# =============================================================================
-# Generic workflow: handles any package defined in versions.yml.
-#
-# Triggers:
-#   - Push to main that modifies versions.yml
-#     Detects which packages changed and builds each one (supports multi-package
-#     commits via a dynamic matrix)
-#   - workflow_dispatch: enter package name; version is read from versions.yml
-# =============================================================================
-
+# Triggered on versions.yml changes (detects which packages changed) or manually.
 name: Build package
 
 on:
@@ -92,7 +83,6 @@ jobs:
                   jq --arg d "$distro" --arg b "$BASE" --arg s "$SUITE" --arg a "$arch" \
                      '. += [{"distro": $d, "base": $b, "suite": $s, "arch": $a}]')
 
-                # Add to flattened matrix with package name
                 FLAT_MATRIX=$(echo "$FLAT_MATRIX" | \
                   jq --arg pkg "$PKG" --arg d "$distro" --arg b "$BASE" --arg s "$SUITE" --arg a "$arch" \
                      '. += [{"package": $pkg, "distro": $d, "base": $b, "suite": $s, "arch": $a}]')
@@ -150,9 +140,6 @@ jobs:
           echo "version=${VERSION}"   >> "$GITHUB_OUTPUT"
           echo "depends_on=${DEPENDS}" >> "$GITHUB_OUTPUT"
 
-      # Download custom dependency .deb files into packages/<pkg>/deps/
-      # These are then COPYed into the Docker build context and installed
-      # inside the container before the actual build starts.
       - name: Download custom dependencies
         if: steps.meta.outputs.depends_on != ''
         env:
@@ -177,14 +164,12 @@ jobs:
         run: |
           PKG="${{ steps.meta.outputs.package }}"
           VERSION="${{ steps.meta.outputs.version }}"
-          # ARG name is uppercased package name + _VERSION (e.g. ROFI_VERSION)
-          BUILD_ARG="$(echo "${PKG}" | tr '[:lower:]' '[:upper:]')_VERSION=${VERSION}"
 
           docker buildx build \
             --platform "linux/${{ matrix.arch }}" \
             --load \
             --build-arg "BASE_IMAGE=${{ matrix.base }}" \
-            --build-arg "${BUILD_ARG}" \
+            --build-arg "VERSION=${VERSION}" \
             --tag "omakasui-build-${PKG}:local" \
             "packages/${PKG}/"
 
@@ -195,68 +180,67 @@ jobs:
           ARCH="${{ matrix.arch }}"
           DISTRO="${{ matrix.distro }}"
 
-          # Extract compiled files from the container
+          PKG_TYPE=$(yq e '.type // "build"' "packages/${PKG}/package.yml")
           CID=$(docker create --platform "linux/${ARCH}" "omakasui-build-${PKG}:local")
-          mkdir -p /tmp/staged
-          docker cp "${CID}:/output/staged/." /tmp/staged/
-          docker rm "$CID"
-
-          # Read metadata from package.yml
-          SECTION=$(yq e '.section'   "packages/${PKG}/package.yml")
-          PRIORITY=$(yq e '.priority' "packages/${PKG}/package.yml")
-          HOMEPAGE=$(yq e '.homepage' "packages/${PKG}/package.yml")
-
-          # Description: first line is short desc, rest is long desc (indented with one space)
-          DESC_SHORT=$(yq e '.description' "packages/${PKG}/package.yml" | head -1)
-          DESC_LONG=$(yq e '.description'  "packages/${PKG}/package.yml" \
-            | tail -n +2 | sed 's/^[[:space:]]*$/./' | sed 's/^/ /')
-
-          # Runtime dependencies from official mirrors
-          RUNTIME_DEPS=$(yq e '.runtime_depends | join(", ")' "packages/${PKG}/package.yml")
-
-          # Append custom dependency versions
-          if [[ -n "${{ steps.meta.outputs.depends_on }}" ]]; then
-            IFS=',' read -ra DEPS <<< "${{ steps.meta.outputs.depends_on }}"
-            for dep in "${DEPS[@]}"; do
-              DEP_VERSION=$(yq e ".${dep}.version" versions.yml)
-              RUNTIME_DEPS="${RUNTIME_DEPS}, ${dep} (>= ${DEP_VERSION})"
-            done
-          fi
-
-          # Assemble .deb directory structure
-          DEB_ROOT="/tmp/deb/${PKG}_${VERSION}_${ARCH}"
-          mkdir -p "${DEB_ROOT}/DEBIAN"
-          cp -r /tmp/staged/* "${DEB_ROOT}/"
-          # Measure only installed content (Debian policy: excludes DEBIAN/ dir)
-          SIZE=$(du -sk /tmp/staged | cut -f1)
-
-          # Write control file without leading whitespace (Bug #8 fix).
-          # Using a temp file + printf avoids heredoc indentation issues inside
-          # a bash-in-YAML context.
-          CONTROL_FILE="${DEB_ROOT}/DEBIAN/control"
-          printf "Package: %s\n"        "${PKG}"           > "$CONTROL_FILE"
-          printf "Version: %s\n"        "${VERSION}"       >> "$CONTROL_FILE"
-          printf "Architecture: %s\n"   "${ARCH}"          >> "$CONTROL_FILE"
-          printf "Maintainer: %s\n"     "omakasui <packages@omakasui.org>" >> "$CONTROL_FILE"
-          printf "Installed-Size: %s\n" "${SIZE}"          >> "$CONTROL_FILE"
-          printf "Depends: %s\n"        "${RUNTIME_DEPS}"  >> "$CONTROL_FILE"
-          printf "Section: %s\n"        "${SECTION}"       >> "$CONTROL_FILE"
-          printf "Priority: %s\n"       "${PRIORITY}"      >> "$CONTROL_FILE"
-          printf "Homepage: %s\n"       "${HOMEPAGE}"      >> "$CONTROL_FILE"
-          printf "Description: %s\n"    "${DESC_SHORT}"    >> "$CONTROL_FILE"
-          # Only write long description if present (avoids a bare blank line
-          # immediately after the short description, which dpkg-deb rejects)
-          [[ -n "${DESC_LONG}" ]] && printf "%s\n" "${DESC_LONG}" >> "$CONTROL_FILE"
-
-          echo "==> control file:"
-          cat "$CONTROL_FILE"
-
           mkdir -p output
-          fakeroot dpkg-deb --build "${DEB_ROOT}" \
-            "output/${PKG}_${VERSION}_${DISTRO}_${ARCH}.deb"
 
-          echo "==> Created: output/${PKG}_${VERSION}_${DISTRO}_${ARCH}.deb"
-          ls -lh output/
+          if [[ "$PKG_TYPE" == "repackage" ]]; then
+            # Dockerfile writes final .debs to /output/; inject distro tag into filename.
+            mkdir -p /tmp/repack_out
+            docker cp "${CID}:/output/." /tmp/repack_out/
+            docker rm "$CID"
+            for f in /tmp/repack_out/*.deb; do
+              [[ -f "$f" ]] || continue
+              base="$(basename "$f")"
+              mv "$f" "output/${base%_all.deb}_${DISTRO}_all.deb"
+            done
+            ls -lh output/
+
+          else
+            # Dockerfile stages content under /output/staged/; we assemble the .deb here.
+            mkdir -p /tmp/staged
+            docker cp "${CID}:/output/staged/." /tmp/staged/
+            docker rm "$CID"
+
+            SECTION=$(yq e '.section'   "packages/${PKG}/package.yml")
+            PRIORITY=$(yq e '.priority' "packages/${PKG}/package.yml")
+            HOMEPAGE=$(yq e '.homepage' "packages/${PKG}/package.yml")
+            DESC_SHORT=$(yq e '.description' "packages/${PKG}/package.yml" | head -1)
+            DESC_LONG=$(yq e '.description'  "packages/${PKG}/package.yml" \
+              | tail -n +2 | sed 's/^[[:space:]]*$/./' | sed 's/^/ /')
+            RUNTIME_DEPS=$(yq e '.runtime_depends | join(", ")' "packages/${PKG}/package.yml")
+
+            if [[ -n "${{ steps.meta.outputs.depends_on }}" ]]; then
+              IFS=',' read -ra DEPS <<< "${{ steps.meta.outputs.depends_on }}"
+              for dep in "${DEPS[@]}"; do
+                DEP_VERSION=$(yq e ".${dep}.version" versions.yml)
+                RUNTIME_DEPS="${RUNTIME_DEPS}, ${dep} (>= ${DEP_VERSION})"
+              done
+            fi
+
+            DEB_ROOT="/tmp/deb/${PKG}_${VERSION}_${ARCH}"
+            mkdir -p "${DEB_ROOT}/DEBIAN"
+            cp -r /tmp/staged/* "${DEB_ROOT}/"
+            SIZE=$(du -sk /tmp/staged | cut -f1)
+
+            CONTROL_FILE="${DEB_ROOT}/DEBIAN/control"
+            printf "Package: %s\n"        "${PKG}"           > "$CONTROL_FILE"
+            printf "Version: %s\n"        "${VERSION}"       >> "$CONTROL_FILE"
+            printf "Architecture: %s\n"   "${ARCH}"          >> "$CONTROL_FILE"
+            printf "Maintainer: %s\n"     "omakasui <packages@omakasui.org>" >> "$CONTROL_FILE"
+            printf "Installed-Size: %s\n" "${SIZE}"          >> "$CONTROL_FILE"
+            printf "Depends: %s\n"        "${RUNTIME_DEPS}"  >> "$CONTROL_FILE"
+            printf "Section: %s\n"        "${SECTION}"       >> "$CONTROL_FILE"
+            printf "Priority: %s\n"       "${PRIORITY}"      >> "$CONTROL_FILE"
+            printf "Homepage: %s\n"       "${HOMEPAGE}"      >> "$CONTROL_FILE"
+            printf "Description: %s\n"    "${DESC_SHORT}"    >> "$CONTROL_FILE"
+            [[ -n "${DESC_LONG}" ]] && printf "%s\n" "${DESC_LONG}" >> "$CONTROL_FILE"
+
+            cat "$CONTROL_FILE"
+            fakeroot dpkg-deb --build "${DEB_ROOT}" \
+              "output/${PKG}_${VERSION}_${DISTRO}_${ARCH}.deb"
+            ls -lh output/
+          fi
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -290,10 +274,10 @@ jobs:
         with:
           tag_name: ${{ matrix.package_entry.package }}-${{ matrix.package_entry.version }}
           name: "${{ matrix.package_entry.package }} v${{ matrix.package_entry.version }}"
-          # overwrite: true ensures rebuilds without a version bump replace assets cleanly
           files: artifacts/*.deb
           fail_on_unmatched_files: true
           make_latest: true
+          # overwrite ensures rebuilds without a version bump replace assets cleanly
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
