@@ -89,12 +89,15 @@ jobs:
               done < <(yq e ".distros.${distro}.architectures[]" build-matrix.yml)
             done <<< "$PKG_DISTROS"
 
+            PRODUCES=$(yq e '.produces // [] | join(",")' packages/${PKG}/package.yml)
+
             ENTRY=$(jq -n \
               --arg pkg "$PKG" \
               --arg ver "$VERSION" \
               --arg deps "$DEPENDS" \
+              --arg prods "$PRODUCES" \
               --argjson matrix "{\"include\": $MATRIX_INCLUDES}" \
-              '{package: $pkg, version: $ver, depends_on: $deps, matrix: $matrix}')
+              '{package: $pkg, version: $ver, depends_on: $deps, produces: ($prods | if . == "" then [] else split(",") end), matrix: $matrix}')
 
             BUILDS=$(echo "$BUILDS" | jq ". += [$ENTRY]")
             echo "==> Queued: ${PKG} ${VERSION}"
@@ -292,6 +295,13 @@ jobs:
         package_entry: ${{ fromJson(needs.detect.outputs.builds) }}
 
     steps:
+      - name: Compute suites
+        id: suites
+        run: |
+          SUITES=$(echo '${{ toJson(matrix.package_entry.matrix.include) }}' \
+            | jq -r '[.[].suite] | unique | join(" ")')
+          echo "value=${SUITES}" >> "$GITHUB_OUTPUT"
+
       - name: Dispatch to omakasui/apt-packages
         uses: peter-evans/repository-dispatch@v3
         with:
@@ -301,5 +311,7 @@ jobs:
           client-payload: |
             {
               "package": "${{ matrix.package_entry.package }}",
-              "version": "${{ matrix.package_entry.version }}"
+              "version": "${{ matrix.package_entry.version }}",
+              "suites": "${{ steps.suites.outputs.value }}",
+              "produces": ${{ toJson(matrix.package_entry.produces) }}
             }
