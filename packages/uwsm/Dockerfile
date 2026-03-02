@@ -44,8 +44,9 @@ RUN set -e; \
     # Replace Ubuntu-only util-linux-extra with util-linux (Debian includes waitpid there). \
     sed -i 's/util-linux-extra/util-linux/g' debian/control; \
     \
-    # Write a clean debian/changelog with the correct version. \
-    printf 'uwsm (%s-1) UNRELEASED; urgency=medium\n\n  * Upstream release %s.\n\n -- omakasui <omakasui@users.noreply.github.com>  %s\n' \
+    # Write a clean debian/changelog with the correct version (native format, no -1 revision \
+    # so the emitted .deb filename matches VERSION exactly, as expected by apt-packages). \
+    printf 'uwsm (%s) UNRELEASED; urgency=medium\n\n  * Upstream release %s.\n\n -- omakasui <omakasui@users.noreply.github.com>  %s\n' \
         "${VERSION}" "${VERSION}" "$(date -R)" > debian/changelog; \
     \
     dpkg-buildpackage -us -uc -b; \
