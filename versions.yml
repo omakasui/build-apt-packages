@@ -6,3 +6,6 @@ yaru-theme:
   version: "25.04.1-0ubuntu1"
   depends_on: []
 
+uwsm:
+  version: "0.26.4"
+  depends_on: []
