@@ -28,15 +28,16 @@ RUN set -e; \
     \
     echo "Downloading ${URL}..."; \
     curl -fsSL "${URL}" -o "${TARBALL}"; \
-    tar -xzf "${TARBALL}"; \
+    mkdir -p extracted; \
+    tar -xzf "${TARBALL}" -C extracted; \
     \
     mkdir -p /output/staged/usr/bin; \
-    install -m 0755 gum /output/staged/usr/bin/gum; \
+    install -m 0755 extracted/gum /output/staged/usr/bin/gum; \
     \
     # Install man page if present in the tarball. \
-    if find . -name "*.1.gz" | grep -q .; then \
+    if find extracted -name "*.1.gz" | grep -q .; then \
       mkdir -p /output/staged/usr/share/man/man1; \
-      find . -name "*.1.gz" -exec install -m 0644 {} /output/staged/usr/share/man/man1/ \;; \
+      find extracted -name "*.1.gz" -exec install -m 0644 {} /output/staged/usr/share/man/man1/ \;; \
     fi; \
     \
     echo "Binary installed: $(ls -lh /output/staged/usr/bin/gum)"

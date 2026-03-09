@@ -10,10 +10,6 @@ description: >
 runtime_depends:
   - libc6
 
-# Package emitted by the Dockerfile into /output/ (used by the release step).
-produces:
-  - omakasui-gum
-
 distros:
   - debian13
   - ubuntu2404
