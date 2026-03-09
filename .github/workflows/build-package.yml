@@ -195,7 +195,8 @@ jobs:
             for f in /tmp/repack_out/*.deb; do
               [[ -f "$f" ]] || continue
               base="$(basename "$f")"
-              mv "$f" "output/${base%_all.deb}_${DISTRO}_all.deb"
+              stripped="${base%_*.deb}"
+              mv "$f" "output/${stripped}_${DISTRO}_${ARCH}.deb"
             done
             ls -lh output/
 
