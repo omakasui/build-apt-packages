@@ -19,5 +19,5 @@ nautilus-open-any-terminal:
   depends_on: []
 
 omakasui-nvim:
-  version: "20260309"
+  version: "20260310"
   depends_on: []

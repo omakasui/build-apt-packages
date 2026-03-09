@@ -9,6 +9,13 @@ DATA_DIR="${HOME}/.local/share/nvim"
 STATE_DIR="${HOME}/.local/state/nvim"
 CACHE_DIR="${HOME}/.cache/nvim"
 
+OMAKASUI_PROJECTS=(
+  "omabuntu"
+  "omakub"
+  "omadeb"
+  "omakasui"
+)
+
 # Check if package is installed
 if [[ ! -d "$PACKAGE_DIR" ]]; then
   echo "Error: omakasui-nvim package not installed"
@@ -44,8 +51,15 @@ cp -r "$PACKAGE_DIR/data" "$DATA_DIR"
 chown -R "${USER}:${USER}" "$CONFIG_DIR"
 chown -R "${USER}:${USER}" "$DATA_DIR"
 
-# Create link for current theme
-ln -snf "${HOME}/.config/omakasui/current/theme/neovim.lua" "${CONFIG_DIR}/lua/plugins/theme.lua"
+# Create link for current theme (scroll projects folders until we find the current one)
+for project in "${OMAKASUI_PROJECTS[@]}"; do
+  if [[ -d "${HOME}/.config/${project}" ]]; then
+    if [[ -d "${HOME}/.config/${project}/current/theme" ]]; then
+      ln -snf "${HOME}/.config/${project}/current/theme/neovim.lua" "${CONFIG_DIR}/lua/plugins/theme.lua"
+      break
+    fi
+  fi
+done
 
 # Restore git working trees
 for dir in "$DATA_DIR"/lazy/*/; do

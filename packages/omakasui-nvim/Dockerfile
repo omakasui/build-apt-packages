@@ -1,4 +1,4 @@
-# Builds a pre-cached LazyVim configuration (omakasui edition).
+# Builds a pre-cached LazyVim configuration.
 # Mirrors the omarchy-nvim PKGBUILD logic adapted for Debian/Ubuntu.
 # Upstream LazyVim starter: https://github.com/LazyVim/starter
 
