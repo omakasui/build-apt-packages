@@ -9,3 +9,7 @@ yaru-theme:
 uwsm:
   version: "0.26.4"
   depends_on: []
+
+gum:
+  version: "0.17.0"
+  depends_on: []

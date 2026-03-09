@@ -1,0 +1,19 @@
+name: gum
+type: build
+section: utils
+priority: optional
+homepage: https://github.com/charmbracelet/gum
+description: >
+  Charmbracelet Gum - a tool for glamorous shell scripts.
+  Installs the official upstream release binary.
+  Provides interactive TUI components for shell scripts and aliases.
+runtime_depends:
+  - libc6
+
+# Package emitted by the Dockerfile into /output/ (used by the release step).
+produces:
+  - omakasui-gum
+
+distros:
+  - debian13
+  - ubuntu2404
