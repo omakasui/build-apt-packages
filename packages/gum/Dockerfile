@@ -29,6 +29,12 @@ RUN set -e; \
     CTRL="extracted/DEBIAN/control"; \
     sed -i "s/^Package: gum$/Package: omakasui-gum/" "$CTRL"; \
     \
+    # Remove conffiles if empty or containing blank lines — dpkg-deb rejects non-absolute paths. \
+    if [ -f extracted/DEBIAN/conffiles ]; then \
+      sed -i '/^[[:space:]]*$/d' extracted/DEBIAN/conffiles; \
+      [ ! -s extracted/DEBIAN/conffiles ] && rm extracted/DEBIAN/conffiles; \
+    fi; \
+    \
     grep -q "^Conflicts:" "$CTRL" || printf "Conflicts: gum\n" >> "$CTRL"; \
     grep -q "^Replaces:"  "$CTRL" || printf "Replaces: gum\n"  >> "$CTRL"; \
     grep -q "^Provides:"  "$CTRL" || printf "Provides: gum\n"  >> "$CTRL"; \
