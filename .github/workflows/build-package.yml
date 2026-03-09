@@ -188,7 +188,7 @@ jobs:
           mkdir -p output
 
           if [[ "$PKG_TYPE" == "repackage" ]]; then
-            # Dockerfile writes final .debs to /output/; inject distro tag into filename.
+            # Dockerfile writes final .debs to /output/; inject distro and arch into filename.
             mkdir -p /tmp/repack_out
             docker cp "${CID}:/output/." /tmp/repack_out/
             docker rm "$CID"
