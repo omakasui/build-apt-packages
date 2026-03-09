@@ -1,6 +1,6 @@
-# Downloads the official gum binary from GitHub releases and stages it.
+# Downloads the official gum .deb from GitHub releases.
 # Upstream: https://github.com/charmbracelet/gum
-# Release assets: gum_<version>_Linux_amd64.tar.gz / gum_<version>_Linux_arm64.tar.gz
+# Release assets: gum_<version>_amd64.deb / gum_<version>_arm64.deb
 
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE:-debian:trixie-slim}
@@ -16,28 +16,10 @@ ARG TARGETARCH
 WORKDIR /work
 
 RUN set -e; \
-    # Map Docker arch to Charm's release arch naming. \
-    case "${TARGETARCH}" in \
-      amd64) CHARM_ARCH="x86_64" ;; \
-      arm64) CHARM_ARCH="arm64"  ;; \
-      *)     echo "Unsupported arch: ${TARGETARCH}"; exit 1 ;; \
-    esac; \
-    \
-    TARBALL="gum_${VERSION}_Linux_${CHARM_ARCH}.tar.gz"; \
-    URL="https://github.com/charmbracelet/gum/releases/download/v${VERSION}/${TARBALL}"; \
+    mkdir -p /output; \
+    DEB="gum_${VERSION}_${TARGETARCH}.deb"; \
+    URL="https://github.com/charmbracelet/gum/releases/download/v${VERSION}/${DEB}"; \
     \
     echo "Downloading ${URL}..."; \
-    curl -fsSL "${URL}" -o "${TARBALL}"; \
-    mkdir -p extracted; \
-    tar -xzf "${TARBALL}" -C extracted; \
-    \
-    mkdir -p /output/staged/usr/bin; \
-    install -m 0755 extracted/gum /output/staged/usr/bin/gum; \
-    \
-    # Install man page if present in the tarball. \
-    if find extracted -name "*.1.gz" | grep -q .; then \
-      mkdir -p /output/staged/usr/share/man/man1; \
-      find extracted -name "*.1.gz" -exec install -m 0644 {} /output/staged/usr/share/man/man1/ \;; \
-    fi; \
-    \
-    echo "Binary installed: $(ls -lh /output/staged/usr/bin/gum)"
+    curl -fsSL "${URL}" -o "/output/${DEB}"; \
+    echo "Downloaded: $(ls -lh /output/${DEB})"
