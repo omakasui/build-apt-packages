@@ -17,3 +17,7 @@ gum:
 nautilus-open-any-terminal:
   version: "0.8.1"
   depends_on: []
+
+omakasui-nvim:
+  version: "20260309"
+  depends_on: []

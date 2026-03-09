@@ -1,0 +1,19 @@
+name: omakasui-nvim
+type: build
+section: editors
+priority: optional
+homepage: https://github.com/LazyVim/LazyVim
+description: >
+  Pre-built LazyVim configuration with cached plugins.
+  Adapted from omarchy-nvim.
+runtime_depends:
+  - neovim
+  - git
+  - gum
+
+produces:
+  - omakasui-nvim
+
+distros:
+  - debian13
+  - ubuntu2404
