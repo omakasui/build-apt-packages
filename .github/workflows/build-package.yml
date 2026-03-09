@@ -206,6 +206,11 @@ jobs:
             docker cp "${CID}:/output/staged/." /tmp/staged/
             docker rm "$CID"
 
+            # If produces[] is set, use its first entry as the installed package name.
+            # Otherwise fall back to the key name (PKG).
+            PRODUCES=$(yq e '.produces[0] // ""' "packages/${PKG}/package.yml")
+            DEB_NAME="${PRODUCES:-${PKG}}"
+
             SECTION=$(yq e '.section'   "packages/${PKG}/package.yml")
             PRIORITY=$(yq e '.priority' "packages/${PKG}/package.yml")
             HOMEPAGE=$(yq e '.homepage' "packages/${PKG}/package.yml")
@@ -222,13 +227,13 @@ jobs:
               done
             fi
 
-            DEB_ROOT="/tmp/deb/${PKG}_${VERSION}_${ARCH}"
+            DEB_ROOT="/tmp/deb/${DEB_NAME}_${VERSION}_${ARCH}"
             mkdir -p "${DEB_ROOT}/DEBIAN"
             cp -r /tmp/staged/* "${DEB_ROOT}/"
             SIZE=$(du -sk /tmp/staged | cut -f1)
 
             CONTROL_FILE="${DEB_ROOT}/DEBIAN/control"
-            printf "Package: %s\n"        "${PKG}"           > "$CONTROL_FILE"
+            printf "Package: %s\n"        "${DEB_NAME}"      > "$CONTROL_FILE"
             printf "Version: %s\n"        "${VERSION}"       >> "$CONTROL_FILE"
             printf "Architecture: %s\n"   "${ARCH}"          >> "$CONTROL_FILE"
             printf "Maintainer: %s\n"     "omakasui <packages@omakasui.org>" >> "$CONTROL_FILE"
@@ -242,7 +247,7 @@ jobs:
 
             cat "$CONTROL_FILE"
             fakeroot dpkg-deb --build "${DEB_ROOT}" \
-              "output/${PKG}_${VERSION}_${DISTRO}_${ARCH}.deb"
+              "output/${DEB_NAME}_${VERSION}_${DISTRO}_${ARCH}.deb"
             ls -lh output/
           fi
 
