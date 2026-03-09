@@ -1,0 +1,15 @@
+name: nautilus-open-any-terminal
+type: repackage
+arch: all
+section: gnome
+description: >
+  Nautilus extension to open any terminal emulator from the context menu.
+  Repackaged from the official upstream GitHub release .deb.
+  Supports alacritty, kitty, foot, tilix, and many other terminals.
+
+produces:
+  - omakasui-nautilus-open-any-terminal
+
+distros:
+  - debian13
+  - ubuntu2404

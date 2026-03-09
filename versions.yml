@@ -13,3 +13,7 @@ uwsm:
 gum:
   version: "0.17.0"
   depends_on: []
+
+nautilus-open-any-terminal:
+  version: "0.8.1"
+  depends_on: []
