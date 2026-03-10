@@ -1,0 +1,16 @@
+name: zellij
+type: build
+section: utils
+priority: optional
+homepage: https://zellij.dev
+description: >
+  Zellij - a terminal workspace with batteries included.
+  Installs the official upstream musl release binary for amd64 and arm64.
+  Provides floating panes, layouts, multiplayer collaboration, and a plugin system.
+
+produces:
+  - omakasui-zellij
+
+distros:
+  - debian13
+  - ubuntu2404

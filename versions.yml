@@ -33,3 +33,7 @@ lazygit:
 lazydocker:
   version: "0.24.4"
   depends_on: []
+
+zellij:
+  version: "0.43.1"
+  depends_on: []
