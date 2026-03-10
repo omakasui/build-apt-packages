@@ -7,8 +7,7 @@ description: >
   Lazydocker - a simple terminal UI for Docker and Docker Compose.
   Installs the official upstream release binary for amd64 and arm64.
   Provides a keyboard-driven interface to manage containers, images, and volumes.
-runtime_depends:
-  - docker.io
+  Requires Docker (docker-ce or docker.io) to be installed separately.
 
 produces:
   - omakasui-lazydocker
