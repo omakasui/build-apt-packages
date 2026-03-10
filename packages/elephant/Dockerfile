@@ -35,8 +35,8 @@ RUN PATH="$PATH:$(go env GOPATH)/bin" go generate ./... 2>/dev/null || true
 # Build main binary.
 RUN go build -o /tmp/elephant ./cmd/elephant
 
-# Build desktopapplications provider plugin.
-RUN go build -buildmode=plugin \
+# Build desktopapplications provider plugin (requires CGO for plugin mode).
+RUN CGO_ENABLED=1 go build -buildmode=plugin \
     -o /tmp/desktopapplications.so \
     ./internal/providers/desktopapplications
 
