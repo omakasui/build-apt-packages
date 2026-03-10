@@ -1,17 +1,38 @@
 # Source of truth for package versions. Pushing a change here triggers a build.
 # depends_on: list of sibling packages required at build time (empty [] if none).
 
-# Upstream version format: YY.MM.PATCH-0ubuntuN
-yaru-theme:
-  version: "25.04.1-0ubuntu1"
+elephant:
+  version: "2.18.0"
+  depends_on: []
+  triggers:
+    - elephant-desktopapplications
+
+elephant-desktopapplications:
+  version: "2.18.0"
   depends_on: []
 
-uwsm:
-  version: "0.26.4"
+fastfetch:
+  version: "2.60.0"
+  depends_on: []
+
+gtk4-layer-shell:
+  version: "1.1.0"
   depends_on: []
 
 gum:
   version: "0.17.0"
+  depends_on: []
+
+lazygit:
+  version: "0.60.0"
+  depends_on: []
+
+lazydocker:
+  version: "0.24.4"
+  depends_on: []
+
+makima:
+  version: "0.10.3"
   depends_on: []
 
 nautilus-open-any-terminal:
@@ -27,30 +48,8 @@ omakasui-aether:
   depends_on:
     - gtk4-layer-shell
 
-lazygit:
-  version: "0.60.0"
-  depends_on: []
-
-lazydocker:
-  version: "0.24.4"
-  depends_on: []
-
-zellij:
-  version: "0.43.1"
-  depends_on: []
-
-gtk4-layer-shell:
-  version: "1.1.0"
-  depends_on: []
-
-elephant:
-  version: "2.18.0"
-  depends_on: []
-  triggers:
-    - elephant-desktopapplications
-
-elephant-desktopapplications:
-  version: "2.18.0"
+uwsm:
+  version: "0.26.4"
   depends_on: []
 
 walker:
@@ -58,6 +57,11 @@ walker:
   depends_on:
     - gtk4-layer-shell
 
-fastfetch:
-  version: "2.60.0"
+# Upstream version format: YY.MM.PATCH-0ubuntuN
+yaru-theme:
+  version: "25.04.1-0ubuntu1"
+  depends_on: []
+
+zellij:
+  version: "0.43.1"
   depends_on: []

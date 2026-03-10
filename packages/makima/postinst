@@ -1,0 +1,37 @@
+#!/bin/bash
+# postinst for omakasui-makima
+
+set -e
+
+case "$1" in
+  configure)
+    # Reload systemd to pick up the new unit file.
+    systemctl daemon-reload || true
+
+    # Reload udev rules if present.
+    if [ -f /usr/lib/udev/rules.d/50-makima.rules ]; then
+      udevadm control --reload-rules || true
+      udevadm trigger             || true
+    fi
+
+    echo ""
+    echo "┌─────────────────────────────────────────────────────┐"
+    echo "│              omakasui-makima installed               │"
+    echo "├─────────────────────────────────────────────────────┤"
+    echo "│  To enable and start the systemd service:           │"
+    echo "│                                                     │"
+    echo "│    sudo systemctl enable --now makima               │"
+    echo "│                                                     │"
+    echo "│  Config files go in:                                │"
+    echo "│    ~/.config/makima/                                │"
+    echo "│  See examples in:                                   │"
+    echo "│    /usr/share/doc/makima/examples/                  │"
+    echo "└─────────────────────────────────────────────────────┘"
+    echo ""
+    ;;
+
+  abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
+esac
+
+exit 0
