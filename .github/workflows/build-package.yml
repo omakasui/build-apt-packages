@@ -156,11 +156,14 @@ jobs:
           IFS=',' read -ra DEPS <<< "${{ steps.meta.outputs.depends_on }}"
           for dep in "${DEPS[@]}"; do
             DEP_VERSION=$(yq e ".${dep}.version" versions.yml)
-            echo "Downloading dep: ${dep} ${DEP_VERSION} for ${DISTRO}/${ARCH}..."
+            # Use produces[0] as the filename prefix, fallback to the key name.
+            DEP_PRODUCES=$(yq e '.produces[0] // ""' "packages/${dep}/package.yml")
+            DEP_NAME="${DEP_PRODUCES:-${dep}}"
+            echo "Downloading dep: ${dep} (${DEP_NAME}) ${DEP_VERSION} for ${DISTRO}/${ARCH}..."
             gh release download "${dep}-${DEP_VERSION}" \
               --repo omakasui/build-apt-packages \
-              --pattern "${dep}_${DEP_VERSION}_${DISTRO}_${ARCH}.deb" \
-              --output "packages/${PKG}/deps/${dep}_${DEP_VERSION}_${ARCH}.deb"
+              --pattern "${DEP_NAME}_${DEP_VERSION}_${DISTRO}_${ARCH}.deb" \
+              --output "packages/${PKG}/deps/${DEP_NAME}_${DEP_VERSION}_${ARCH}.deb"
           done
 
       - name: Resolve arch:all skip
