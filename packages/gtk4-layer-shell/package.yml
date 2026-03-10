@@ -1,0 +1,20 @@
+name: gtk4-layer-shell
+type: build
+section: libs
+priority: optional
+homepage: https://github.com/wmww/gtk4-layer-shell
+description: >
+  GTK4 Layer Shell - library for the Wayland Layer Shell protocol with GTK4.
+  Provides libgtk4-layer-shell.so and GObject Introspection typelib.
+  Required by GJS/GTK4 apps that use the Layer Shell protocol (e.g. omakasui-aether).
+runtime_depends:
+  - libgtk-4-1
+  - libwayland-client0
+  - libglib2.0-0
+
+produces:
+  - omakasui-gtk4-layer-shell
+
+distros:
+  - debian13
+  - ubuntu2404

@@ -24,7 +24,8 @@ omakasui-nvim:
 
 omakasui-aether:
   version: "2.20.4"
-  depends_on: []
+  depends_on:
+    - gtk4-layer-shell
 
 lazygit:
   version: "0.60.0"
@@ -36,4 +37,8 @@ lazydocker:
 
 zellij:
   version: "0.43.1"
+  depends_on: []
+
+gtk4-layer-shell:
+  version: "1.1.0"
   depends_on: []
