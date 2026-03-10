@@ -163,7 +163,19 @@ jobs:
               --output "packages/${PKG}/deps/${dep}_${DEP_VERSION}_${ARCH}.deb"
           done
 
+      - name: Resolve arch:all skip
+        id: archcheck
+        run: |
+          PKG="${{ steps.meta.outputs.package }}"
+          PKG_ARCH="$(yq e '.arch // ""' "packages/${PKG}/package.yml")"
+          if [[ "$PKG_ARCH" == "all" && "${{ matrix.arch }}" == "arm64" ]]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Build Docker image
+        if: steps.archcheck.outputs.skip != 'true'
         run: |
           PKG="${{ steps.meta.outputs.package }}"
           VERSION="${{ steps.meta.outputs.version }}"
@@ -177,6 +189,7 @@ jobs:
             "packages/${PKG}/"
 
       - name: Extract and assemble .deb
+        if: steps.archcheck.outputs.skip != 'true'
         run: |
           PKG="${{ steps.meta.outputs.package }}"
           VERSION="${{ steps.meta.outputs.version }}"
@@ -230,6 +243,7 @@ jobs:
           fi
 
       - name: Upload artifact
+        if: steps.archcheck.outputs.skip != 'true'
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.meta.outputs.package }}-${{ matrix.distro }}-${{ matrix.arch }}
