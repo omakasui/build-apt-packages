@@ -1,0 +1,19 @@
+name: elephant
+type: build
+section: utils
+priority: optional
+homepage: https://github.com/abenz1267/elephant
+description: >
+  Elephant - powerful data provider service and backend for application launchers.
+  Communicates via Unix sockets and Protocol Buffers.
+  Includes the desktopapplications provider.
+  Run "elephant service enable" after install to set up the systemd user service.
+runtime_depends:
+  - fd-find
+
+produces:
+  - omakasui-elephant
+
+distros:
+  - debian13
+  - ubuntu2404

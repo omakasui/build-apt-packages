@@ -1,0 +1,23 @@
+name: walker
+type: build
+section: utils
+priority: optional
+homepage: https://github.com/abenz1267/walker
+description: >
+  Walker - multi-purpose application launcher for Wayland.
+  Fast, highly customizable, GTK4-based.
+  Requires omakasui-elephant to be running as a user service.
+  Start with "walker --gapplication-service" for faster subsequent launches.
+runtime_depends:
+  - libgtk-4-1
+  - libcairo2
+  - libpoppler-glib8
+  - omakasui-gtk4-layer-shell
+  - omakasui-elephant
+
+produces:
+  - omakasui-walker
+
+distros:
+  - debian13
+  - ubuntu2404
