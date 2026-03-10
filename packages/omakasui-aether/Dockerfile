@@ -15,6 +15,10 @@ ARG VERSION
 
 WORKDIR /build
 
+# Copy local assets (icon, .desktop) from the build context.
+COPY aether.png aether.png
+COPY aether.desktop aether.desktop
+
 RUN set -e; \
     URL="https://github.com/bjarneo/aether/archive/v${VERSION}.tar.gz"; \
     echo "Downloading ${URL}..."; \
@@ -39,5 +43,13 @@ RUN set -e; \
     printf '#!/bin/sh\nexec /usr/share/omakasui-aether/aether "$@"\n' \
       > /output/staged/usr/bin/aether; \
     chmod +x /output/staged/usr/bin/aether; \
+    \
+    # Install .desktop file. \
+    mkdir -p /output/staged/usr/share/applications; \
+    cp aether.desktop /output/staged/usr/share/applications/aether.desktop; \
+    \
+    # Install icon (PNG 512x512). \
+    mkdir -p /output/staged/usr/share/icons/hicolor/512x512/apps; \
+    cp aether.png /output/staged/usr/share/icons/hicolor/512x512/apps/aether.png; \
     \
     echo "Staged: $(du -sh /output/staged)"
