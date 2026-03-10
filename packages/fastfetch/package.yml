@@ -1,6 +1,7 @@
 name: fastfetch
 type: repackage
 section: utils
+homepage: https://github.com/fastfetch-cli/fastfetch
 description: >
   Fastfetch - a fast and highly customizable system information tool.
   Repackaged from official GitHub release binaries.

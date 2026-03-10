@@ -1,6 +1,7 @@
 name: gum
 type: repackage
 section: utils
+homepage: https://github.com/charmbracelet/gum
 description: >
   Charmbracelet Gum - a tool for glamorous shell scripts.
   Repackaged from official GitHub release binaries.
