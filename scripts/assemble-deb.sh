@@ -14,7 +14,8 @@
 #   output-dir    Directory to write the final .deb into
 #   extra-depends Optional comma-separated additional Depends entries
 #
-# Reads from package.yml: produces[], section, priority, homepage, description, runtime_depends
+# Reads from package.yml: produces[], arch, section, priority, homepage, description, runtime_depends
+# If arch: all is set in package.yml, overrides the passed-in arch for control file and filename.
 
 set -euo pipefail
 
@@ -26,6 +27,10 @@ ARCH="${5:?missing arch}"
 DISTRO="${6:?missing distro}"
 OUTPUT_DIR="${7:?missing output-dir}"
 EXTRA_DEPENDS="${8:-}"
+
+# If package.yml declares arch: all, use it regardless of the build arch.
+PKG_ARCH="$(yq e '.arch // ""' "$PKG_YAML")"
+[[ "$PKG_ARCH" == "all" ]] && ARCH="all"
 
 command -v yq  >/dev/null || { echo "ERROR: yq not found"; exit 1; }
 command -v fakeroot >/dev/null || { echo "ERROR: fakeroot not found"; exit 1; }
@@ -40,7 +45,7 @@ PRIORITY="$(yq e '.priority' "$PKG_YAML")"
 HOMEPAGE="$(yq e '.homepage' "$PKG_YAML")"
 DESC_SHORT="$(yq e '.description' "$PKG_YAML" | head -1)"
 DESC_LONG="$(yq e '.description' "$PKG_YAML" | tail -n +2 | sed 's/^[[:space:]]*$/./' | sed 's/^/ /')"
-RUNTIME_DEPS="$(yq e '.runtime_depends | join(", ")' "$PKG_YAML")"
+RUNTIME_DEPS="$(yq e '.runtime_depends // [] | join(", ")' "$PKG_YAML")"
 
 # Append extra depends (e.g. from depends_on in versions.yml).
 if [[ -n "$EXTRA_DEPENDS" ]]; then
