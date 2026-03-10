@@ -30,10 +30,7 @@ jobs:
           fetch-depth: 2
 
       - name: Install yq
-        run: |
-          sudo wget -qO /usr/local/bin/yq \
-            https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-          sudo chmod +x /usr/local/bin/yq
+        run: bash scripts/install-yq.sh
 
       - name: Resolve packages and versions
         id: resolve
@@ -128,10 +125,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Install yq
-        run: |
-          sudo wget -qO /usr/local/bin/yq \
-            https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-          sudo chmod +x /usr/local/bin/yq
+        run: bash scripts/install-yq.sh
 
       - name: Resolve package metadata for this job
         id: meta
@@ -156,9 +150,7 @@ jobs:
           IFS=',' read -ra DEPS <<< "${{ steps.meta.outputs.depends_on }}"
           for dep in "${DEPS[@]}"; do
             DEP_VERSION=$(yq e ".${dep}.version" versions.yml)
-            # Use produces[0] as the filename prefix, fallback to the key name.
-            DEP_PRODUCES=$(yq e '.produces[0] // ""' "packages/${dep}/package.yml")
-            DEP_NAME="${DEP_PRODUCES:-${dep}}"
+            DEP_NAME=$(bash scripts/resolve-dep-name.sh "$dep")
             echo "Downloading dep: ${dep} (${DEP_NAME}) ${DEP_VERSION} for ${DISTRO}/${ARCH}..."
             gh release download "${dep}-${DEP_VERSION}" \
               --repo omakasui/build-apt-packages \
@@ -223,14 +215,12 @@ jobs:
             docker rm "$CID"
 
             # Build extra depends string from depends_on versions.
-            # Use produces[0] as the package name, fallback to the key.
             EXTRA_DEPS=""
             if [[ -n "${{ steps.meta.outputs.depends_on }}" ]]; then
               IFS=',' read -ra DEPS <<< "${{ steps.meta.outputs.depends_on }}"
               for dep in "${DEPS[@]}"; do
                 DEP_VERSION=$(yq e ".${dep}.version" versions.yml)
-                DEP_PRODUCES=$(yq e '.produces[0] // ""' "packages/${dep}/package.yml")
-                DEP_NAME="${DEP_PRODUCES:-${dep}}"
+                DEP_NAME=$(bash scripts/resolve-dep-name.sh "$dep")
                 EXTRA_DEPS="${EXTRA_DEPS:+${EXTRA_DEPS}, }${DEP_NAME} (>= ${DEP_VERSION})"
               done
             fi

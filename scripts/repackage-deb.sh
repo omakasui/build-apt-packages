@@ -31,6 +31,9 @@ echo "Extracting ${INPUT_DEB}..."
 mkdir -p "$EXTRACTED"
 dpkg-deb -R "$INPUT_DEB" "$EXTRACTED"
 
+# Keep only the first stanza — some upstreams (e.g. fastfetch) ship multi-entry control files.
+awk 'BEGIN{p=1} /^$/{p=0} p{print}' "$CTRL" > /tmp/control.clean && mv /tmp/control.clean "$CTRL"
+
 echo "Renaming Package: ${UPSTREAM_NAME} -> ${NEW_NAME}..."
 sed -i "s/^Package: ${UPSTREAM_NAME}$/Package: ${NEW_NAME}/" "$CTRL"
 
