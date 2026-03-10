@@ -47,9 +47,9 @@ elephant:
   version: "2.18.0"
   depends_on: []
   triggers:
-    - elephant-desktopapps
+    - elephant-desktopapplications
 
-elephant-desktopapps:
+elephant-desktopapplications:
   version: "2.18.0"
   depends_on: []
 

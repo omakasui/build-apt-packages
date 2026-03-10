@@ -1,4 +1,4 @@
-name: elephant-desktopapps
+name: elephant-desktopapplications
 type: build
 section: utils
 priority: optional
@@ -11,7 +11,7 @@ runtime_depends:
   - omakasui-elephant
 
 produces:
-  - omakasui-elephant-desktopapps
+  - omakasui-elephant-desktopapplications
 
 distros:
   - debian13
