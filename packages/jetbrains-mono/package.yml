@@ -1,0 +1,16 @@
+name: jetbrains-mono
+type: build
+arch: all
+section: fonts
+priority: optional
+homepage: https://www.jetbrains.com/lp/mono/
+description: >
+  JetBrains Mono — all TTF variants (Thin to ExtraBold with matching italics).
+  A free and open-source typeface designed for developers.
+
+produces:
+  - omakasui-font-jetbrains-mono
+
+distros:
+  - debian13
+  - ubuntu2404

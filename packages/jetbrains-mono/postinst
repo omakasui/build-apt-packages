@@ -1,0 +1,12 @@
+#!/bin/bash
+# postinst for omakasui-font-jetbrains-mono
+
+set -e
+
+case "$1" in
+  configure)
+    fc-cache -f /usr/share/fonts/truetype/jetbrains-mono || true
+    ;;
+esac
+
+exit 0

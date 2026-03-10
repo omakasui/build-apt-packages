@@ -1,6 +1,10 @@
 # Source of truth for package versions. Pushing a change here triggers a build.
 # depends_on: list of sibling packages required at build time (empty [] if none).
 
+cascadia-mono-nf:
+  version: "3.4.0"
+  depends_on: []
+
 elephant:
   version: "2.18.0"
   depends_on: []
@@ -21,6 +25,10 @@ gtk4-layer-shell:
 
 gum:
   version: "0.17.0"
+  depends_on: []
+
+jetbrains-mono:
+  version: "2.304"
   depends_on: []
 
 lazygit:
