@@ -1,5 +1,5 @@
 # Repackages the official fastfetch .deb under the omakasui-fastfetch namespace.
-# Upstream: https://github.com/fastfetch/fastfetch
+# Upstream: https://github.com/fastfetch-cli/fastfetch
 # Release assets: fastfetch_<version>_amd64.deb / fastfetch_<version>_arm64.deb
 
 ARG BASE_IMAGE
@@ -24,7 +24,7 @@ RUN set -e; \
     esac; \
     \
     DEB="fastfetch_linux_${TARGETARCH}.deb"; \
-    URL="https://github.com/fastfetch/fastfetch/releases/download/${VERSION}/${DEB}"; \
+    URL="https://github.com/fastfetch-cli/fastfetch/releases/download/${VERSION}/${DEB}"; \
     \
     echo "Downloading ${URL}..."; \
     curl -fsSL "${URL}" -o "${DEB}"; \
