@@ -1,0 +1,23 @@
+name: omakasui-aether
+type: build
+arch: all
+section: gnome
+priority: optional
+homepage: https://github.com/bjarneo/aether
+description: >
+  Aether - create Omarchy/Omakasui themes the easy way.
+  GTK4/libadwaita app for wallpaper-based color extraction and theme generation.
+  Supports wallhaven.cc browsing, image filters, color presets, and Base16 import.
+runtime_depends:
+  - gjs
+  - gir1.2-gtk-4.0
+  - gir1.2-adw-1
+  - gir1.2-soup-3.0
+  - imagemagick
+
+produces:
+  - omakasui-aether
+
+distros:
+  - debian13
+  - ubuntu2404
