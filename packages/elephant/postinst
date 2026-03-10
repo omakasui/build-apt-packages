@@ -1,0 +1,25 @@
+#!/bin/bash
+# postinst for omakasui-elephant
+
+set -e
+
+case "$1" in
+  configure)
+    echo ""
+    echo "┌─────────────────────────────────────────────────────┐"
+    echo "│              omakasui-elephant installed             │"
+    echo "├─────────────────────────────────────────────────────┤"
+    echo "│  To set up and start the systemd user service,      │"
+    echo "│  run as your regular user:                          │"
+    echo "│                                                     │"
+    echo "│    elephant service enable                          │"
+    echo "│                                                     │"
+    echo "│  This places the service file in:                   │"
+    echo "│    ~/.config/systemd/user/elephant.service          │"
+    echo "│  and enables it to start with your session.         │"
+    echo "└─────────────────────────────────────────────────────┘"
+    echo ""
+    ;;
+esac
+
+exit 0

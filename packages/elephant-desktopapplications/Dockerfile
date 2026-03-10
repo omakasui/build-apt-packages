@@ -1,4 +1,5 @@
-# Builds elephant daemon from source (Go).
+# Builds elephant desktopapplications provider plugin from source (Go).
+# Must be compiled with the same Go version as omakasui-elephant.
 # Upstream: https://github.com/abenz1267/elephant
 
 ARG BASE_IMAGE
@@ -33,16 +34,15 @@ WORKDIR /build/elephant
 # Generate protobuf bindings.
 RUN PATH="$PATH:$(go env GOPATH)/bin" go generate ./... 2>/dev/null || true
 
-# Build main binary only.
-RUN go build -o /tmp/elephant ./cmd/elephant
+# Build desktopapplications provider plugin (requires CGO for plugin mode).
+RUN CGO_ENABLED=1 go build -buildmode=plugin \
+    -o /tmp/desktopapplications.so \
+    ./internal/providers/desktopapplications
 
 # Stage output.
+# Elephant looks for provider plugins in /usr/lib/elephant/.
 RUN set -e; \
-    mkdir -p /output/staged/usr/bin; \
-    install -m 0755 /tmp/elephant /output/staged/usr/bin/elephant; \
-    echo "Staged: $(ls -lh /output/staged/usr/bin/elephant)"
-
-# Stage postinst — prints setup instructions after dpkg install.
-RUN mkdir -p /output/staged/DEBIAN
-COPY postinst /output/staged/DEBIAN/postinst
-RUN chmod 0755 /output/staged/DEBIAN/postinst
+    mkdir -p /output/staged/usr/lib/elephant; \
+    install -m 0755 /tmp/desktopapplications.so \
+      /output/staged/usr/lib/elephant/desktopapplications.so; \
+    echo "Staged: $(ls -lh /output/staged/usr/lib/elephant/desktopapplications.so)"

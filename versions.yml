@@ -46,6 +46,12 @@ gtk4-layer-shell:
 elephant:
   version: "2.18.0"
   depends_on: []
+  triggers:
+    - elephant-desktopapps
+
+elephant-desktopapps:
+  version: "2.18.0"
+  depends_on: []
 
 walker:
   version: "2.14.2"

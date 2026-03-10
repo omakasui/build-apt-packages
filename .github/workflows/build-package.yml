@@ -51,6 +51,19 @@ jobs:
             PACKAGES=$(echo "$PACKAGES" | xargs)
           fi
 
+          # Expand triggers: if a changed package declares triggers[], add them too.
+          TRIGGERED=""
+          for PKG in $PACKAGES; do
+            if yq e ".${PKG}.triggers" versions.yml | grep -qv 'null'; then
+              while IFS= read -r triggered; do
+                [[ -z "$triggered" || "$triggered" == "null" ]] && continue
+                # Only add if not already in the list.
+                echo "$PACKAGES $TRIGGERED" | grep -qw "$triggered" ||                   TRIGGERED="$TRIGGERED $triggered"
+              done < <(yq e ".${PKG}.triggers[]" versions.yml 2>/dev/null)
+            fi
+          done
+          PACKAGES=$(echo "$PACKAGES $TRIGGERED" | xargs)
+
           if [[ -z "$PACKAGES" ]]; then
             echo "No package changes detected."
             echo 'builds=[]' >> "$GITHUB_OUTPUT"
@@ -226,14 +239,14 @@ jobs:
             fi
 
             bash scripts/assemble-deb.sh \
-              /tmp/staged \
-              "packages/${PKG}/package.yml" \
-              "${PKG}" \
-              "${VERSION}" \
-              "${ARCH}" \
-              "${DISTRO}" \
-              output \
-              "${EXTRA_DEPS}"
+              --staged      /tmp/staged \
+              --pkg-yaml    "packages/${PKG}/package.yml" \
+              --key         "${PKG}" \
+              --version     "${VERSION}" \
+              --arch        "${ARCH}" \
+              --distro      "${DISTRO}" \
+              --output-dir  output \
+              --extra-depends "${EXTRA_DEPS}"
 
             ls -lh output/
           fi
