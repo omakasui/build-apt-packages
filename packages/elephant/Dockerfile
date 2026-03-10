@@ -11,6 +11,8 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     git \
     golang \
     protobuf-compiler \
+    gcc \
+    libc6-dev \
   && rm -rf /var/lib/apt/lists/*
 
 # Install protoc-gen-go.
