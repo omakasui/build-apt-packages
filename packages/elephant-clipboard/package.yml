@@ -1,0 +1,19 @@
+name: elephant-clipboard
+type: build
+section: utils
+priority: optional
+homepage: https://github.com/abenz1267/elephant
+description: >
+  Elephant clipboard provider plugin for the walker application launcher.
+  Installs clipboard.so into /usr/lib/elephant/.
+runtime_depends:
+  - wl-clipboard
+  - imagemagick
+
+
+produces:
+  - omakasui-elephant-clipboard
+
+distros:
+  - debian13
+  - ubuntu2404

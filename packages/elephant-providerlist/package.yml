@@ -1,0 +1,15 @@
+name: elephant-providerlist
+type: build
+section: utils
+priority: optional
+homepage: https://github.com/abenz1267/elephant
+description: >
+  Elephant providerlist provider plugin for the walker application launcher.
+  Installs providerlist.so into /usr/lib/elephant/.
+
+produces:
+  - omakasui-elephant-providerlist
+
+distros:
+  - debian13
+  - ubuntu2404

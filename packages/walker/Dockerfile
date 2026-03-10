@@ -48,9 +48,23 @@ WORKDIR /build/walker
 
 RUN cargo build --release
 
-# Stage output.
+# Stage binary.
+RUN mkdir -p /output/staged/usr/bin && \
+    install -m 0755 target/release/walker /output/staged/usr/bin/walker
+
+# Stage default config and themes from resources/.
 RUN set -e; \
-    mkdir -p /output/staged/usr/bin; \
-    install -m 0755 target/release/walker /output/staged/usr/bin/walker; \
-    \
+    mkdir -p /output/staged/etc/xdg/walker/themes/default; \
+    install -m 0644 resources/config.toml \
+      /output/staged/etc/xdg/walker/; \
+    for f in \
+      item.xml item_calc.xml item_clipboard.xml item_dmenu.xml \
+      item_files.xml item_providerlist.xml item_symbols.xml \
+      item_symbols_grid.xml item_todo.xml item_unicode.xml \
+      item_archlinuxpkgs.xml item_dnfpackages.xml \
+      layout.xml keybind.xml preview.xml style.css; do \
+        src="resources/themes/default/${f}"; \
+        [ -f "$src" ] && install -m 0644 "$src" \
+          /output/staged/etc/xdg/walker/themes/default/ || true; \
+    done; \
     echo "Staged: $(ls -lh /output/staged/usr/bin/walker)"

@@ -6,13 +6,59 @@ cascadia-mono-nf:
   depends_on: []
 
 elephant:
-  version: "2.18.0"
+  version: "2.20.2"
   depends_on: []
   triggers:
     - elephant-desktopapplications
+    - elephant-calc
+    - elephant-clipboard
+    - elephant-files
+    - elephant-menus
+    - elephant-providerlist
+    - elephant-runner
+    - elephant-symbols
+    - elephant-todo
+    - elephant-unicode
+    - elephant-websearch
 
-elephant-desktopapplications:
-  version: "2.18.0"
+elephant-calc:
+  version: "2.20.2"
+  depends_on: []
+
+elephant-clipboard:
+  version: "2.20.2"
+  depends_on: []
+
+elephant-files:
+  version: "2.20.2"
+  depends_on: []
+
+elephant-menus:
+  version: "2.20.2"
+  depends_on: []
+
+elephant-providerlist:
+  version: "2.20.2"
+  depends_on: []
+
+elephant-runner:
+  version: "2.20.2"
+  depends_on: []
+
+elephant-symbols:
+  version: "2.20.2"
+  depends_on: []
+
+elephant-todo:
+  version: "2.20.2"
+  depends_on: []
+
+elephant-unicode:
+  version: "2.20.2"
+  depends_on: []
+
+elephant-websearch:
+  version: "2.20.2"
   depends_on: []
 
 fastfetch:
@@ -65,7 +111,7 @@ uwsm:
   depends_on: []
 
 walker:
-  version: "2.14.2"
+  version: "2.15.1"
   depends_on:
     - gtk4-layer-shell
 

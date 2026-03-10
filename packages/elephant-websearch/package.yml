@@ -1,0 +1,15 @@
+name: elephant-websearch
+type: build
+section: utils
+priority: optional
+homepage: https://github.com/abenz1267/elephant
+description: >
+  Elephant websearch provider plugin for the walker application launcher.
+  Installs websearch.so into /usr/lib/elephant/.
+
+produces:
+  - omakasui-elephant-websearch
+
+distros:
+  - debian13
+  - ubuntu2404

@@ -1,0 +1,15 @@
+name: elephant-runner
+type: build
+section: utils
+priority: optional
+homepage: https://github.com/abenz1267/elephant
+description: >
+  Elephant runner provider plugin for the walker application launcher.
+  Installs runner.so into /usr/lib/elephant/.
+
+produces:
+  - omakasui-elephant-runner
+
+distros:
+  - debian13
+  - ubuntu2404

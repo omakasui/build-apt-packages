@@ -1,0 +1,15 @@
+name: elephant-todo
+type: build
+section: utils
+priority: optional
+homepage: https://github.com/abenz1267/elephant
+description: >
+  Elephant todo provider plugin for the walker application launcher.
+  Installs todo.so into /usr/lib/elephant/.
+
+produces:
+  - omakasui-elephant-todo
+
+distros:
+  - debian13
+  - ubuntu2404
