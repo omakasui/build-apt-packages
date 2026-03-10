@@ -23,7 +23,7 @@ RUN set -e; \
       *)     echo "Unsupported arch: ${TARGETARCH}"; exit 1 ;; \
     esac; \
     \
-    DEB="fastfetch-linux-${TARGETARCH}.deb"; \
+    DEB="fastfetch-linux-${FF_ARCH}.deb"; \
     URL="https://github.com/fastfetch-cli/fastfetch/releases/download/${VERSION}/${DEB}"; \
     \
     echo "Downloading ${URL}..."; \
