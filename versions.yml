@@ -21,3 +21,11 @@ nautilus-open-any-terminal:
 omakasui-nvim:
   version: "20260310"
   depends_on: []
+
+lazygit:
+  version: "0.60.0"
+  depends_on: []
+
+lazygit:
+  version: "0.24.4"
+  depends_on: []
