@@ -1,0 +1,12 @@
+#!/bin/bash
+# postinst for omakasui-font-ia-writer-mono
+
+set -e
+
+case "$1" in
+  configure)
+    fc-cache -f /usr/share/fonts/truetype/ia-writer-mono || true
+    ;;
+esac
+
+exit 0

@@ -1,0 +1,16 @@
+name: ia-writer-mono
+type: build
+arch: all
+section: fonts
+priority: optional
+homepage: https://github.com/iaolo/iA-Fonts
+description: >
+  iA Writer Mono S — Static TTF variants (Regular, Italic, Bold, BoldItalic).
+  Designed for writing and coding, used by the iA Writer app.
+
+produces:
+  - omakasui-font-ia-writer-mono
+
+distros:
+  - debian13
+  - ubuntu2404
