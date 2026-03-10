@@ -223,12 +223,15 @@ jobs:
             docker rm "$CID"
 
             # Build extra depends string from depends_on versions.
+            # Use produces[0] as the package name, fallback to the key.
             EXTRA_DEPS=""
             if [[ -n "${{ steps.meta.outputs.depends_on }}" ]]; then
               IFS=',' read -ra DEPS <<< "${{ steps.meta.outputs.depends_on }}"
               for dep in "${DEPS[@]}"; do
                 DEP_VERSION=$(yq e ".${dep}.version" versions.yml)
-                EXTRA_DEPS="${EXTRA_DEPS:+${EXTRA_DEPS}, }${dep} (>= ${DEP_VERSION})"
+                DEP_PRODUCES=$(yq e '.produces[0] // ""' "packages/${dep}/package.yml")
+                DEP_NAME="${DEP_PRODUCES:-${dep}}"
+                EXTRA_DEPS="${EXTRA_DEPS:+${EXTRA_DEPS}, }${DEP_NAME} (>= ${DEP_VERSION})"
               done
             fi
 
