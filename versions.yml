@@ -51,3 +51,7 @@ walker:
   version: "2.14.2"
   depends_on:
     - gtk4-layer-shell
+
+fastfetch:
+  version: "2.60.0"
+  depends_on: []
