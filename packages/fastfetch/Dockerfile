@@ -33,6 +33,7 @@ RUN set -e; \
     dpkg-deb -R "${DEB}" extracted/; \
     \
     CTRL="extracted/DEBIAN/control"; \
+    awk 'BEGIN{p=1} /^$/{p=0} p{print}' "$CTRL" > /tmp/control.clean && mv /tmp/control.clean "$CTRL"; \
     sed -i "s/^Package: fastfetch$/Package: omakasui-fastfetch/" "$CTRL"; \
     \
     # Remove conffiles if empty or containing blank lines — dpkg-deb rejects non-absolute paths. \
