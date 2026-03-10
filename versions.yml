@@ -26,6 +26,6 @@ lazygit:
   version: "0.60.0"
   depends_on: []
 
-lazygit:
+lazydocker:
   version: "0.24.4"
   depends_on: []
