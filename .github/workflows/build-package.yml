@@ -139,8 +139,8 @@ jobs:
           PKG="${{ matrix.package }}"
           VERSION=$(yq e ".${PKG}.version" versions.yml)
           DEPENDS=$(yq e ".${PKG}.depends_on | join(\",\")" versions.yml)
-          echo "package=${PKG}"       >> "$GITHUB_OUTPUT"
-          echo "version=${VERSION}"   >> "$GITHUB_OUTPUT"
+          echo "package=${PKG}"        >> "$GITHUB_OUTPUT"
+          echo "version=${VERSION}"    >> "$GITHUB_OUTPUT"
           echo "depends_on=${DEPENDS}" >> "$GITHUB_OUTPUT"
 
       - name: Download custom dependencies
@@ -176,7 +176,7 @@ jobs:
             --tag "omakasui-build-${PKG}:local" \
             "packages/${PKG}/"
 
-      - name: Extract staged files and assemble .deb
+      - name: Extract and assemble .deb
         run: |
           PKG="${{ steps.meta.outputs.package }}"
           VERSION="${{ steps.meta.outputs.version }}"
@@ -188,7 +188,7 @@ jobs:
           mkdir -p output
 
           if [[ "$PKG_TYPE" == "repackage" ]]; then
-            # Dockerfile writes final .debs to /output/; inject distro and arch into filename.
+            # Dockerfile writes final .debs to /output/; inject distro into filename.
             mkdir -p /tmp/repack_out
             docker cp "${CID}:/output/." /tmp/repack_out/
             docker rm "$CID"
@@ -201,53 +201,31 @@ jobs:
             ls -lh output/
 
           else
-            # Dockerfile stages content under /output/staged/; we assemble the .deb here.
+            # Dockerfile stages content under /output/staged/; assemble .deb via helper.
             mkdir -p /tmp/staged
             docker cp "${CID}:/output/staged/." /tmp/staged/
             docker rm "$CID"
 
-            # If produces[] is set, use its first entry as the installed package name.
-            # Otherwise fall back to the key name (PKG).
-            PRODUCES=$(yq e '.produces[0] // ""' "packages/${PKG}/package.yml")
-            DEB_NAME="${PRODUCES:-${PKG}}"
-
-            SECTION=$(yq e '.section'   "packages/${PKG}/package.yml")
-            PRIORITY=$(yq e '.priority' "packages/${PKG}/package.yml")
-            HOMEPAGE=$(yq e '.homepage' "packages/${PKG}/package.yml")
-            DESC_SHORT=$(yq e '.description' "packages/${PKG}/package.yml" | head -1)
-            DESC_LONG=$(yq e '.description'  "packages/${PKG}/package.yml" \
-              | tail -n +2 | sed 's/^[[:space:]]*$/./' | sed 's/^/ /')
-            RUNTIME_DEPS=$(yq e '.runtime_depends | join(", ")' "packages/${PKG}/package.yml")
-
+            # Build extra depends string from depends_on versions.
+            EXTRA_DEPS=""
             if [[ -n "${{ steps.meta.outputs.depends_on }}" ]]; then
               IFS=',' read -ra DEPS <<< "${{ steps.meta.outputs.depends_on }}"
               for dep in "${DEPS[@]}"; do
                 DEP_VERSION=$(yq e ".${dep}.version" versions.yml)
-                RUNTIME_DEPS="${RUNTIME_DEPS}, ${dep} (>= ${DEP_VERSION})"
+                EXTRA_DEPS="${EXTRA_DEPS:+${EXTRA_DEPS}, }${dep} (>= ${DEP_VERSION})"
               done
             fi
 
-            DEB_ROOT="/tmp/deb/${DEB_NAME}_${VERSION}_${ARCH}"
-            mkdir -p "${DEB_ROOT}/DEBIAN"
-            cp -r /tmp/staged/* "${DEB_ROOT}/"
-            SIZE=$(du -sk /tmp/staged | cut -f1)
+            bash scripts/assemble-deb.sh \
+              /tmp/staged \
+              "packages/${PKG}/package.yml" \
+              "${PKG}" \
+              "${VERSION}" \
+              "${ARCH}" \
+              "${DISTRO}" \
+              output \
+              "${EXTRA_DEPS}"
 
-            CONTROL_FILE="${DEB_ROOT}/DEBIAN/control"
-            printf "Package: %s\n"        "${DEB_NAME}"      > "$CONTROL_FILE"
-            printf "Version: %s\n"        "${VERSION}"       >> "$CONTROL_FILE"
-            printf "Architecture: %s\n"   "${ARCH}"          >> "$CONTROL_FILE"
-            printf "Maintainer: %s\n"     "omakasui <packages@omakasui.org>" >> "$CONTROL_FILE"
-            printf "Installed-Size: %s\n" "${SIZE}"          >> "$CONTROL_FILE"
-            printf "Depends: %s\n"        "${RUNTIME_DEPS}"  >> "$CONTROL_FILE"
-            printf "Section: %s\n"        "${SECTION}"       >> "$CONTROL_FILE"
-            printf "Priority: %s\n"       "${PRIORITY}"      >> "$CONTROL_FILE"
-            printf "Homepage: %s\n"       "${HOMEPAGE}"      >> "$CONTROL_FILE"
-            printf "Description: %s\n"    "${DESC_SHORT}"    >> "$CONTROL_FILE"
-            [[ -n "${DESC_LONG}" ]] && printf "%s\n" "${DESC_LONG}" >> "$CONTROL_FILE"
-
-            cat "$CONTROL_FILE"
-            fakeroot dpkg-deb --build "${DEB_ROOT}" \
-              "output/${DEB_NAME}_${VERSION}_${DISTRO}_${ARCH}.deb"
             ls -lh output/
           fi
 
