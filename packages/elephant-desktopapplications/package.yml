@@ -7,11 +7,9 @@ description: >
   Elephant desktopapplications provider plugin.
   Enables application launcher entries from .desktop files in walker.
   Requires omakasui-elephant to be installed and running.
-runtime_depends:
-  - omakasui-elephant
 
-produces:
-  - omakasui-elephant-desktopapplications
+runtime_depends:
+  - elephant
 
 distros:
   - debian13

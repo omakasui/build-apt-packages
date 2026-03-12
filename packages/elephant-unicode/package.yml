@@ -7,9 +7,6 @@ description: >
   Elephant unicode provider plugin for the walker application launcher.
   Installs unicode.so into /usr/lib/elephant/.
 
-produces:
-  - omakasui-elephant-unicode
-
 distros:
   - debian13
   - ubuntu2404

@@ -6,12 +6,9 @@ homepage: https://github.com/abenz1267/elephant
 description: >
   Elephant files provider plugin for the walker application launcher.
   Installs files.so into /usr/lib/elephant/.
+
 runtime_depends:
   - fd-find
-
-
-produces:
-  - omakasui-elephant-files
 
 distros:
   - debian13

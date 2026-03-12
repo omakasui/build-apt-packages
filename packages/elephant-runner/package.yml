@@ -7,9 +7,6 @@ description: >
   Elephant runner provider plugin for the walker application launcher.
   Installs runner.so into /usr/lib/elephant/.
 
-produces:
-  - omakasui-elephant-runner
-
 distros:
   - debian13
   - ubuntu2404

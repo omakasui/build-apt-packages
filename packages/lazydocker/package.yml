@@ -9,9 +9,6 @@ description: >
   Provides a keyboard-driven interface to manage containers, images, and volumes.
   Requires Docker (docker-ce or docker.io) to be installed separately.
 
-produces:
-  - omakasui-lazydocker
-
 distros:
   - debian13
   - ubuntu2404

@@ -7,11 +7,9 @@ description: >
   Lazygit - a simple terminal UI for git commands.
   Installs the official upstream release binary for amd64 and arm64.
   Provides a keyboard-driven git interface inside any terminal.
+
 runtime_depends:
   - git
-
-produces:
-  - omakasui-lazygit
 
 distros:
   - debian13

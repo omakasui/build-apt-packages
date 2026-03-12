@@ -7,13 +7,11 @@ description: >
   Repackaged from Ubuntu upstream with omakasui- namespace prefix.
   Installs and replaces the official yaru-theme-* packages.
 
-# Packages emitted by the Dockerfile into /output/ (used by the release step).
 produces:
   - omakasui-yaru-theme-gtk
   - omakasui-yaru-theme-icon
   - omakasui-yaru-theme-sound
   - omakasui-yaru-theme-gnome-shell
 
-# Noble has Yaru in its official mirrors; Trixie does not.
 distros:
   - debian13

@@ -8,6 +8,7 @@ description: >
   Compiled from upstream source using the Rust toolchain.
   Works on Wayland and X11 via the evdev kernel interface.
   Supports TOML-based per-device config files and hot plugging.
+
 runtime_depends:
   - libc6
   - libgcc-s1
@@ -16,6 +17,3 @@ runtime_depends:
 distros:
   - debian13
   - ubuntu2404
-
-produces:
-  - omakasui-makima

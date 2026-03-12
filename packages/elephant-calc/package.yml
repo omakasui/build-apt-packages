@@ -6,12 +6,9 @@ homepage: https://github.com/abenz1267/elephant
 description: >
   Elephant calc provider plugin for the walker application launcher.
   Installs calc.so into /usr/lib/elephant/.
+
 runtime_depends:
   - libqalculate23 | libqalculate22 | libqalculate21
-
-
-produces:
-  - omakasui-elephant-calc
 
 distros:
   - debian13

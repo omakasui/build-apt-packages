@@ -8,9 +8,6 @@ description: >
   Communicates via Unix sockets and Protocol Buffers.
   Install provider packages (e.g. omakasui-elephant-desktopapps) to add functionality.
 
-produces:
-  - omakasui-elephant
-
 distros:
   - debian13
   - ubuntu2404

@@ -115,7 +115,6 @@ walker:
   depends_on:
     - gtk4-layer-shell
 
-# Upstream version format: YY.MM.PATCH-0ubuntuN
 yaru-theme:
   version: "25.04.1-0ubuntu1"
   depends_on: []

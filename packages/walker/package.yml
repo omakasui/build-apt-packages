@@ -12,11 +12,8 @@ runtime_depends:
   - libgtk-4-1
   - libcairo2
   - libpoppler-glib8
-  - omakasui-gtk4-layer-shell
-  - omakasui-elephant
-
-produces:
-  - omakasui-walker
+  - gtk4-layer-shell
+  - elephant
 
 distros:
   - debian13

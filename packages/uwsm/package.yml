@@ -8,9 +8,5 @@ description: >
   Provides a lightweight, modular session management framework
   for Wayland environments based on systemd user units.
 
-# Package emitted by the Dockerfile into /output/ (used by the release step).
-produces:
-  - omakasui-uwsm
-
 distros:
   - debian13
