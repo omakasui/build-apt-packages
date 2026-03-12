@@ -25,7 +25,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 2
 
@@ -128,14 +128,14 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup QEMU (arm64)
         if: matrix.arch == 'arm64'
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
 
       - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Install yq
         run: bash scripts/install-yq.sh
@@ -253,7 +253,7 @@ jobs:
 
       - name: Upload artifact
         if: steps.archcheck.outputs.skip != 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ steps.meta.outputs.package }}-${{ matrix.distro }}-${{ matrix.arch }}
           path: output/*.deb
@@ -273,7 +273,7 @@ jobs:
 
     steps:
       - name: Download artifacts for this package
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           path: artifacts/
           pattern: ${{ matrix.package_entry.package }}-*
@@ -310,7 +310,7 @@ jobs:
           echo "value=${SUITES}" >> "$GITHUB_OUTPUT"
 
       - name: Dispatch to omakasui/apt-packages
-        uses: peter-evans/repository-dispatch@v3
+        uses: peter-evans/repository-dispatch@v4
         with:
           token: ${{ secrets.APT_PKG_DISPATCH_TOKEN }}
           repository: omakasui/apt-packages
