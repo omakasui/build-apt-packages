@@ -7,9 +7,6 @@ description: >
   Repackaged from official GitHub release binaries.
   Provides interactive TUI components for shell scripts and aliases.
 
-produces:
-  - omakasui-gum
-
 distros:
   - debian13
   - ubuntu2404
