@@ -6,7 +6,7 @@ homepage: https://github.com/abenz1267/elephant
 description: >
   Elephant - powerful data provider daemon for application launchers.
   Communicates via Unix sockets and Protocol Buffers.
-  Install provider packages (e.g. omakasui-elephant-desktopapps) to add functionality.
+  Install provider packages (e.g. elephant-desktopapplications) to add functionality.
 
 distros:
   - debian13

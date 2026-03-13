@@ -1,5 +1,5 @@
 #!/bin/bash
-# postinst for omakasui-font-jetbrains-mono
+# postinst for font-jetbrains-mono
 
 set -e
 

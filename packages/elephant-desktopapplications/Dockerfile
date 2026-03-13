@@ -1,5 +1,5 @@
 # Builds elephant desktopapplications provider plugin from source (Go).
-# Must be compiled with the same Go version as omakasui-elephant.
+# Must be compiled with the same Go version as elephant.
 # Upstream: https://github.com/abenz1267/elephant
 
 ARG BASE_IMAGE

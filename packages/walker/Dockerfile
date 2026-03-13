@@ -1,5 +1,5 @@
 # Builds walker from source (Rust/Cargo).
-# Links against omakasui-gtk4-layer-shell installed from the local deps/ directory.
+# Links against gtk4-layer-shell installed from the local deps/ directory.
 # Upstream: https://github.com/abenz1267/walker
 
 ARG BASE_IMAGE
@@ -25,7 +25,7 @@ ENV PATH="/root/.cargo/bin:${PATH}"
 ARG VERSION
 ARG TARGETARCH
 
-# Install omakasui-gtk4-layer-shell from the pre-built dep .deb.
+# Install gtk4-layer-shell from the pre-built dep .deb.
 # The workflow places it in deps/ inside the build context.
 COPY deps/ /tmp/deps/
 RUN set -e; \

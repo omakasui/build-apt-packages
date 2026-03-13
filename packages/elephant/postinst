@@ -1,5 +1,5 @@
 #!/bin/bash
-# postinst for omakasui-elephant
+# postinst for elephant
 
 set -e
 
@@ -7,7 +7,7 @@ case "$1" in
   configure)
     echo ""
     echo "┌─────────────────────────────────────────────────────┐"
-    echo "│              omakasui-elephant installed             │"
+    echo "│              elephant installed                     │"
     echo "├─────────────────────────────────────────────────────┤"
     echo "│  To set up and start the systemd user service,      │"
     echo "│  run as your regular user:                          │"

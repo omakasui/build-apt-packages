@@ -6,7 +6,7 @@ homepage: https://github.com/abenz1267/elephant
 description: >
   Elephant desktopapplications provider plugin.
   Enables application launcher entries from .desktop files in walker.
-  Requires omakasui-elephant to be installed and running.
+  Requires elephant to be installed and running.
 
 runtime_depends:
   - elephant

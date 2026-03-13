@@ -1,5 +1,5 @@
 #!/bin/bash
-# postinst for omakasui-makima
+# postinst for makima
 
 set -e
 
@@ -16,7 +16,7 @@ case "$1" in
 
     echo ""
     echo "┌─────────────────────────────────────────────────────┐"
-    echo "│              omakasui-makima installed               │"
+    echo "│              makima installed                       │"
     echo "├─────────────────────────────────────────────────────┤"
     echo "│  To enable and start the systemd service:           │"
     echo "│                                                     │"

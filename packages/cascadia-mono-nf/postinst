@@ -1,5 +1,5 @@
 #!/bin/bash
-# postinst for omakasui-font-cascadia-mono-nf
+# postinst for font-cascadia-mono-nf
 
 set -e
 

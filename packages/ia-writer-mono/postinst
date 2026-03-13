@@ -1,5 +1,5 @@
 #!/bin/bash
-# postinst for omakasui-font-ia-writer-mono
+# postinst for font-ia-writer-mono
 
 set -e
 
