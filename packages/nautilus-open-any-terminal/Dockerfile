@@ -1,4 +1,4 @@
-# Repackages nautilus-open-any-terminal under the omakasui- namespace.
+# Repackages nautilus-open-any-terminal (renames from upstream nautilus-extension-any-terminal).
 # Upstream: https://github.com/Stunkymonkey/nautilus-open-any-terminal
 # Release assets: nautilus-open-any-terminal_<version>_all.deb
 
@@ -26,7 +26,7 @@ RUN set -e; \
     dpkg-deb -R "${DEB}" extracted/; \
     \
     CTRL="extracted/DEBIAN/control"; \
-    sed -i "s/^Package: nautilus-extension-any-terminal$/Package: omakasui-nautilus-open-any-terminal/" "$CTRL"; \
+    sed -i "s/^Package: nautilus-extension-any-terminal$/Package: nautilus-open-any-terminal/" "$CTRL"; \
     \
     # Remove conffiles if empty or containing blank lines — dpkg-deb rejects non-absolute paths. \
     if [ -f extracted/DEBIAN/conffiles ]; then \
@@ -39,5 +39,5 @@ RUN set -e; \
     grep -q "^Provides:"  "$CTRL" || printf "Provides: nautilus-extension-any-terminal\n"  >> "$CTRL"; \
     \
     mkdir -p /output; \
-    dpkg-deb -b extracted/ "/output/omakasui-nautilus-open-any-terminal_${VERSION}_all.deb"; \
+    dpkg-deb -b extracted/ "/output/nautilus-open-any-terminal_${VERSION}_all.deb"; \
     echo "Built: $(ls -lh /output/)"

@@ -1,4 +1,4 @@
-# Repackages the official gum .deb under the omakasui-gum namespace.
+# Repackages the official gum .deb (adds Conflicts/Replaces for clean coexistence).
 # Upstream: https://github.com/charmbracelet/gum
 # Release assets: gum_<version>_amd64.deb / gum_<version>_arm64.deb
 
@@ -27,7 +27,6 @@ RUN set -e; \
     dpkg-deb -R "${DEB}" extracted/; \
     \
     CTRL="extracted/DEBIAN/control"; \
-    sed -i "s/^Package: gum$/Package: omakasui-gum/" "$CTRL"; \
     \
     # Remove conffiles if empty or containing blank lines — dpkg-deb rejects non-absolute paths. \
     if [ -f extracted/DEBIAN/conffiles ]; then \
@@ -35,10 +34,6 @@ RUN set -e; \
       [ ! -s extracted/DEBIAN/conffiles ] && rm extracted/DEBIAN/conffiles; \
     fi; \
     \
-    grep -q "^Conflicts:" "$CTRL" || printf "Conflicts: gum\n" >> "$CTRL"; \
-    grep -q "^Replaces:"  "$CTRL" || printf "Replaces: gum\n"  >> "$CTRL"; \
-    grep -q "^Provides:"  "$CTRL" || printf "Provides: gum\n"  >> "$CTRL"; \
-    \
     mkdir -p /output; \
-    dpkg-deb -b extracted/ "/output/omakasui-gum_${VERSION}_${TARGETARCH}.deb"; \
+    dpkg-deb -b extracted/ "/output/gum_${VERSION}_${TARGETARCH}.deb"; \
     echo "Built: $(ls -lh /output/)"

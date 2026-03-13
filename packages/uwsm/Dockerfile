@@ -34,9 +34,6 @@ RUN set -e; \
     mv "uwsm-${VERSION}" uwsm; \
     cd uwsm; \
     \
-    # Rename package to omakasui-uwsm and add Conflicts/Replaces/Provides. \
-    sed -i 's/^Package: uwsm$/Package: omakasui-uwsm/' debian/control; \
-    printf 'Conflicts: uwsm\nReplaces: uwsm\nProvides: uwsm\n' >> debian/control; \
     \
     # Patch Architecture to "all" (package is pure Python/shell, no compiled code). \
     sed -i 's/^Architecture: any$/Architecture: all/' debian/control; \
