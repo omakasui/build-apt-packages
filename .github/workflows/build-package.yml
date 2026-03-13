@@ -217,7 +217,12 @@ jobs:
               [[ -f "$f" ]] || continue
               base="$(basename "$f")"
               stripped="${base%_*.deb}"
-              mv "$f" "output/${stripped}_${DISTRO}_${ARCH}.deb"
+              # Preserve arch:all — Dockerfile outputs _all.deb for arch-independent packages.
+              if [[ "$base" == *_all.deb ]]; then
+                mv "$f" "output/${stripped}_${DISTRO}_all.deb"
+              else
+                mv "$f" "output/${stripped}_${DISTRO}_${ARCH}.deb"
+              fi
             done
             ls -lh output/
 
