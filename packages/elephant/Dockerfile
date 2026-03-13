@@ -22,6 +22,7 @@ RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest && \
 
 ARG VERSION
 ARG TARGETARCH
+ARG DISTRO
 
 WORKDIR /build
 
@@ -77,8 +78,8 @@ RUN set -e; \
     ARCH="${TARGETARCH:-amd64}"; \
     mkdir -p /output; \
     fakeroot dpkg-deb --build "/output/deb/elephant" \
-      "/output/elephant_${VERSION}_${ARCH}.deb"; \
-    echo "Built: $(ls -lh /output/elephant_${VERSION}_${ARCH}.deb)"
+      "/output/elephant_${VERSION}_${DISTRO}_${ARCH}.deb"; \
+    echo "Built: $(ls -lh /output/elephant_${VERSION}_${DISTRO}_${ARCH}.deb)"
 
 # Assemble .deb for each provider plugin. Each plugin is packaged separately to allow users to install only the providers they want.
 
@@ -95,6 +96,6 @@ RUN set -e; \
       printf "Package: %s\nVersion: %s\nArchitecture: %s\nMaintainer: omakasui <packages@omakasui.org>\nInstalled-Size: %s\nDepends: elephant (= %s)\nSection: utils\nPriority: optional\nHomepage: https://github.com/abenz1267/elephant\nDescription: Elephant ${provider} provider plugin for the walker application launcher.\n Installs ${provider}.so into /usr/lib/elephant/.\n" \
         "$PKG" "$VERSION" "$ARCH" "$SIZE" "$VERSION" > "${ROOT}/DEBIAN/control"; \
       fakeroot dpkg-deb --build "${ROOT}" \
-        "/output/${PKG}_${VERSION}_${ARCH}.deb"; \
-      echo "Built: $(ls -lh /output/${PKG}_${VERSION}_${ARCH}.deb)"; \
+        "/output/${PKG}_${VERSION}_${DISTRO}_${ARCH}.deb"; \
+      echo "Built: $(ls -lh /output/${PKG}_${VERSION}_${DISTRO}_${ARCH}.deb)"; \
     done

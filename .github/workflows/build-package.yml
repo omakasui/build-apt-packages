@@ -193,6 +193,7 @@ jobs:
             --load \
             --build-arg "BASE_IMAGE=${{ matrix.base }}" \
             --build-arg "VERSION=${VERSION}" \
+            --build-arg "DISTRO=${{ matrix.distro }}" \
             --tag "omakasui-build-${PKG}:local" \
             "packages/${PKG}/"
 
