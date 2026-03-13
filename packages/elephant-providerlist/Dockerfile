@@ -1,4 +1,4 @@
-# Builds elephant-menus provider plugin from source (Go).
+# Builds elephant-providerlist provider plugin from source (Go).
 # Upstream: https://github.com/abenz1267/elephant
 
 ARG BASE_IMAGE
@@ -23,15 +23,15 @@ RUN curl -fsSL \
     tar -xzf src.tar.gz && \
     mv "elephant-${VERSION}" elephant
 
-WORKDIR /build/elephant/internal/providers/menus
+WORKDIR /build/elephant/internal/providers/providerlist
 
 RUN CGO_ENABLED=1 go build \
     -ldflags="-s -w" \
     -buildvcs=false \
     -buildmode=plugin \
     -trimpath \
-    -o menus.so .
+    -o providerlist.so .
 
 RUN mkdir -p /output/staged/usr/lib/elephant && \
-    install -m 0755 menus.so /output/staged/usr/lib/elephant/menus.so && \
-    echo "Staged: $(ls -lh /output/staged/usr/lib/elephant/menus.so)"
+    install -m 0755 providerlist.so /output/staged/usr/lib/elephant/providerlist.so && \
+    echo "Staged: $(ls -lh /output/staged/usr/lib/elephant/providerlist.so)"
