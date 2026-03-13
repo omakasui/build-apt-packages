@@ -13,7 +13,7 @@ runtime_depends:
   - gir1.2-gtk-4.0
   - gir1.2-adw-1
   - gir1.2-soup-3.0
-  - omakasui-gtk4-layer-shell
+  - gtk4-layer-shell
   - imagemagick
 
 produces:
