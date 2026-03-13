@@ -9,9 +9,14 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     ca-certificates \
     git \
     golang \
+    protobuf-compiler \
     gcc \
     libc6-dev \
   && rm -rf /var/lib/apt/lists/*
+
+# Install protoc-gen-go.
+RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest && \
+    go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 
 ARG VERSION
 
@@ -23,15 +28,32 @@ RUN curl -fsSL \
     tar -xzf src.tar.gz && \
     mv "elephant-${VERSION}" elephant
 
-WORKDIR /build/elephant/internal/providers/websearch
+WORKDIR /build/elephant
 
+# Generate protobuf bindings.
+RUN PATH="$PATH:$(go env GOPATH)/bin" go generate ./... 2>/dev/null || true
+
+# Build main binary first -- this warms the build cache for internal packages
+# so the plugin below shares the same build IDs.
+RUN go build \
+    -ldflags="-s -w" \
+    -buildvcs=false \
+    -trimpath \
+    -o /tmp/elephant \
+    ./cmd/elephant
+
+# Build websearch provider plugin.
 RUN CGO_ENABLED=1 go build \
     -ldflags="-s -w" \
     -buildvcs=false \
     -buildmode=plugin \
     -trimpath \
-    -o websearch.so .
+    -o /tmp/websearch.so \
+    ./internal/providers/websearch
 
-RUN mkdir -p /output/staged/usr/lib/elephant && \
-    install -m 0755 websearch.so /output/staged/usr/lib/elephant/websearch.so && \
+# Stage output.
+RUN set -e; \
+    mkdir -p /output/staged/usr/lib/elephant; \
+    install -m 0755 /tmp/websearch.so \
+      /output/staged/usr/lib/elephant/websearch.so; \
     echo "Staged: $(ls -lh /output/staged/usr/lib/elephant/websearch.so)"

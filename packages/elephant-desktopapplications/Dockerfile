@@ -1,5 +1,4 @@
-# Builds elephant desktopapplications provider plugin from source (Go).
-# Must be compiled with the same Go version as elephant.
+# Builds elephant-desktopapplications provider plugin from source (Go).
 # Upstream: https://github.com/abenz1267/elephant
 
 ARG BASE_IMAGE
@@ -34,13 +33,25 @@ WORKDIR /build/elephant
 # Generate protobuf bindings.
 RUN PATH="$PATH:$(go env GOPATH)/bin" go generate ./... 2>/dev/null || true
 
-# Build desktopapplications provider plugin (requires CGO for plugin mode).
-RUN CGO_ENABLED=1 go build -buildmode=plugin \
+# Build main binary first -- this warms the build cache for internal packages
+# so the plugin below shares the same build IDs.
+RUN go build \
+    -ldflags="-s -w" \
+    -buildvcs=false \
+    -trimpath \
+    -o /tmp/elephant \
+    ./cmd/elephant
+
+# Build desktopapplications provider plugin.
+RUN CGO_ENABLED=1 go build \
+    -ldflags="-s -w" \
+    -buildvcs=false \
+    -buildmode=plugin \
+    -trimpath \
     -o /tmp/desktopapplications.so \
     ./internal/providers/desktopapplications
 
 # Stage output.
-# Elephant looks for provider plugins in /usr/lib/elephant/.
 RUN set -e; \
     mkdir -p /output/staged/usr/lib/elephant; \
     install -m 0755 /tmp/desktopapplications.so \
