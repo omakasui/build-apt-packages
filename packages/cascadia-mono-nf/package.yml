@@ -9,7 +9,7 @@ description: >
   Patched with Nerd Fonts icons for use in terminals and code editors.
 
 produces:
-  - omakasui-font-cascadia-mono-nf
+  - font-cascadia-mono-nf
 
 distros:
   - debian13

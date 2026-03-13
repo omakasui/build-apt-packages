@@ -9,7 +9,7 @@ description: >
   A free and open-source typeface designed for developers.
 
 produces:
-  - omakasui-font-jetbrains-mono
+  - font-jetbrains-mono
 
 distros:
   - debian13

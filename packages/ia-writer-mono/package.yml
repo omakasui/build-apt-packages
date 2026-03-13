@@ -9,7 +9,7 @@ description: >
   Designed for writing and coding, used by the iA Writer app.
 
 produces:
-  - omakasui-font-ia-writer-mono
+  - font-ia-writer-mono
 
 distros:
   - debian13
