@@ -318,15 +318,13 @@ jobs:
             }
           ]')
 
+          BODY=$(jq -cn --argjson packages "$PAYLOAD" '{
+            event_type: "packages-updated",
+            client_payload: { packages: $packages }
+          }')
+
           gh api \
             --method POST \
             -H "Accept: application/vnd.github+json" \
             /repos/omakasui/apt-packages/dispatches \
-            --input - << EOF
-{
-  "event_type": "packages-updated",
-  "client_payload": {
-    "packages": $PAYLOAD
-  }
-}
-EOF
+            --input - <<< "$BODY"
