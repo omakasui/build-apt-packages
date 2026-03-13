@@ -1,4 +1,4 @@
-# Repackages the official fastfetch .deb under the omakasui-fastfetch namespace.
+# Repackages the official fastfetch .deb.
 # Upstream: https://github.com/fastfetch-cli/fastfetch
 # Release assets: fastfetch_<version>_amd64.deb / fastfetch_<version>_arm64.deb
 
@@ -34,7 +34,6 @@ RUN set -e; \
     \
     CTRL="extracted/DEBIAN/control"; \
     awk 'BEGIN{p=1} /^$/{p=0} p{print}' "$CTRL" > /tmp/control.clean && mv /tmp/control.clean "$CTRL"; \
-    sed -i "s/^Package: fastfetch$/Package: omakasui-fastfetch/" "$CTRL"; \
     \
     # Remove conffiles if empty or containing blank lines — dpkg-deb rejects non-absolute paths. \
     if [ -f extracted/DEBIAN/conffiles ]; then \
@@ -42,10 +41,6 @@ RUN set -e; \
       [ ! -s extracted/DEBIAN/conffiles ] && rm extracted/DEBIAN/conffiles; \
     fi; \
     \
-    grep -q "^Conflicts:" "$CTRL" || printf "Conflicts: fastfetch\n" >> "$CTRL"; \
-    grep -q "^Replaces:"  "$CTRL" || printf "Replaces: fastfetch\n"  >> "$CTRL"; \
-    grep -q "^Provides:"  "$CTRL" || printf "Provides: fastfetch\n"  >> "$CTRL"; \
-    \
     mkdir -p /output; \
-    dpkg-deb -b extracted/ "/output/omakasui-fastfetch_${VERSION}_${TARGETARCH}.deb"; \
+    dpkg-deb -b extracted/ "/output/fastfetch_${VERSION}_${TARGETARCH}.deb"; \
     echo "Built: $(ls -lh /output/)"
