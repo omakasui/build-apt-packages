@@ -22,11 +22,8 @@ ARG VERSION
 
 WORKDIR /build
 
-RUN curl -fsSL \
-    "https://github.com/abenz1267/elephant/archive/refs/tags/v${VERSION}.tar.gz" \
-    -o src.tar.gz && \
-    tar -xzf src.tar.gz && \
-    mv "elephant-${VERSION}" elephant
+RUN git clone --depth 1 --branch "v${VERSION}" \
+    https://github.com/abenz1267/elephant.git elephant
 
 WORKDIR /build/elephant
 
