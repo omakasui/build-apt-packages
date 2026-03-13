@@ -23,4 +23,3 @@ fi
 
 PRODUCES="$(yq e '.produces[0] // ""' "$PKG_YAML")"
 echo "${PRODUCES:-${DEP_KEY}}"
-echo "${PRODUCES:-${DEP_KEY}}"
