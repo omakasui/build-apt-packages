@@ -29,6 +29,10 @@ elephant-clipboard:
   version: "2.20.2"
   depends_on: []
 
+elephant-desktopapplications:
+  version: "2.20.2"
+  depends_on: []
+
 elephant-files:
   version: "2.20.2"
   depends_on: []
