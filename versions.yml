@@ -97,14 +97,18 @@ nautilus-open-any-terminal:
   version: "0.8.1"
   depends_on: []
 
-omakasui-nvim:
-  version: "20260310"
-  depends_on: []
-
 omakasui-aether:
   version: "2.20.4"
   depends_on:
     - gtk4-layer-shell
+
+omakasui-nvim:
+  version: "20260310"
+  depends_on: []
+
+omakasui-walker:
+  version: "2.15.1"
+  depends_on: []
 
 uwsm:
   version: "0.26.4"

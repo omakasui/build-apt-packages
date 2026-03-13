@@ -1,0 +1,31 @@
+name: omakasui-walker
+type: build
+arch: all
+section: utils
+priority: optional
+homepage: https://github.com/omakasui/omakasui
+description: >
+  omakasui-walker — metapackage for walker and elephant providers.
+  Installs walker, elephant, and all elephant provider packages in one shot.
+
+produces:
+  - omakasui-walker
+
+runtime_depends:
+  - walker
+  - elephant
+  - elephant-desktopapplications
+  - elephant-calc
+  - elephant-clipboard
+  - elephant-files
+  - elephant-menus
+  - elephant-providerlist
+  - elephant-runner
+  - elephant-symbols
+  - elephant-todo
+  - elephant-unicode
+  - elephant-websearch
+
+distros:
+  - debian13
+  - ubuntu2404
