@@ -1,4 +1,7 @@
 # Builds elephant daemon and all provider plugins from source (Go).
+# IMPORTANT: elephant and all .so plugins MUST be compiled in the same build
+# context so that internal Go package build IDs match — otherwise the plugin
+# loader will reject them at runtime with "different version of package".
 # Upstream: https://github.com/abenz1267/elephant
 
 ARG BASE_IMAGE
@@ -42,6 +45,8 @@ RUN go build \
     ./cmd/elephant
 
 # Build all provider plugins in the same build context.
+# Each provider is a Go plugin — they must share the same build environment
+# as the main binary to avoid internal/goarch build ID mismatches.
 RUN for provider in calc clipboard desktopapplications files menus providerlist runner symbols todo unicode websearch; do \
       PROVIDER_DIR="./internal/providers/${provider}"; \
       if [ -d "$PROVIDER_DIR" ]; then \
@@ -58,7 +63,7 @@ RUN for provider in calc clipboard desktopapplications files menus providerlist 
       fi; \
     done
 
-# Assemble .deb for main binary.
+# ── Assemble .deb for elephant (main binary) ────────────────────────────────
 
 RUN set -e; \
     ARCH="${TARGETARCH:-amd64}"; \
@@ -80,7 +85,7 @@ RUN set -e; \
       "/output/elephant_${VERSION}_${ARCH}.deb"; \
     echo "Built: $(ls -lh /output/elephant_${VERSION}_${ARCH}.deb)"
 
-# Assemble .deb for each provider plugin. Each plugin is packaged separately to allow users to install only the providers they want.
+# ── Assemble one .deb per provider plugin ───────────────────────────────────
 
 RUN set -e; \
     ARCH="${TARGETARCH:-amd64}"; \
@@ -94,11 +99,15 @@ RUN set -e; \
       SIZE=$(du -sk "${ROOT}/usr/lib/elephant" | cut -f1); \
       EXTRA_DEPS=""; \
       case "$provider" in \
-        calc)  EXTRA_DEPS=", libqalculate23t64 | libqalculate23 | libqalculate-dev" ;; \
+        calc)  EXTRA_DEPS=", qalc" ;; \
         files) EXTRA_DEPS=", fd-find" ;; \
       esac; \
       printf "Package: %s\nVersion: %s\nArchitecture: %s\nMaintainer: omakasui <packages@omakasui.org>\nInstalled-Size: %s\nDepends: elephant (= %s)%s\nSection: utils\nPriority: optional\nHomepage: https://github.com/abenz1267/elephant\nDescription: Elephant ${provider} provider plugin for the walker application launcher.\n Installs ${provider}.so into /usr/lib/elephant/.\n" \
         "$PKG" "$VERSION" "$ARCH" "$SIZE" "$VERSION" "$EXTRA_DEPS" > "${ROOT}/DEBIAN/control"; \
+      if [ "$provider" = "files" ]; then \
+        printf '#!/bin/sh\nset -e\ncase "$1" in\n  configure)\n    if ! command -v fd >/dev/null 2>&1 && command -v fdfind >/dev/null 2>&1; then\n      ln -sf /usr/bin/fdfind /usr/local/bin/fd\n    fi\n    ;;\nesac\nexit 0\n' > "${ROOT}/DEBIAN/postinst"; \
+        chmod 0755 "${ROOT}/DEBIAN/postinst"; \
+      fi; \
       fakeroot dpkg-deb --build "${ROOT}" \
         "/output/${PKG}_${VERSION}_${ARCH}.deb"; \
       echo "Built: $(ls -lh /output/${PKG}_${VERSION}_${ARCH}.deb)"; \
