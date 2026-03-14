@@ -1,0 +1,15 @@
+name: ufw-docker
+type: build
+arch: all
+section: net
+priority: optional
+homepage: https://github.com/chaifeng/ufw-docker
+description: >
+  ufw-docker — fix the Docker and UFW security flaw.
+  Installs the ufw-docker management script to /usr/local/bin/ufw-docker.
+runtime_depends:
+  - ufw
+
+distros:
+  - debian13
+  - ubuntu2404

@@ -58,6 +58,10 @@ omakasui-walker:
   version: "2.15.1"
   depends_on: []
 
+ufw-docker:
+  version: "251123"
+  depends_on: []
+
 uwsm:
   version: "0.26.4"
   depends_on: []
