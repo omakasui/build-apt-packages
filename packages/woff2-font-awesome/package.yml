@@ -1,0 +1,14 @@
+name: woff2-font-awesome
+type: build
+arch: all
+section: fonts
+priority: optional
+homepage: https://github.com/FortAwesome/Font-Awesome
+description: >
+  Font Awesome woff2 webfonts.
+  Installs all woff2 files from the Font Awesome free web release
+  into /usr/share/fonts/woff2/, for use with walker and similar tools.
+
+distros:
+  - debian13
+  - ubuntu2404

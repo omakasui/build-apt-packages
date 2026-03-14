@@ -71,6 +71,10 @@ walker:
   depends_on:
     - gtk4-layer-shell
 
+woff2-font-awesome:
+  version: "7.2.0"
+  depends_on: []
+
 yaru-theme:
   version: "25.04.1-0ubuntu1"
   depends_on: []
