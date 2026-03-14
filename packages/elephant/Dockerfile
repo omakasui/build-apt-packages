@@ -92,8 +92,13 @@ RUN set -e; \
       mkdir -p "${ROOT}/DEBIAN" "${ROOT}/usr/lib/elephant"; \
       install -m 0755 "$SO" "${ROOT}/usr/lib/elephant/${provider}.so"; \
       SIZE=$(du -sk "${ROOT}/usr/lib/elephant" | cut -f1); \
-      printf "Package: %s\nVersion: %s\nArchitecture: %s\nMaintainer: omakasui <packages@omakasui.org>\nInstalled-Size: %s\nDepends: elephant (= %s)\nSection: utils\nPriority: optional\nHomepage: https://github.com/abenz1267/elephant\nDescription: Elephant ${provider} provider plugin for the walker application launcher.\n Installs ${provider}.so into /usr/lib/elephant/.\n" \
-        "$PKG" "$VERSION" "$ARCH" "$SIZE" "$VERSION" > "${ROOT}/DEBIAN/control"; \
+      EXTRA_DEPS=""; \
+      case "$provider" in \
+        calc)  EXTRA_DEPS=", libqalculate23t64 | libqalculate23 | libqalculate-dev" ;; \
+        files) EXTRA_DEPS=", fd-find" ;; \
+      esac; \
+      printf "Package: %s\nVersion: %s\nArchitecture: %s\nMaintainer: omakasui <packages@omakasui.org>\nInstalled-Size: %s\nDepends: elephant (= %s)%s\nSection: utils\nPriority: optional\nHomepage: https://github.com/abenz1267/elephant\nDescription: Elephant ${provider} provider plugin for the walker application launcher.\n Installs ${provider}.so into /usr/lib/elephant/.\n" \
+        "$PKG" "$VERSION" "$ARCH" "$SIZE" "$VERSION" "$EXTRA_DEPS" > "${ROOT}/DEBIAN/control"; \
       fakeroot dpkg-deb --build "${ROOT}" \
         "/output/${PKG}_${VERSION}_${ARCH}.deb"; \
       echo "Built: $(ls -lh /output/${PKG}_${VERSION}_${ARCH}.deb)"; \
