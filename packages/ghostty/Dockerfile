@@ -6,8 +6,9 @@ ARG BASE_IMAGE
 FROM ${BASE_IMAGE:-debian:trixie-slim}
 
 ARG VERSION
+ARG TARGETARCH
 
-# Common build dependencies
+# Build dependencies
 RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     git \
     curl \
