@@ -55,3 +55,11 @@ RUN set -e; \
     ls -lh /output/staged/usr/lib/libgtk4-layer-shell.so*; \
     find /output/staged -name "Gtk4LayerShell*.typelib"; \
     echo "Staged: $(du -sh /output/staged)"
+
+# Add libgtk4-layer-shell-0.so symlink — some consumers (e.g. ghostty) look
+# for this name convention instead of the plain libgtk4-layer-shell.so.
+RUN LIBDIR=$(find /output/staged/usr/lib -maxdepth 1 -mindepth 1 -type d | head -1); \
+    [ -z "$LIBDIR" ] && LIBDIR="/output/staged/usr/lib"; \
+    ln -sf "${LIBDIR##/output/staged}/libgtk4-layer-shell.so" \
+           "${LIBDIR}/libgtk4-layer-shell-0.so" && \
+    echo "Symlinked: ${LIBDIR}/libgtk4-layer-shell-0.so"
