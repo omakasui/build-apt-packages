@@ -1,0 +1,76 @@
+# Builds ghostty terminal from source (Zig).
+# Upstream: https://github.com/ghostty-org/ghostty
+# Zig is installed via debian.griffo.io which supports both Debian and Ubuntu.
+
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE:-debian:trixie-slim}
+
+ARG VERSION
+
+# Common build dependencies
+RUN apt-get update -qq && apt-get install -y --no-install-recommends \
+    git \
+    curl \
+    ca-certificates \
+    gpg \
+    lsb-release \
+    blueprint-compiler \
+    build-essential \
+    debhelper \
+    devscripts \
+    pandoc \
+    libonig-dev \
+    libbz2-dev \
+    libgtk4-layer-shell-dev \
+    libgtk-4-dev \
+    libadwaita-1-dev \
+    minisign \
+    libxml2-utils \
+  && rm -rf /var/lib/apt/lists/*
+
+# Install zig via debian.griffo.io (supports Debian trixie and Ubuntu noble).
+RUN curl -sS https://debian.griffo.io/EA0F721D231FDD3A0A17B9AC7808B4DD62C41256.asc \
+      | gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/debian.griffo.io.gpg && \
+    echo "deb https://debian.griffo.io/apt $(lsb_release -sc) main" \
+      | tee /etc/apt/sources.list.d/debian.griffo.io.list && \
+    apt-get update -qq && \
+    apt-get install -y --no-install-recommends zig && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /build
+
+RUN git clone --depth 1 --branch "v${VERSION}" \
+    https://github.com/ghostty-org/ghostty.git ghostty
+
+WORKDIR /build/ghostty
+
+RUN zig build \
+    --summary all \
+    --prefix ./zig-out/usr \
+    -Doptimize=ReleaseFast \
+    -Dcpu=baseline \
+    -Dpie=true \
+    -Demit-docs \
+    -Dversion-string=${VERSION}
+
+# Fix absolute paths left by zig-out in service/desktop/dbus files.
+RUN sed -i 's|\./zig-out||g' \
+      ./zig-out/usr/share/systemd/user/app-com.mitchellh.ghostty.service \
+      ./zig-out/usr/share/applications/com.mitchellh.ghostty.desktop \
+      ./zig-out/usr/share/dbus-1/services/com.mitchellh.ghostty.service
+
+# Compress man pages.
+RUN gzip -n -9 ./zig-out/usr/share/man/man1/ghostty.1
+RUN gzip -n -9 ./zig-out/usr/share/man/man5/ghostty.5
+
+# Fix zsh completions path.
+RUN mv ./zig-out/usr/share/zsh/site-functions \
+       ./zig-out/usr/share/zsh/vendor-completions
+
+# Remove bundled terminfo (conflicts with system ncurses).
+RUN rm -rf ./zig-out/usr/share/terminfo/g || true
+
+# Stage output for assemble-deb.sh
+RUN mkdir -p /output/staged && \
+    cp -r ./zig-out/usr /output/staged/ && \
+    echo "Staged: $(find /output/staged -type f | wc -l) files"
