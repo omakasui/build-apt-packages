@@ -1,12 +1,18 @@
 # Builds ghostty terminal from source (Zig).
 # Upstream: https://github.com/ghostty-org/ghostty
-# Zig is installed via debian.griffo.io which supports both Debian and Ubuntu.
 
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE:-debian:trixie-slim}
 
+SHELL ["/bin/bash", "-c"]
+
 ARG VERSION
 ARG TARGETARCH
+
+# Ensure blueprint-compiler is on PATH for zig subprocesses, and GIR typelibs are found.
+ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV GI_TYPELIB_PATH=/usr/lib/x86_64-linux-gnu/girepository-1.0:/usr/lib/aarch64-linux-gnu/girepository-1.0
+ENV XDG_DATA_DIRS=/usr/share:/usr/local/share
 
 # Build dependencies
 RUN apt-get update -qq && apt-get install -y --no-install-recommends \
@@ -15,7 +21,6 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     ca-certificates \
     gpg \
     lsb-release \
-    blueprint-compiler \
     build-essential \
     debhelper \
     devscripts \
@@ -26,7 +31,28 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     libadwaita-1-dev \
     minisign \
     libxml2-utils \
+    gobject-introspection \
+    gir1.2-gtk-4.0 \
+    gir1.2-adw-1 \
+    libgirepository-2.0-0 \
   && rm -rf /var/lib/apt/lists/*
+
+# Install blueprint-compiler >= 0.16.0 from source.
+# The apt version on noble/trixie (0.12.0) is too old for ghostty 1.3.1+.
+RUN apt-get update -qq && apt-get install -y --no-install-recommends \
+    meson \
+    ninja-build \
+    python3-packaging \
+  && rm -rf /var/lib/apt/lists/* && \
+    git clone --depth 1 --branch v0.16.0 \
+      https://gitlab.gnome.org/GNOME/blueprint-compiler.git /tmp/blueprint-compiler && \
+    cd /tmp/blueprint-compiler && \
+    meson setup --prefix=/usr _build && \
+    ninja -C _build install && \
+    rm -rf /tmp/blueprint-compiler
+
+# Verify blueprint-compiler is on PATH.
+RUN which blueprint-compiler && blueprint-compiler --version
 
 # Install gtk4-layer-shell from the pre-built dep .deb.
 # The workflow places it in deps/ inside the build context.
