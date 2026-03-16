@@ -35,6 +35,7 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     gir1.2-gtk-4.0 \
     gir1.2-adw-1 \
     libgirepository-2.0-0 \
+    python3-gi \
   && rm -rf /var/lib/apt/lists/*
 
 # Install blueprint-compiler >= 0.16.0 from source.
