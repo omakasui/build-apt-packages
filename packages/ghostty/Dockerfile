@@ -1,8 +1,5 @@
 # Builds ghostty terminal from source (Zig).
 # Upstream: https://github.com/ghostty-org/ghostty
-# Zig is installed via debian.griffo.io which supports both Debian and Ubuntu.
-# gtk4-layer-shell is installed from the pre-built dep .deb (depends_on in versions.yml).
-# The libgtk4-layer-shell-0.so symlink is produced by the gtk4-layer-shell package itself.
 
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE:-debian:trixie-slim}
@@ -20,7 +17,6 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     gpg \
     lsb-release \
     build-essential \
-    python3-pip \
     debhelper \
     devscripts \
     pandoc \
@@ -30,6 +26,10 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     libadwaita-1-dev \
     minisign \
     libxml2-utils \
+    gobject-introspection \
+    gir1.2-gtk-4.0 \
+    gir1.2-adw-1 \
+    libgirepository-2.0-0 \
   && rm -rf /var/lib/apt/lists/*
 
 # Install blueprint-compiler >= 0.16.0 from source.
@@ -57,14 +57,12 @@ RUN set -e; \
     apt-get install -y --no-install-recommends "$DEB"; \
     ldconfig
 
-# Install zig via debian.griffo.io (supports Debian trixie and Ubuntu noble).
-RUN curl -sS https://debian.griffo.io/EA0F721D231FDD3A0A17B9AC7808B4DD62C41256.asc \
-      | gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/debian.griffo.io.gpg && \
-    echo "deb https://debian.griffo.io/apt $(lsb_release -sc) main" \
-      | tee /etc/apt/sources.list.d/debian.griffo.io.list && \
-    apt-get update -qq && \
-    apt-get install -y --no-install-recommends zig && \
-    rm -rf /var/lib/apt/lists/*
+# Install zig 0.14.1 from ziglang.org (required by ghostty 1.3.1).
+RUN curl -sL "https://ziglang.org/download/0.14.1/zig-linux-$(uname -m)-0.14.1.tar.xz" \
+      -o /tmp/zig.tar.xz && \
+    tar -xf /tmp/zig.tar.xz -C /opt && \
+    rm /tmp/zig.tar.xz && \
+    ln -s /opt/zig-linux-$(uname -m)-0.14.1/zig /usr/bin/zig
 
 WORKDIR /build
 
