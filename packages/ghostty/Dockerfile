@@ -1,6 +1,8 @@
 # Builds ghostty terminal from source (Zig).
 # Upstream: https://github.com/ghostty-org/ghostty
 # Zig is installed via debian.griffo.io which supports both Debian and Ubuntu.
+# gtk4-layer-shell is installed from the pre-built dep .deb (depends_on in versions.yml).
+# The libgtk4-layer-shell-0.so symlink is produced by the gtk4-layer-shell package itself.
 
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE:-debian:trixie-slim}
@@ -30,8 +32,19 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     libxml2-utils \
   && rm -rf /var/lib/apt/lists/*
 
-# Install blueprint-compiler >= 0.16.0 (apt version on noble/trixie is too old).
-RUN pip3 install --break-system-packages blueprint-compiler
+# Install blueprint-compiler >= 0.16.0 from source.
+# The apt version on noble/trixie (0.12.0) is too old for ghostty 1.3.1+.
+RUN apt-get update -qq && apt-get install -y --no-install-recommends \
+    meson \
+    ninja-build \
+    python3-packaging \
+  && rm -rf /var/lib/apt/lists/* && \
+    git clone --depth 1 --branch 0.16.0 \
+      https://gitlab.gnome.org/GNOME/blueprint-compiler.git /tmp/blueprint-compiler && \
+    cd /tmp/blueprint-compiler && \
+    meson setup --prefix=/usr _build && \
+    ninja -C _build install && \
+    rm -rf /tmp/blueprint-compiler
 
 # Install gtk4-layer-shell from the pre-built dep .deb.
 # The workflow places it in deps/ inside the build context.
