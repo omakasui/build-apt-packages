@@ -1,4 +1,4 @@
-# Repackages the official gum .deb (adds Conflicts/Replaces for clean coexistence).
+# Repackages the official gum .deb.
 # Upstream: https://github.com/charmbracelet/gum
 # Release assets: gum_<version>_amd64.deb / gum_<version>_arm64.deb
 

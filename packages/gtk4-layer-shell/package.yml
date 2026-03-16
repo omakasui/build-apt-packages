@@ -13,6 +13,20 @@ runtime_depends:
   - libwayland-client0
   - libglib2.0-0
 
+conflicts:
+  - libgtk4-layer-shell-0
+  - libgtk4-layer-shell-dev
+  - gir1.2-gtk4layershell-1.0
+
+replaces:
+  - libgtk4-layer-shell-0
+  - libgtk4-layer-shell-dev
+  - gir1.2-gtk4layershell-1.0
+
+provides:
+  - libgtk4-layer-shell-0
+  - gir1.2-gtk4layershell-1.0
+
 distros:
   - debian13
   - ubuntu2404

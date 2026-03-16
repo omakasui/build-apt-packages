@@ -11,6 +11,15 @@ description: >
 produces:
   - font-jetbrains-mono
 
+conflicts:
+  - fonts-jetbrains-mono
+
+replaces:
+  - fonts-jetbrains-mono
+
+provides:
+  - fonts-jetbrains-mono
+
 distros:
   - debian13
   - ubuntu2404
