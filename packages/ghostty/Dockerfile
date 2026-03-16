@@ -9,6 +9,10 @@ SHELL ["/bin/bash", "-c"]
 ARG VERSION
 ARG TARGETARCH
 
+# Ensure blueprint-compiler can find GIR typelibs in the container environment.
+ENV GI_TYPELIB_PATH=/usr/lib/x86_64-linux-gnu/girepository-1.0:/usr/lib/aarch64-linux-gnu/girepository-1.0
+ENV XDG_DATA_DIRS=/usr/share:/usr/local/share
+
 # Build dependencies
 RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     git \
@@ -57,12 +61,14 @@ RUN set -e; \
     apt-get install -y --no-install-recommends "$DEB"; \
     ldconfig
 
-# Install zig 0.14.1 from ziglang.org (required by ghostty 1.3.1).
-RUN curl -sL "https://ziglang.org/download/0.14.1/zig-linux-$(uname -m)-0.14.1.tar.xz" \
-      -o /tmp/zig.tar.xz && \
-    tar -xf /tmp/zig.tar.xz -C /opt && \
-    rm /tmp/zig.tar.xz && \
-    ln -s /opt/zig-linux-$(uname -m)-0.14.1/zig /usr/bin/zig
+# Install zig via debian.griffo.io (supports Debian trixie and Ubuntu noble).
+RUN curl -sS https://debian.griffo.io/EA0F721D231FDD3A0A17B9AC7808B4DD62C41256.asc \
+      | gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/debian.griffo.io.gpg && \
+    echo "deb https://debian.griffo.io/apt $(lsb_release -sc) main" \
+      | tee /etc/apt/sources.list.d/debian.griffo.io.list && \
+    apt-get update -qq && \
+    apt-get install -y --no-install-recommends zig && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /build
 
