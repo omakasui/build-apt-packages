@@ -61,6 +61,9 @@ HOMEPAGE="$(yq e '.homepage' "$PKG_YAML")"
 DESC_SHORT="$(yq e '.description' "$PKG_YAML" | head -1)"
 DESC_LONG="$(yq e '.description'  "$PKG_YAML" | tail -n +2 | sed 's/^[[:space:]]*$/./' | sed 's/^/ /')"
 RUNTIME_DEPS="$(yq e '.runtime_depends // [] | join(", ")' "$PKG_YAML")"
+CONFLICTS="$(yq e '.conflicts // [] | join(", ")' "$PKG_YAML")"
+REPLACES="$(yq e '.replaces  // [] | join(", ")' "$PKG_YAML")"
+PROVIDES="$(yq e '.provides  // [] | join(", ")' "$PKG_YAML")"
 
 # Append extra depends (e.g. from depends_on in versions.yml).
 if [[ -n "$EXTRA_DEPENDS" ]]; then
@@ -81,6 +84,12 @@ printf "Maintainer: %s\n"     "omakasui <packages@omakasui.org>" >> "$CONTROL_FI
 printf "Installed-Size: %s\n" "${SIZE}"                          >> "$CONTROL_FILE"
 [[ -n "${RUNTIME_DEPS}" ]] && \
   printf "Depends: %s\n"      "${RUNTIME_DEPS}"                  >> "$CONTROL_FILE"
+[[ -n "${CONFLICTS}" ]] && \
+  printf "Conflicts: %s\n"    "${CONFLICTS}"                     >> "$CONTROL_FILE"
+[[ -n "${REPLACES}" ]]  && \
+  printf "Replaces: %s\n"     "${REPLACES}"                      >> "$CONTROL_FILE"
+[[ -n "${PROVIDES}" ]]  && \
+  printf "Provides: %s\n"     "${PROVIDES}"                      >> "$CONTROL_FILE"
 printf "Section: %s\n"        "${SECTION}"                       >> "$CONTROL_FILE"
 printf "Priority: %s\n"       "${PRIORITY}"                      >> "$CONTROL_FILE"
 printf "Homepage: %s\n"       "${HOMEPAGE}"                      >> "$CONTROL_FILE"
