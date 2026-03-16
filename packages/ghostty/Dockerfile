@@ -9,7 +9,8 @@ SHELL ["/bin/bash", "-c"]
 ARG VERSION
 ARG TARGETARCH
 
-# Ensure blueprint-compiler can find GIR typelibs in the container environment.
+# Ensure blueprint-compiler is on PATH for zig subprocesses, and GIR typelibs are found.
+ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 ENV GI_TYPELIB_PATH=/usr/lib/x86_64-linux-gnu/girepository-1.0:/usr/lib/aarch64-linux-gnu/girepository-1.0
 ENV XDG_DATA_DIRS=/usr/share:/usr/local/share
 
@@ -49,6 +50,9 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     meson setup --prefix=/usr _build && \
     ninja -C _build install && \
     rm -rf /tmp/blueprint-compiler
+
+# Verify blueprint-compiler is on PATH.
+RUN which blueprint-compiler && blueprint-compiler --version
 
 # Install gtk4-layer-shell from the pre-built dep .deb.
 # The workflow places it in deps/ inside the build context.
