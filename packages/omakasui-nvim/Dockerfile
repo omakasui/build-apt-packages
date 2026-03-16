@@ -1,6 +1,7 @@
 # Builds a pre-cached LazyVim configuration.
 # Mirrors the omarchy-nvim PKGBUILD logic adapted for Debian/Ubuntu.
 # Upstream LazyVim starter: https://github.com/LazyVim/starter
+# Depends on the nvim package for the neovim binary.
 
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE:-debian:trixie-slim}
@@ -18,19 +19,15 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
 # Install tree-sitter-cli via npm globally.
 RUN npm install -g tree-sitter-cli
 
-# Install latest stable neovim from GitHub releases (distro packages are often outdated).
+# Install nvim from the pre-built dep (built by the nvim package in this repo).
 ARG TARGETARCH
+COPY deps/ /tmp/deps/
 RUN set -e; \
-    case "${TARGETARCH}" in \
-      amd64) NVIM_ARCH="linux-x86_64" ;; \
-      arm64) NVIM_ARCH="linux-arm64"  ;; \
-      *)     echo "Unsupported arch: ${TARGETARCH}"; exit 1 ;; \
-    esac; \
-    curl -fsSL \
-      "https://github.com/neovim/neovim/releases/latest/download/nvim-${NVIM_ARCH}.tar.gz" \
-      -o /tmp/nvim.tar.gz; \
-    tar -xzf /tmp/nvim.tar.gz -C /usr/local --strip-components=1; \
-    rm /tmp/nvim.tar.gz; \
+    DEB=$(ls /tmp/deps/nvim_*_${TARGETARCH}.deb 2>/dev/null | head -1); \
+    if [[ -z "$DEB" ]]; then \
+      echo "ERROR: nvim dep not found in deps/"; exit 1; \
+    fi; \
+    apt-get install -y --no-install-recommends "$DEB"; \
     nvim --version
 
 ARG VERSION

@@ -1,0 +1,22 @@
+name: nvim
+type: build
+section: editors
+priority: optional
+homepage: https://github.com/neovim/neovim
+description: >
+  Neovim - hyperextensible Vim-based text editor.
+  Packaged from official GitHub release binaries for amd64 and arm64.
+  Conflicts with and replaces the distro neovim package.
+
+conflicts:
+  - neovim
+
+replaces:
+  - neovim
+
+provides:
+  - neovim
+
+distros:
+  - debian13
+  - ubuntu2404

@@ -7,7 +7,7 @@ description: >
   Pre-built LazyVim configuration with cached plugins.
   Adapted from omarchy-nvim.
 runtime_depends:
-  - neovim
+  - nvim
   - git
   - gum
 
