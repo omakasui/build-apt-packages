@@ -5,6 +5,8 @@
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE:-debian:trixie-slim}
 
+SHELL ["/bin/bash", "-c"]
+
 ARG VERSION
 ARG TARGETARCH
 
@@ -15,8 +17,8 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     ca-certificates \
     gpg \
     lsb-release \
-    blueprint-compiler \
     build-essential \
+    python3-pip \
     debhelper \
     devscripts \
     pandoc \
@@ -27,6 +29,9 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     minisign \
     libxml2-utils \
   && rm -rf /var/lib/apt/lists/*
+
+# Install blueprint-compiler >= 0.16.0 (apt version on noble/trixie is too old).
+RUN pip3 install --break-system-packages blueprint-compiler
 
 # Install gtk4-layer-shell from the pre-built dep .deb.
 # The workflow places it in deps/ inside the build context.
