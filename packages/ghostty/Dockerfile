@@ -39,7 +39,7 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     ninja-build \
     python3-packaging \
   && rm -rf /var/lib/apt/lists/* && \
-    git clone --depth 1 --branch 0.16.0 \
+    git clone --depth 1 --branch v0.16.0 \
       https://gitlab.gnome.org/GNOME/blueprint-compiler.git /tmp/blueprint-compiler && \
     cd /tmp/blueprint-compiler && \
     meson setup --prefix=/usr _build && \
