@@ -6,7 +6,6 @@
 # The fork may carry omakasui-specific patches; all original copyright
 # and licence terms (GPL-2.0) are preserved and distributed with the package.
 
-
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE:-debian:trixie-slim}
 
@@ -35,7 +34,9 @@ RUN git clone --depth 1 --branch "v${VERSION}" \
 WORKDIR /build/src
 
 # Install Node dependencies (tsc + type definitions).
-RUN npm install
+# --legacy-peer-deps avoids duplicate nested installs of @girs/* type definitions
+# that would cause TypeScript to see incompatible duplicate types for Gio/GLib.
+RUN npm install --legacy-peer-deps && npm dedupe
 
 # Compile TypeScript → JS into dist/.
 RUN npx tsc
