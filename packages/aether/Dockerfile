@@ -28,7 +28,7 @@ RUN set -e; \
 
 # Stage application files.
 RUN set -e; \
-    DEST="/output/staged/usr/share/omakasui-aether"; \
+    DEST="/output/staged/usr/share/aether"; \
     mkdir -p "$DEST"; \
     \
     # Copy all source files except git metadata and docs. \
@@ -40,7 +40,7 @@ RUN set -e; \
     \
     # Create a launcher wrapper in /usr/bin so it is on PATH. \
     mkdir -p /output/staged/usr/bin; \
-    printf '#!/bin/sh\nexec /usr/share/omakasui-aether/aether "$@"\n' \
+    printf '#!/bin/sh\nexec /usr/share/aether/aether "$@"\n' \
       > /output/staged/usr/bin/aether; \
     chmod +x /output/staged/usr/bin/aether; \
     \

@@ -1,6 +1,11 @@
 # Source of truth for package versions. Pushing a change here triggers a build.
 # depends_on: list of sibling packages required at build time (empty [] if none).
 
+aether:
+  version: "3.0.3"
+  depends_on:
+    - gtk4-layer-shell
+
 cascadia-mono-nf:
   version: "3.4.0"
   depends_on: []
@@ -53,11 +58,6 @@ nautilus-open-any-terminal:
 nvim:
   version: "0.11.6"
   depends_on: []
-
-omakasui-aether:
-  version: "2.20.4"
-  depends_on:
-    - gtk4-layer-shell
 
 omakasui-nvim:
   version: "20260310"
