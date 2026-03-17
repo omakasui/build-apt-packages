@@ -7,23 +7,16 @@
 # and licence terms (GPL-2.0) are preserved and distributed with the package.
 
 ARG BASE_IMAGE
-FROM ${BASE_IMAGE:-debian:trixie-slim}
+ARG NODE_IMAGE=node:lts-slim
 
-SHELL ["/bin/bash", "-c"]
+# Clone and build the extension's JavaScript assets in a Node image.
+FROM ${NODE_IMAGE} AS js-builder
 
 ARG VERSION
 
-# Build dependencies.
-# nodejs/npm:        compile TypeScript via tsc.
-# libglib2.0-bin:    glib-compile-schemas for GSettings.
-# gettext:           msgfmt for .po → .mo translation files.
 RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     git \
     ca-certificates \
-    nodejs \
-    npm \
-    libglib2.0-bin \
-    gettext \
   && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /build
@@ -40,6 +33,22 @@ RUN npm install --legacy-peer-deps && npm dedupe
 
 # Compile TypeScript → JS into dist/.
 RUN npx tsc
+
+# Assemble the extension directory (mirrors build.sh asset copy, minus the zip step).
+FROM ${BASE_IMAGE:-debian:trixie-slim}
+
+SHELL ["/bin/bash", "-c"]
+
+# libglib2.0-bin:  glib-compile-schemas for GSettings.
+# gettext:         msgfmt for .po → .mo translation files.
+RUN apt-get update -qq && apt-get install -y --no-install-recommends \
+    libglib2.0-bin \
+    gettext \
+  && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /build/src
+
+COPY --from=js-builder /build/src ./
 
 # Compile GSettings schema.
 RUN glib-compile-schemas schemas/
