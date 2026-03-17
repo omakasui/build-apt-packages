@@ -18,14 +18,18 @@ fastfetch:
   version: "2.60.0"
   depends_on: []
 
-gtk4-layer-shell:
-  version: "1.1.0"
-  depends_on: []
-
 ghostty:
   version: "1.3.1"
   depends_on:
     - gtk4-layer-shell
+
+gnome-extension-grimble-tiling-wm:
+  version: "1.2.0"
+  depends_on: []
+
+gtk4-layer-shell:
+  version: "1.1.0"
+  depends_on: []
 
 gum:
   version: "0.17.0"
