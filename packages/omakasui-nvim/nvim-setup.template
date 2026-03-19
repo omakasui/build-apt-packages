@@ -1,0 +1,65 @@
+#!/bin/bash
+# Setup script for {{PKG_NAME}}.
+# Copies the pre-cached LazyVim config/data into the current user's home.
+
+set -euo pipefail
+
+PACKAGE_DIR="/usr/share/{{PKG_NAME}}"
+CONFIG_DIR="${HOME}/.config/nvim"
+DATA_DIR="${HOME}/.local/share/nvim"
+STATE_DIR="${HOME}/.local/state/nvim"
+CACHE_DIR="${HOME}/.cache/nvim"
+PROJECT_CONFIG_DIR="${HOME}/.config/{{PROJECT}}"
+
+if [[ ! -d "$PACKAGE_DIR" ]]; then
+  echo "Error: {{PKG_NAME}} package not installed"
+  exit 1
+fi
+
+if [[ -d "$CONFIG_DIR" ]]; then
+  if gum confirm "$(echo -e "Neovim configuration already exists at $CONFIG_DIR.\nThis will create a backup and overwrite it. Continue?")"; then
+    BACKUP_DIR="${CONFIG_DIR}.backup.$(date +%Y%m%d-%H%M%S)"
+    echo "Backing up existing config to $BACKUP_DIR"
+    mv "$CONFIG_DIR" "$BACKUP_DIR"
+  else
+    echo "Setup cancelled."
+    exit 0
+  fi
+fi
+
+echo "Setting up Neovim configuration for {{PROJECT}}..."
+
+rm -rf "$DATA_DIR" "$CACHE_DIR" "$STATE_DIR"
+mkdir -p "$(dirname "$CONFIG_DIR")"
+mkdir -p "$(dirname "$DATA_DIR")"
+
+cp -r "$PACKAGE_DIR/config" "$CONFIG_DIR"
+cp -r "$PACKAGE_DIR/data"   "$DATA_DIR"
+
+chown -R "${USER}:${USER}" "$CONFIG_DIR"
+chown -R "${USER}:${USER}" "$DATA_DIR"
+
+# Link theme from the {{PROJECT}} project folder if available.
+if [[ -d "${PROJECT_CONFIG_DIR}/current/theme" ]]; then
+  ln -snf "${PROJECT_CONFIG_DIR}/current/theme/neovim.lua" \
+    "${CONFIG_DIR}/lua/plugins/theme.lua"
+fi
+
+# Restore git working trees.
+for dir in "$DATA_DIR"/lazy/*/; do
+  if [[ -d "$dir/.git" ]]; then
+    git --git-dir="$dir/.git" --work-tree="$dir" restore .
+  fi
+done
+
+# Set nvim.desktop as default editor for common text types.
+for mime in \
+  text/plain text/english text/x-makefile \
+  text/x-c++hdr text/x-c++src text/x-chdr text/x-csrc \
+  text/x-java text/x-moc text/x-pascal text/x-tcl text/x-tex \
+  application/x-shellscript text/x-c text/x-c++ \
+  application/xml text/xml; do
+  xdg-mime default nvim.desktop "$mime"
+done
+
+echo "{{PKG_NAME}} setup complete!"

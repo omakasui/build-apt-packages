@@ -64,7 +64,7 @@ nvim:
   depends_on: []
 
 omakasui-nvim:
-  version: "20260310"
+  version: "20260319"
   depends_on:
     - nvim
 

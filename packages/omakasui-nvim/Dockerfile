@@ -1,10 +1,19 @@
-# Builds a pre-cached LazyVim configuration.
-# Mirrors the omarchy-nvim PKGBUILD logic adapted for Debian/Ubuntu.
+# Builds pre-cached LazyVim configurations for all omakasui project variants.
+# Produces three .deb files in /output/ (picked up by the repackage workflow path):
+#   omakasui-nvim_<version>_all.deb
+#   omakub-nvim_<version>_all.deb
+#   omadeb-nvim_<version>_all.deb
+# Each .deb installs /usr/share/<project>-nvim/{config,data} and
+# /usr/bin/<project>-nvim-setup (generated from nvim-setup.template).
 # Upstream LazyVim starter: https://github.com/LazyVim/starter
-# Depends on the nvim package for the neovim binary.
 
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE:-debian:trixie-slim}
+
+SHELL ["/bin/bash", "-c"]
+
+ARG VERSION
+ARG TARGETARCH
 
 RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     curl \
@@ -14,13 +23,11 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     npm \
     unzip \
     build-essential \
+    fakeroot \
   && rm -rf /var/lib/apt/lists/*
 
-# Install tree-sitter-cli via npm globally.
 RUN npm install -g tree-sitter-cli
 
-# Install nvim from the pre-built dep (built by the nvim package in this repo).
-ARG TARGETARCH
 COPY deps/ /tmp/deps/
 RUN set -e; \
     DEB=$(ls /tmp/deps/nvim_*_${TARGETARCH}.deb 2>/dev/null | head -1); \
@@ -30,64 +37,89 @@ RUN set -e; \
     apt-get install -y --no-install-recommends "$DEB"; \
     nvim --version
 
-ARG VERSION
-
 WORKDIR /build
 
-# Copy all custom config files first.
-COPY lua/            lua/
-COPY plugin/         plugin/
-COPY lazyvim.json    lazyvim.json
-COPY omakasui-nvim-setup omakasui-nvim-setup
+COPY lua/                 lua/
+COPY plugin/              plugin/
+COPY lazyvim.json         lazyvim.json
+COPY nvim-setup.template  nvim-setup.template
 
-# Download LazyVim starter.
+# Download LazyVim starter once — shared across all three variants.
 RUN curl -fsSL \
     "https://github.com/LazyVim/starter/archive/refs/heads/main.tar.gz" \
     -o starter.tar.gz && \
     tar -xzf starter.tar.gz
 
-# Set up isolated XDG environment.
 ENV HOME=/build/build-home
 ENV XDG_CONFIG_HOME=/build/build-home/.config
 ENV XDG_DATA_HOME=/build/build-home/.local/share
 ENV XDG_STATE_HOME=/build/build-home/.local/state
 ENV XDG_CACHE_HOME=/build/build-home/.cache
 
-RUN mkdir -p \
-    "$XDG_CONFIG_HOME" \
-    "$XDG_DATA_HOME" \
-    "$XDG_STATE_HOME" \
-    "$XDG_CACHE_HOME"
+RUN mkdir -p "$XDG_CONFIG_HOME" "$XDG_DATA_HOME" "$XDG_STATE_HOME" "$XDG_CACHE_HOME"
 
-# Copy LazyVim starter into config.
 RUN cp -r starter-main "$XDG_CONFIG_HOME/nvim" && \
     rm -rf "$XDG_CONFIG_HOME/nvim/.git"
 
-# Overlay omakasui custom configs.
-RUN cp -r lua/   "$XDG_CONFIG_HOME/nvim/lua/" && \
+RUN cp -r lua/    "$XDG_CONFIG_HOME/nvim/lua/"  && \
     cp -r plugin/ "$XDG_CONFIG_HOME/nvim/plugin/" && \
     cp lazyvim.json "$XDG_CONFIG_HOME/nvim/lazyvim.json" && \
     echo "vim.opt.relativenumber = false" >> "$XDG_CONFIG_HOME/nvim/lua/config/options.lua"
 
-# Pre-cache all plugins headless.
+# Pre-cache plugins once — shared by all three variants.
 RUN nvim --headless "+Lazy! sync" "+qa!" || true
 
-# Stage output.
+# Build all three .deb files.
 RUN set -e; \
-    mkdir -p /output/staged/usr/share/omakasui-nvim; \
-    cp -a "$XDG_CONFIG_HOME/nvim" /output/staged/usr/share/omakasui-nvim/config; \
-    cp -a "$XDG_DATA_HOME/nvim"   /output/staged/usr/share/omakasui-nvim/data; \
-    \
-    # Remove site/ contents but keep the directory (mirrors PKGBUILD). \
-    rm -rf /output/staged/usr/share/omakasui-nvim/data/site/*; \
-    mkdir -p /output/staged/usr/share/omakasui-nvim/data/site; \
-    \
-    # Fix permissions. \
-    chmod -R 755 /output/staged/usr/share/omakasui-nvim; \
-    find /output/staged/usr/share/omakasui-nvim -type f -exec chmod 644 {} \;; \
-    \
-    # Install setup script. \
-    install -Dm755 omakasui-nvim-setup \
-      /output/staged/usr/bin/omakasui-nvim-setup; \
-    \
-    echo "Staged: $(du -sh /output/staged)"
+    mkdir -p /output; \
+    for PROJECT in omakasui omakub omadeb; do \
+      PKG_NAME="${PROJECT}-nvim"; \
+      SHARE_DIR="/usr/share/${PKG_NAME}"; \
+      STAGED="/tmp/staged-${PROJECT}"; \
+      \
+      # Stage config and data. \
+      mkdir -p "${STAGED}${SHARE_DIR}"; \
+      cp -a "$XDG_CONFIG_HOME/nvim" "${STAGED}${SHARE_DIR}/config"; \
+      cp -a "$XDG_DATA_HOME/nvim"   "${STAGED}${SHARE_DIR}/data"; \
+      rm -rf "${STAGED}${SHARE_DIR}/data/site/"*; \
+      mkdir -p "${STAGED}${SHARE_DIR}/data/site"; \
+      chmod -R 755 "${STAGED}${SHARE_DIR}"; \
+      find "${STAGED}${SHARE_DIR}" -type f -exec chmod 644 {} \;; \
+      \
+      # Instantiate setup script from template via sed. \
+      mkdir -p "${STAGED}/usr/bin"; \
+      SETUP="${STAGED}/usr/bin/${PKG_NAME}-setup"; \
+      sed \
+        -e "s|{{PROJECT}}|${PROJECT}|g" \
+        -e "s|{{PKG_NAME}}|${PKG_NAME}|g" \
+        /build/nvim-setup.template > "$SETUP"; \
+      chmod 755 "$SETUP"; \
+      \
+      # Write DEBIAN/control. \
+      DEB_ROOT="/tmp/deb-${PROJECT}"; \
+      mkdir -p "${DEB_ROOT}/DEBIAN"; \
+      cp -r "${STAGED}/." "${DEB_ROOT}/"; \
+      SIZE=$(du -sk "$STAGED" | cut -f1); \
+      printf "Package: %s\nVersion: %s\nArchitecture: all\n" \
+        "${PKG_NAME}" "${VERSION}" > "${DEB_ROOT}/DEBIAN/control"; \
+      printf "Maintainer: omakasui <packages@omakasui.org>\n" \
+        >> "${DEB_ROOT}/DEBIAN/control"; \
+      printf "Installed-Size: %s\n" "${SIZE}" \
+        >> "${DEB_ROOT}/DEBIAN/control"; \
+      printf "Depends: nvim, git, gum\n" \
+        >> "${DEB_ROOT}/DEBIAN/control"; \
+      printf "Section: editors\nPriority: optional\n" \
+        >> "${DEB_ROOT}/DEBIAN/control"; \
+      printf "Homepage: https://github.com/LazyVim/LazyVim\n" \
+        >> "${DEB_ROOT}/DEBIAN/control"; \
+      printf "Description: Pre-built LazyVim configuration for %s\n" "${PROJECT}" \
+        >> "${DEB_ROOT}/DEBIAN/control"; \
+      printf " Installs pre-cached config and plugins to %s.\n" "${SHARE_DIR}" \
+        >> "${DEB_ROOT}/DEBIAN/control"; \
+      printf " Run %s-setup to activate for the current user.\n" "${PKG_NAME}" \
+        >> "${DEB_ROOT}/DEBIAN/control"; \
+      \
+      fakeroot dpkg-deb --build "${DEB_ROOT}" \
+        "/output/${PKG_NAME}_${VERSION}_all.deb"; \
+      echo "Built: $(ls -lh /output/${PKG_NAME}_${VERSION}_all.deb)"; \
+    done
