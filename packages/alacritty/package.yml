@@ -1,0 +1,29 @@
+name: alacritty
+type: build
+section: x11
+priority: optional
+homepage: https://github.com/alacritty/alacritty
+description: >
+  GPU-accelerated terminal emulator, built from source.
+  Upstream releases do not provide Linux binaries.
+runtime_depends:
+  - libfontconfig1
+  - libfreetype6
+  - libxcb1
+  - libxkbcommon0
+
+conflicts:
+  - alacritty
+
+replaces:
+  - alacritty
+
+provides:
+  - alacritty
+
+produces:
+  - alacritty
+
+distros:
+  - debian13
+  - ubuntu2404

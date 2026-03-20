@@ -6,6 +6,10 @@ aether:
   depends_on:
     - gtk4-layer-shell
 
+alacritty:
+  version: "0.16.1"
+  depends_on: []
+
 cascadia-mono-nf:
   version: "3.4.0"
   depends_on: []
