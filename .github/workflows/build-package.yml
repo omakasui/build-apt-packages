@@ -14,6 +14,14 @@ on:
         description: 'Package to build (must exist in versions.yml)'
         required: true
         type: string
+      channel:
+        description: 'Publishing channel (stable or dev)'
+        required: false
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - stable
 
 jobs:
   detect:
@@ -307,14 +315,18 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.APT_PKG_DISPATCH_TOKEN }}
         run: |
-          # Build a JSON array of {package, version, suites, produces} entries
+          # Build a JSON array of {package, version, suites, produces, channel} entries
           # from the full builds list — one dispatch, processed in sequence by update.yml.
-          PAYLOAD=$(echo '${{ needs.detect.outputs.builds }}' | jq -c '[
+          # Push-triggered builds always land on dev; stable promotion is done via promote.yml.
+          CHANNEL="${{ inputs.channel }}"
+          CHANNEL="${CHANNEL:-dev}"
+          PAYLOAD=$(echo '${{ needs.detect.outputs.builds }}' | jq -c --arg channel "$CHANNEL" '[
             .[] | {
               package: .package,
               version: .version,
               suites: ( .matrix.include | map(.suite) | unique | join(" ") ),
-              produces: .produces
+              produces: .produces,
+              channel: $channel
             }
           ]')
 
