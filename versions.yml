@@ -86,7 +86,8 @@ omakasui-walker:
 
 omakasui-zellij:
   version: "20260323"
-  depends_on: []
+  depends_on:
+    - zellij
 
 starship:
   version: "1.24.2"
