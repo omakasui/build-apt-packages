@@ -1,0 +1,13 @@
+#!/bin/sh
+# postrm for alacritty
+
+set -e
+
+case "$1" in
+    remove|purge)
+        update-alternatives --remove x-terminal-emulator /usr/bin/alacritty \
+            2>/dev/null || true
+        ;;
+esac
+
+exit 0

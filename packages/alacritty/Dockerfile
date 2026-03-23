@@ -82,8 +82,13 @@ RUN set -e; \
     install -Dm644 extra/completions/alacritty.fish \
       /output/staged/usr/share/fish/vendor_completions.d/alacritty.fish; \
     \
-    # Terminfo. \
-    install -Dm644 extra/alacritty.info \
-      /output/staged/usr/share/terminfo/a/alacritty || true; \
-    \
     echo "Staged: $(du -sh /output/staged)"
+
+# Stage maintainer scripts.
+RUN mkdir -p /output/staged/DEBIAN
+COPY preinst /output/staged/DEBIAN/preinst
+COPY postinst /output/staged/DEBIAN/postinst
+COPY postrm   /output/staged/DEBIAN/postrm
+RUN chmod 0755 /output/staged/DEBIAN/preinst \
+               /output/staged/DEBIAN/postinst \
+               /output/staged/DEBIAN/postrm

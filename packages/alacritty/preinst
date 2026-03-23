@@ -1,0 +1,20 @@
+#!/bin/sh
+# preinst for alacritty
+
+set -e
+
+case "$1" in
+    install|upgrade)
+        # Pre-emptively remove the x-terminal-emulator alternative that may have
+        # been registered by the Debian alacritty package. This must happen before
+        # dpkg invokes the old package's prerm script (which also tries to remove
+        # it). On Trixie, dpkg runs prerm inside a systemd-run unit; if the prerm
+        # calls update-alternatives and the alternative no longer exists it exits
+        # non-zero (set -e), aborting the upgrade. Removing it here first makes
+        # the subsequent prerm call a no-op that safely exits 0.
+        update-alternatives --remove x-terminal-emulator /usr/bin/alacritty \
+            2>/dev/null || true
+        ;;
+esac
+
+exit 0
