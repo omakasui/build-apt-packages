@@ -1,0 +1,30 @@
+name: tmux
+type: build
+section: admin
+priority: optional
+homepage: https://github.com/tmux/tmux
+description: >
+  Terminal multiplexer. Built from source, newer than the distro package.
+  Allows creating multiple terminal sessions within a single window,
+  with persistent sessions that survive disconnections.
+
+conflicts:
+  - tmux
+
+replaces:
+  - tmux
+
+provides:
+  - tmux
+
+runtime_depends:
+  - libevent-2.1-7t64 | libevent-2.1-7
+  - libc6
+  - libtinfo6 | libncurses6
+
+produces:
+  - tmux
+
+distros:
+  - debian13
+  - ubuntu2404

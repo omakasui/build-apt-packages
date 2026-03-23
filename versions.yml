@@ -92,6 +92,10 @@ starship:
   version: "1.24.2"
   depends_on: []
 
+tmux:
+  version: "3.6a"
+  depends_on: []
+
 ufw-docker:
   version: "251123"
   depends_on: []
