@@ -18,7 +18,6 @@ provides:
   - tmux
 
 runtime_depends:
-  - libevent-2.1-7t64 | libevent-2.1-7
   - libc6
   - libtinfo6 | libncurses6
 
