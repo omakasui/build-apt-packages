@@ -9,6 +9,15 @@ description: >
   pipelines, releases and more without leaving the command line.
   Repackaged from the upstream official .deb release.
 
+conflicts:
+  - glab
+
+replaces:
+  - glab
+
+provides:
+  - glab
+
 produces:
   - glab
 
