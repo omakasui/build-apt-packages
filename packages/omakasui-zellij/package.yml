@@ -1,0 +1,25 @@
+name: omakasui-zellij
+type: repackage
+arch: all
+section: utils
+priority: optional
+homepage: https://zellij.dev
+description: >
+  Zellij configuration for omakasui/omakub/omadeb.
+  Builds three variants: omakasui-zellij, omakub-zellij, omadeb-zellij.
+  Each installs the omakub-based config and a setup script that links
+  the active theme and sets zellij as the alacritty shell.
+runtime_depends:
+  - zellij
+  - gum
+
+depends_on: []
+
+produces:
+  - omakasui-zellij
+  - omakub-zellij
+  - omadeb-zellij
+
+distros:
+  - debian13
+  - ubuntu2404
