@@ -51,9 +51,11 @@ command -v dpkg-deb >/dev/null || { echo "ERROR: dpkg-deb not found"; exit 1; }
 PKG_ARCH="$(yq e '.arch // ""' "$PKG_YAML")"
 [[ "$PKG_ARCH" == "all" ]] && ARCH="all"
 
-# Resolve installed package name (produces[0] or fallback to pkg key).
-DEB_NAME="$(yq e '.produces[0] // ""' "$PKG_YAML")"
-DEB_NAME="${DEB_NAME:-${PKG_KEY}}"
+# Resolve all package names to produce (produces[] or fallback to pkg key).
+mapfile -t PRODUCE_NAMES < <(yq e '.produces // [] | .[]' "$PKG_YAML")
+[[ ${#PRODUCE_NAMES[@]} -eq 0 ]] && PRODUCE_NAMES=("${PKG_KEY}")
+
+DEB_NAME="${PRODUCE_NAMES[0]}"  # primary name (kept for backward-compat logging)
 
 SECTION="$(yq e '.section'   "$PKG_YAML")"
 PRIORITY="$(yq e '.priority' "$PKG_YAML")"
@@ -70,38 +72,40 @@ if [[ -n "$EXTRA_DEPENDS" ]]; then
   RUNTIME_DEPS="${RUNTIME_DEPS:+${RUNTIME_DEPS}, }${EXTRA_DEPENDS}"
 fi
 
-DEB_ROOT="/tmp/deb/${DEB_NAME}_${VERSION}_${ARCH}"
-mkdir -p "${DEB_ROOT}/DEBIAN"
-cp -r "${STAGED_DIR}/." "${DEB_ROOT}/"
-
 SIZE="$(du -sk "$STAGED_DIR" | cut -f1)"
 
-CONTROL_FILE="${DEB_ROOT}/DEBIAN/control"
-printf "Package: %s\n"        "${DEB_NAME}"                      > "$CONTROL_FILE"
-printf "Version: %s\n"        "${VERSION}"                       >> "$CONTROL_FILE"
-printf "Architecture: %s\n"   "${ARCH}"                          >> "$CONTROL_FILE"
-printf "Maintainer: %s\n"     "omakasui <packages@omakasui.org>" >> "$CONTROL_FILE"
-printf "Installed-Size: %s\n" "${SIZE}"                          >> "$CONTROL_FILE"
-[[ -n "${RUNTIME_DEPS}" ]] && \
-  printf "Depends: %s\n"      "${RUNTIME_DEPS}"                  >> "$CONTROL_FILE"
-[[ -n "${CONFLICTS}" ]] && \
-  printf "Conflicts: %s\n"    "${CONFLICTS}"                     >> "$CONTROL_FILE"
-[[ -n "${REPLACES}" ]]  && \
-  printf "Replaces: %s\n"     "${REPLACES}"                      >> "$CONTROL_FILE"
-[[ -n "${PROVIDES}" ]]  && \
-  printf "Provides: %s\n"     "${PROVIDES}"                      >> "$CONTROL_FILE"
-printf "Section: %s\n"        "${SECTION}"                       >> "$CONTROL_FILE"
-printf "Priority: %s\n"       "${PRIORITY}"                      >> "$CONTROL_FILE"
-printf "Homepage: %s\n"       "${HOMEPAGE}"                      >> "$CONTROL_FILE"
-printf "Description: %s\n"    "${DESC_SHORT}"                    >> "$CONTROL_FILE"
-[[ -n "${DESC_LONG}" ]] && printf "%s\n" "${DESC_LONG}"          >> "$CONTROL_FILE"
-
-echo "--- control file ---"
-cat "$CONTROL_FILE"
-echo "--------------------"
-
 mkdir -p "$OUTPUT_DIR"
-fakeroot dpkg-deb --build "${DEB_ROOT}" \
-  "${OUTPUT_DIR}/${DEB_NAME}_${VERSION}_${DISTRO}_${ARCH}.deb"
+for DEB_NAME in "${PRODUCE_NAMES[@]}"; do
+  DEB_ROOT="/tmp/deb/${DEB_NAME}_${VERSION}_${ARCH}"
+  mkdir -p "${DEB_ROOT}/DEBIAN"
+  cp -r "${STAGED_DIR}/." "${DEB_ROOT}/"
 
-echo "Built: $(ls -lh "${OUTPUT_DIR}/${DEB_NAME}_${VERSION}_${DISTRO}_${ARCH}.deb")"
+  CONTROL_FILE="${DEB_ROOT}/DEBIAN/control"
+  printf "Package: %s\n"        "${DEB_NAME}"                      > "$CONTROL_FILE"
+  printf "Version: %s\n"        "${VERSION}"                       >> "$CONTROL_FILE"
+  printf "Architecture: %s\n"   "${ARCH}"                          >> "$CONTROL_FILE"
+  printf "Maintainer: %s\n"     "omakasui <packages@omakasui.org>" >> "$CONTROL_FILE"
+  printf "Installed-Size: %s\n" "${SIZE}"                          >> "$CONTROL_FILE"
+  [[ -n "${RUNTIME_DEPS}" ]] && \
+    printf "Depends: %s\n"      "${RUNTIME_DEPS}"                  >> "$CONTROL_FILE"
+  [[ -n "${CONFLICTS}" ]] && \
+    printf "Conflicts: %s\n"    "${CONFLICTS}"                     >> "$CONTROL_FILE"
+  [[ -n "${REPLACES}" ]]  && \
+    printf "Replaces: %s\n"     "${REPLACES}"                      >> "$CONTROL_FILE"
+  [[ -n "${PROVIDES}" ]]  && \
+    printf "Provides: %s\n"     "${PROVIDES}"                      >> "$CONTROL_FILE"
+  printf "Section: %s\n"        "${SECTION}"                       >> "$CONTROL_FILE"
+  printf "Priority: %s\n"       "${PRIORITY}"                      >> "$CONTROL_FILE"
+  printf "Homepage: %s\n"       "${HOMEPAGE}"                      >> "$CONTROL_FILE"
+  printf "Description: %s\n"    "${DESC_SHORT}"                    >> "$CONTROL_FILE"
+  [[ -n "${DESC_LONG}" ]] && printf "%s\n" "${DESC_LONG}"          >> "$CONTROL_FILE"
+
+  echo "--- control file ---"
+  cat "$CONTROL_FILE"
+  echo "--------------------"
+
+  fakeroot dpkg-deb --build "${DEB_ROOT}" \
+    "${OUTPUT_DIR}/${DEB_NAME}_${VERSION}_${DISTRO}_${ARCH}.deb"
+
+  echo "Built: $(ls -lh "${OUTPUT_DIR}/${DEB_NAME}_${VERSION}_${DISTRO}_${ARCH}.deb")"
+done

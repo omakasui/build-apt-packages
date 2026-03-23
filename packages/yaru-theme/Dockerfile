@@ -1,5 +1,5 @@
-# Repackages yaru-theme-{gtk,icon,sound,gnome-shell} from Ubuntu Launchpad
-# under the omakasui- namespace, adding Conflicts/Replaces/Provides.
+# Repackages yaru-theme-{gtk,icon,sound,gnome-shell} from Ubuntu Launchpad,
+# stripping the Ubuntu-only session-migration dependency for Debian compatibility.
 # Upstream: https://launchpad.net/ubuntu/+source/yaru-theme
 
 FROM debian:trixie-slim
@@ -26,15 +26,10 @@ RUN set -e; \
       dpkg-deb -R "$DEB" "extracted/${pkg}/"; \
       \
       CTRL="extracted/${pkg}/DEBIAN/control"; \
-      sed -i "s/^Package: ${pkg}$/Package: omakasui-${pkg}/" "$CTRL"; \
       \
       # Strip Ubuntu-only deps that don't exist on Debian (e.g. session-migration). \
       # Handles: "session-migration, …", "…, session-migration", "…, session-migration, …" \
       sed -i -E '/^Depends:/s/(,\s*)?session-migration(\s*,)?//g' "$CTRL"; \
       \
-      grep -q "^Conflicts:" "$CTRL" || printf "Conflicts: %s\n" "$pkg" >> "$CTRL"; \
-      grep -q "^Replaces:"  "$CTRL" || printf "Replaces: %s\n"  "$pkg" >> "$CTRL"; \
-      grep -q "^Provides:"  "$CTRL" || printf "Provides: %s\n"  "$pkg" >> "$CTRL"; \
-      \
-      dpkg-deb -b "extracted/${pkg}/" "/output/omakasui-${pkg}_${VERSION}_all.deb"; \
+      dpkg-deb -b "extracted/${pkg}/" "/output/${pkg}_${VERSION}_all.deb"; \
     done
