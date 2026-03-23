@@ -27,6 +27,10 @@ ghostty:
   depends_on:
     - gtk4-layer-shell
 
+glab:
+  version: "1.89.0"
+  depends_on: []
+
 gnome-extension-grimble-tiling-wm:
   version: "1.2.0"
   depends_on: []
