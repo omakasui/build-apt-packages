@@ -243,6 +243,9 @@ web_client {
 //
 theme "current"
 
+// Force theme_dir su user config folders
+theme_dir "{HOME}/.config/zellij/themes"
+
 // Choose the base input mode of zellij.
 // Default: normal
 //

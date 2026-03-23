@@ -17,7 +17,7 @@ if [[ ! -d "$PACKAGE_DIR" ]]; then
   exit 1
 fi
 
-# --- Config file ---
+#  Install zellij config, backing up existing config if present
 if [[ -f "$CONFIG_FILE" ]]; then
   if gum confirm "$(echo -e "Zellij config already exists at $CONFIG_FILE.\nThis will create a backup and overwrite it. Continue?")"; then
     BACKUP="${CONFIG_FILE}.backup.$(date +%Y%m%d-%H%M%S)"
@@ -34,7 +34,11 @@ echo "Installing Zellij configuration for {{PROJECT}}..."
 mkdir -p "$(dirname "$CONFIG_FILE")"
 cp "$PACKAGE_DIR/config/config.kdl" "$CONFIG_FILE"
 
-# --- Theme symlink ---
+# Replace {HOME} placeholder in config with actual home directory
+# Fix this issue: https://github.com/zellij-org/zellij/issues/4889
+sed -i "s|{HOME}|$HOME|g" "$CONFIG_FILE"
+
+# Setup theme symlink
 mkdir -p "$THEMES_DIR"
 
 if [[ -f "$PROJECT_THEME_FILE" ]]; then
@@ -44,7 +48,7 @@ else
   echo "Note: no zellij theme found at $PROJECT_THEME_FILE — run omakub-theme-set to apply one."
 fi
 
-# --- Alacritty shell ---
+# Setup Alacritty shell
 if [[ -f "$ALACRITTY_CONF" ]]; then
   if grep -qE '^shell\s*=' "$ALACRITTY_CONF"; then
     sed -i -E 's|^shell\s*=.*|shell = "zellij"|' "$ALACRITTY_CONF"
