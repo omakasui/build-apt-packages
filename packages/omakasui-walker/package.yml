@@ -10,6 +10,8 @@ description: >
 
 produces:
   - omakasui-walker
+  - omadeb-walker
+  - omakub-walker
 
 runtime_depends:
   - walker
