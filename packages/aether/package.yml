@@ -1,20 +1,19 @@
 name: aether
 type: build
-arch: all
 section: gnome
 priority: optional
-homepage: https://github.com/bjarneo/aether
+homepage: https://github.com/omakasui/aether
 description: >
-  Aether - create Omarchy/Omakasui themes the easy way.
-  GTK4/libadwaita app for wallpaper-based color extraction and theme generation.
-  Supports wallhaven.cc browsing, image filters, color presets, and Base16 import.
+  Aether - wallpaper-based color extraction and desktop theming.
+  Go/Wails GTK4 app. Supports animated wallpapers (GIF, MP4, WebM),
+  wallhaven.cc browsing, color presets, Base16 import, and per-app templates.
 runtime_depends:
-  - gjs
-  - gir1.2-gtk-4.0
-  - gir1.2-adw-1
-  - gir1.2-soup-3.0
-  - gtk4-layer-shell
-  - imagemagick
+  - libwebkit2gtk-4.1-0
+  - libgtk-3-0
+  - libgtk-layer-shell0
+  - gstreamer1.0-plugins-good
+  - gstreamer1.0-libav
+  - ffmpeg
 
 distros:
   - debian13

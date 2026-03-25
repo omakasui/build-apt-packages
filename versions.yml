@@ -2,9 +2,8 @@
 # depends_on: list of sibling packages required at build time (empty [] if none).
 
 aether:
-  version: "3.0.3"
-  depends_on:
-    - gtk4-layer-shell
+  version: "4.4.0-omakasui.1"
+  depends_on: []
 
 alacritty:
   version: "0.16.1"
