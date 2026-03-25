@@ -79,6 +79,11 @@ omakasui-nvim:
   depends_on:
     - nvim
 
+omakasui-aether:
+  version: "4.4.0-omakasui.1"
+  depends_on:
+    - aether
+
 omakasui-walker:
   version: "2.15.1"
   depends_on: []

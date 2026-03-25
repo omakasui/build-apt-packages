@@ -1,0 +1,24 @@
+name: omakasui-aether
+type: repackage
+arch: all
+section: gnome
+priority: optional
+homepage: https://github.com/bjarneo/aether
+description: >
+  Aether integration for omakasui/omakub/omadeb.
+  Installs a setup script that creates the theme symlink between Aether
+  and the project theme system so that Aether-generated themes appear in
+  the project's theme list.
+
+produces:
+  - omakasui-aether
+  - omakub-aether
+  - omadeb-aether
+
+runtime_depends:
+  - aether
+  - gum
+
+distros:
+  - debian13
+  - ubuntu2404

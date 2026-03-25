@@ -1,0 +1,34 @@
+#!/bin/bash
+# Setup script for {{PKG_NAME}}.
+# Creates a symlink so that Aether-generated themes appear in the
+# {{PROJECT}} theme list, enabling automatic theme switching.
+
+set -euo pipefail
+
+AETHER_THEME_DIR="${HOME}/.config/aether/theme"
+PROJECT_THEMES_DIR="${HOME}/.config/{{PROJECT}}/themes"
+SYMLINK="${PROJECT_THEMES_DIR}/aether"
+
+echo "Setting up Aether integration for {{PROJECT}}..."
+
+# Create the aether theme directory if it doesn't exist yet
+mkdir -p "$AETHER_THEME_DIR"
+
+# Create the project themes directory
+mkdir -p "$PROJECT_THEMES_DIR"
+
+# Create (or update) the symlink
+if [[ -L "$SYMLINK" ]]; then
+  echo "Symlink already exists, updating..."
+  ln -snf "$AETHER_THEME_DIR" "$SYMLINK"
+elif [[ -e "$SYMLINK" ]]; then
+  BACKUP="${SYMLINK}.backup.$(date +%Y%m%d-%H%M%S)"
+  echo "Non-symlink exists at $SYMLINK, backing up to $BACKUP"
+  mv "$SYMLINK" "$BACKUP"
+  ln -snf "$AETHER_THEME_DIR" "$SYMLINK"
+else
+  ln -snf "$AETHER_THEME_DIR" "$SYMLINK"
+fi
+
+echo "Linked: $SYMLINK -> $AETHER_THEME_DIR"
+echo "{{PKG_NAME}} setup complete!"
