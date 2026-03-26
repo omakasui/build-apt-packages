@@ -1,4 +1,4 @@
-name: gtk4-layer-shell
+name: libgtk4-layer-shell-0
 type: build
 section: libs
 priority: optional
@@ -8,23 +8,26 @@ description: >
   Provides libgtk4-layer-shell.so and GObject Introspection typelib.
   Required by GJS/GTK4 apps that use the Layer Shell protocol (e.g. omakasui-aether).
 
+produces:
+  - libgtk4-layer-shell-0
+
 runtime_depends:
   - libgtk-4-1
   - libwayland-client0
   - libglib2.0-0
 
 conflicts:
-  - libgtk4-layer-shell-0
+  - gtk4-layer-shell
   - libgtk4-layer-shell-dev
   - gir1.2-gtk4layershell-1.0
 
 replaces:
-  - libgtk4-layer-shell-0
+  - gtk4-layer-shell
   - libgtk4-layer-shell-dev
   - gir1.2-gtk4layershell-1.0
 
 provides:
-  - libgtk4-layer-shell-0
+  - gtk4-layer-shell
   - gir1.2-gtk4layershell-1.0
 
 distros:
