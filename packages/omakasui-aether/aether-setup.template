@@ -37,10 +37,17 @@ fi
 # Create a symlink in the Omarchy themes directory as well, so project system themes can be found in Aether.
 for theme in "$PROJECT_THEMES_DIR"/*; do
   theme_name=$(basename "$theme")
-  if [[ -L "$theme" ]]; then
-    ln -snf "$theme" "$OMARCHY_THEME_DIR/$theme_name"
+  omarchy_symlink="$OMARCHY_THEME_DIR/$theme_name"
+  if [[ -L "$omarchy_symlink" ]]; then
+    echo "Updating existing symlink for $theme_name in Omarchy themes..."
+    ln -snf "$theme" "$omarchy_symlink"
+  elif [[ -e "$omarchy_symlink" ]]; then
+    BACKUP="${omarchy_symlink}.backup.$(date +%Y%m%d-%H%M%S)"
+    echo "Non-symlink exists at $omarchy_symlink, replacing with symlink to $theme..."
+    rm -rf "$omarchy_symlink"
+    ln -snf "$theme" "$omarchy_symlink"
   else
-    ln -snf "$theme" "$OMARCHY_THEME_DIR/$theme_name"
+    ln -snf "$theme" "$omarchy_symlink"
   fi
 done
 
