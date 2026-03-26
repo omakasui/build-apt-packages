@@ -6,9 +6,11 @@
 set -euo pipefail
 
 AETHER_THEME_DIR="${HOME}/.config/aether/theme"
-OMARCHY_THEME_DIR="${HOME}/.config/omarchy/themes"
-PROJECT_THEMES_DIR="${HOME}/.config/{{PROJECT}}/themes"
-SYMLINK="${PROJECT_THEMES_DIR}/aether"
+OMARCHY_USER_THEME_DIR="${HOME}/.config/omarchy/themes"
+PROJECT_USER_THEMES_DIR="${HOME}/.config/{{PROJECT}}/themes"
+OMARCHY_SYSTEM_THEME_DIR="${HOME}/.local/share/omarchy/themes"
+PROJECT_SYSTEM_THEME_DIR="${HOME}/.local/share/{{PROJECT}}/themes"
+SYMLINK="${PROJECT_USER_THEMES_DIR}/aether"
 
 echo "Setting up Aether integration for {{PROJECT}}..."
 
@@ -16,40 +18,20 @@ echo "Setting up Aether integration for {{PROJECT}}..."
 mkdir -p "$AETHER_THEME_DIR"
 
 # Create the project themes directory
-mkdir -p "$PROJECT_THEMES_DIR"
-
-# Create the Omarchy theme directory
-mkdir -p "$OMARCHY_THEME_DIR"
+mkdir -p "$PROJECT_USER_THEMES_DIR"
 
 # Create (or update) the symlink
-if [[ -L "$SYMLINK" ]]; then
-  echo "Symlink already exists, updating..."
-  ln -snf "$AETHER_THEME_DIR" "$SYMLINK"
-elif [[ -e "$SYMLINK" ]]; then
-  BACKUP="${SYMLINK}.backup.$(date +%Y%m%d-%H%M%S)"
-  echo "Non-symlink exists at $SYMLINK, backing up to $BACKUP"
-  mv "$SYMLINK" "$BACKUP"
-  ln -snf "$AETHER_THEME_DIR" "$SYMLINK"
-else
-  ln -snf "$AETHER_THEME_DIR" "$SYMLINK"
-fi
+rm -f "$SYMLINK"
+ln -snf "$AETHER_THEME_DIR" "$SYMLINK"
 
-# Create a symlink in the Omarchy themes directory as well, so project system themes can be found in Aether.
-for theme in "$PROJECT_THEMES_DIR"/*; do
-  theme_name=$(basename "$theme")
-  omarchy_symlink="$OMARCHY_THEME_DIR/$theme_name"
-  if [[ -L "$omarchy_symlink" ]]; then
-    echo "Updating existing symlink for $theme_name in Omarchy themes..."
-    ln -snf "$theme" "$omarchy_symlink"
-  elif [[ -e "$omarchy_symlink" ]]; then
-    BACKUP="${omarchy_symlink}.backup.$(date +%Y%m%d-%H%M%S)"
-    echo "Non-symlink exists at $omarchy_symlink, replacing with symlink to $theme..."
-    rm -rf "$omarchy_symlink"
-    ln -snf "$theme" "$omarchy_symlink"
-  else
-    ln -snf "$theme" "$omarchy_symlink"
-  fi
-done
+# Create (or update) the symlink for Omarchy User Themes
+mkdir -p "$(dirname "$OMARCHY_USER_THEME_DIR")"
+rm -rf "$OMARCHY_USER_THEME_DIR"
+ln -snf "$PROJECT_USER_THEMES_DIR" "${OMARCHY_USER_THEME_DIR}"
 
-echo "Linked: $SYMLINK -> $AETHER_THEME_DIR"
+# Create (or update) the symlink for Omarchy System Themes
+mkdir -p "$(dirname "$OMARCHY_SYSTEM_THEME_DIR")"
+rm -rf "$OMARCHY_SYSTEM_THEME_DIR"
+ln -snf "$PROJECT_SYSTEM_THEME_DIR" "${OMARCHY_SYSTEM_THEME_DIR}"
+
 echo "{{PKG_NAME}} setup complete!"
