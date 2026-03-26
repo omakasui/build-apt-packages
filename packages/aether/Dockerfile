@@ -1,68 +1,39 @@
-# Builds omakasui/aether — a Go/Wails desktop theming app.
-# Compiles the GUI binary (wails build) and the aether-wp CLI tool.
-# Stages binaries, .desktop file, and icon into /output/staged/.
-# Upstream: https://github.com/omakasui/aether
+# Repackages the official bjarneo/aether .deb.
+# Upstream: https://github.com/bjarneo/aether
+# Release assets: aether_<version>_amd64.deb / aether_<version>_arm64.deb
 
 ARG BASE_IMAGE
-FROM ${BASE_IMAGE:-debian:trixie}
+FROM ${BASE_IMAGE:-debian:trixie-slim}
 
 RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
-    git \
-    build-essential \
-    pkg-config \
-    libgtk-3-dev \
-    libwebkit2gtk-4.1-dev \
-    libgtk-layer-shell-dev \
-    libgstreamer1.0-dev \
+    dpkg-dev \
   && rm -rf /var/lib/apt/lists/*
-
-# Install Node.js 22 from NodeSource (distro npm is too old for @tailwindcss/oxide optional deps)
-RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
-  && apt-get install -y --no-install-recommends nodejs \
-  && rm -rf /var/lib/apt/lists/*
-
-# Install Go 1.23
-RUN curl -fsSL "https://go.dev/dl/go1.23.8.linux-$(dpkg --print-architecture).tar.gz" \
-    | tar -C /usr/local -xzf -
-ENV PATH="/usr/local/go/bin:/root/go/bin:${PATH}"
-
-# Install Wails CLI
-RUN go install github.com/wailsapp/wails/v2/cmd/wails@v2.11.0
 
 ARG VERSION
+ARG TARGETARCH
 
-WORKDIR /build
-
-# Copy local assets from the build context.
-COPY aether.png aether.png
-COPY aether.desktop aether.desktop
+WORKDIR /work
 
 RUN set -e; \
-    URL="https://github.com/omakasui/aether/archive/v${VERSION}.tar.gz"; \
+    DEB="aether_${VERSION}_${TARGETARCH}.deb"; \
+    URL="https://github.com/bjarneo/aether/releases/download/v${VERSION}/${DEB}"; \
+    \
     echo "Downloading ${URL}..."; \
-    curl -fsSL "${URL}" -o aether.tar.gz; \
-    tar -xzf aether.tar.gz; \
-    mv "aether-${VERSION}" aether
-
-WORKDIR /build/aether
-
-# Build aether-wp CLI tool
-RUN go build -o build/bin/aether-wp ./cmd/aether-wp/
-
-# Build the Wails GUI binary
-RUN wails build -tags webkit2_41 -ldflags "-X aether/cli.Version=${VERSION}"
-
-# Stage files for packaging
-RUN set -e; \
-    install -Dm755 build/bin/aether    /output/staged/usr/bin/aether; \
-    install -Dm755 build/bin/aether-wp /output/staged/usr/bin/aether-wp; \
+    curl -fsSL "${URL}" -o "${DEB}"; \
     \
-    install -Dm644 /build/aether.desktop \
-      /output/staged/usr/share/applications/aether.desktop; \
+    mkdir -p extracted; \
+    dpkg-deb -R "${DEB}" extracted/; \
     \
-    install -Dm644 /build/aether.png \
-      /output/staged/usr/share/icons/hicolor/512x512/apps/aether.png; \
+    CTRL="extracted/DEBIAN/control"; \
+    awk 'BEGIN{p=1} /^$/{p=0} p{print}' "$CTRL" > /tmp/control.clean && mv /tmp/control.clean "$CTRL"; \
     \
-    echo "Staged: $(du -sh /output/staged)"
+    if [ -f extracted/DEBIAN/conffiles ]; then \
+      sed -i '/^[[:space:]]*$/d' extracted/DEBIAN/conffiles; \
+      [ ! -s extracted/DEBIAN/conffiles ] && rm extracted/DEBIAN/conffiles; \
+    fi; \
+    \
+    mkdir -p /output; \
+    dpkg-deb -b extracted/ "/output/aether_${VERSION}_${TARGETARCH}.deb"; \
+    echo "Built: $(ls -lh /output/)"

@@ -1,19 +1,13 @@
 name: aether
-type: build
+type: repackage
 section: gnome
 priority: optional
-homepage: https://github.com/omakasui/aether
+homepage: https://github.com/bjarneo/aether
 description: >
   Aether - wallpaper-based color extraction and desktop theming.
   Go/Wails GTK4 app. Supports animated wallpapers (GIF, MP4, WebM),
   wallhaven.cc browsing, color presets, Base16 import, and per-app templates.
-runtime_depends:
-  - libwebkit2gtk-4.1-0
-  - libgtk-3-0
-  - libgtk-layer-shell0
-  - gstreamer1.0-plugins-good
-  - gstreamer1.0-libav
-  - ffmpeg
+  Repackaged from official GitHub release binaries.
 
 distros:
   - debian13
