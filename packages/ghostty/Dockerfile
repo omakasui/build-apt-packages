@@ -55,13 +55,13 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
 # Verify blueprint-compiler is on PATH.
 RUN which blueprint-compiler && blueprint-compiler --version
 
-# Install gtk4-layer-shell from the pre-built dep .deb.
+# Install libgtk4-layer-shell-0 from the pre-built dep .deb.
 # The workflow places it in deps/ inside the build context.
 COPY deps/ /tmp/deps/
 RUN set -e; \
-    DEB=$(ls /tmp/deps/gtk4-layer-shell_*_${TARGETARCH}.deb 2>/dev/null | head -1); \
+    DEB=$(ls /tmp/deps/libgtk4-layer-shell-0_*_${TARGETARCH}.deb 2>/dev/null | head -1); \
     if [[ -z "$DEB" ]]; then \
-      echo "ERROR: gtk4-layer-shell dep not found in deps/"; exit 1; \
+      echo "ERROR: libgtk4-layer-shell-0 dep not found in deps/"; exit 1; \
     fi; \
     apt-get install -y --no-install-recommends "$DEB"; \
     ldconfig

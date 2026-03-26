@@ -9,7 +9,7 @@ description: >
 runtime_depends:
   - libgtk-4-1
   - libadwaita-1-0
-  - gtk4-layer-shell
+  - libgtk4-layer-shell-0
 
 distros:
   - debian13
