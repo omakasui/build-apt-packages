@@ -1,0 +1,21 @@
+name: cliamp
+type: build
+section: sound
+priority: optional
+homepage: https://github.com/bjarneo/cliamp
+description: >
+  Retro terminal music player inspired by Winamp.
+  Plays local files, streams, podcasts, YouTube, Spotify and more,
+  with a spectrum visualizer, parametric EQ and playlist management.
+  Optionally requires ffmpeg for AAC/Opus/WMA and yt-dlp for YouTube.
+
+runtime_depends:
+  - libasound2t64 | libasound2
+  - pipewire-alsa | pulseaudio
+
+produces:
+  - cliamp
+
+distros:
+  - debian13
+  - ubuntu2404
