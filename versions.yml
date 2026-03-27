@@ -84,7 +84,7 @@ omakasui-aether:
     - aether
 
 omakasui-nvim:
-  version: "20260327.1"
+  version: "20260327.2"
   depends_on:
     - nvim
 
