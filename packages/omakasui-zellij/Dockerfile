@@ -20,7 +20,7 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
 WORKDIR /build
 
 COPY config.kdl            config.kdl
-COPY zellij-setup.template zellij-setup.template
+COPY setup-zellij.template setup-zellij.template
 
 RUN set -e; \
     mkdir -p /output; \
@@ -37,11 +37,11 @@ RUN set -e; \
       \
       # Instantiate setup script from template. \
       mkdir -p "${STAGED}/usr/bin"; \
-      SETUP="${STAGED}/usr/bin/${PKG_NAME}-setup"; \
+      SETUP="${STAGED}/usr/bin/${PROJECT}-setup-zellij"; \
       sed \
         -e "s|{{PROJECT}}|${PROJECT}|g" \
         -e "s|{{PKG_NAME}}|${PKG_NAME}|g" \
-        /build/zellij-setup.template > "$SETUP"; \
+        /build/setup-zellij.template > "$SETUP"; \
       chmod 755 "$SETUP"; \
       \
       # Write DEBIAN/control. \
@@ -65,7 +65,7 @@ RUN set -e; \
         >> "${DEB_ROOT}/DEBIAN/control"; \
       printf " Installs omakub-based zellij config and a setup script.\n" \
         >> "${DEB_ROOT}/DEBIAN/control"; \
-      printf " Run %s-setup to activate for the current user.\n" "${PKG_NAME}" \
+      printf " Run %s-setup-zellij to activate for the current user.\n" "${PROJECT}" \
         >> "${DEB_ROOT}/DEBIAN/control"; \
       \
       fakeroot dpkg-deb --build "${DEB_ROOT}" \

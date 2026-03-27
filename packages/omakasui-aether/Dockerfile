@@ -16,7 +16,7 @@ ARG TARGETARCH
 
 WORKDIR /build
 
-COPY aether-setup.template aether-setup.template
+COPY setup-aether.template setup-aether.template
 
 # ── Package three .deb variants ──────────────────────────────────────────
 RUN set -e; \
@@ -26,12 +26,12 @@ RUN set -e; \
       STAGED="/tmp/staged-${PROJECT}"; \
       \
       # Project-specific setup script \
-      SETUP="${STAGED}/usr/bin/${PKG_NAME}-setup"; \
+      SETUP="${STAGED}/usr/bin/${PROJECT}-setup-aether"; \
       mkdir -p "${STAGED}/usr/bin"; \
       sed \
         -e "s|{{PROJECT}}|${PROJECT}|g" \
         -e "s|{{PKG_NAME}}|${PKG_NAME}|g" \
-        aether-setup.template > "$SETUP"; \
+        setup-aether.template > "$SETUP"; \
       chmod 755 "$SETUP"; \
       \
       # Build .deb \

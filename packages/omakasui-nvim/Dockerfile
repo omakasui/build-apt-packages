@@ -42,7 +42,7 @@ WORKDIR /build
 COPY lua/                 lua/
 COPY plugin/              plugin/
 COPY lazyvim.json         lazyvim.json
-COPY nvim-setup.template  nvim-setup.template
+COPY setup-nvim.template  setup-nvim.template
 
 # Download LazyVim starter once — shared across all three variants.
 RUN curl -fsSL \
@@ -88,11 +88,11 @@ RUN set -e; \
       \
       # Instantiate setup script from template via sed. \
       mkdir -p "${STAGED}/usr/bin"; \
-      SETUP="${STAGED}/usr/bin/${PKG_NAME}-setup"; \
+      SETUP="${STAGED}/usr/bin/${PROJECT}-setup-nvim"; \
       sed \
         -e "s|{{PROJECT}}|${PROJECT}|g" \
         -e "s|{{PKG_NAME}}|${PKG_NAME}|g" \
-        /build/nvim-setup.template > "$SETUP"; \
+        /build/setup-nvim.template > "$SETUP"; \
       chmod 755 "$SETUP"; \
       \
       # Write DEBIAN/control. \
@@ -116,7 +116,7 @@ RUN set -e; \
         >> "${DEB_ROOT}/DEBIAN/control"; \
       printf " Installs pre-cached config and plugins to %s.\n" "${SHARE_DIR}" \
         >> "${DEB_ROOT}/DEBIAN/control"; \
-      printf " Run %s-setup to activate for the current user.\n" "${PKG_NAME}" \
+      printf " Run %s-setup-nvim to activate for the current user.\n" "${PROJECT}" \
         >> "${DEB_ROOT}/DEBIAN/control"; \
       \
       fakeroot dpkg-deb --build "${DEB_ROOT}" \
