@@ -1,0 +1,17 @@
+name: zoxide
+type: build
+section: utils
+priority: optional
+homepage: https://github.com/ajeetdsouza/zoxide
+description: >
+  A smarter cd command inspired by z and autojump.
+  Remembers the directories you use most frequently and lets you
+  jump to them in just a few keystrokes. Works with bash, zsh, fish
+  and most other shells.
+
+produces:
+  - zoxide
+
+distros:
+  - debian13
+  - ubuntu2404
