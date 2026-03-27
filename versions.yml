@@ -74,15 +74,15 @@ nvim:
   version: "0.11.6"
   depends_on: []
 
-omakasui-nvim:
-  version: "20260319"
-  depends_on:
-    - nvim
-
 omakasui-aether:
   version: "20260327.1"
   depends_on:
     - aether
+
+omakasui-nvim:
+  version: "20260327.1"
+  depends_on:
+    - nvim
 
 omakasui-walker:
   version: "2.15.1"
