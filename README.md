@@ -19,9 +19,12 @@ Keys in `versions.yml` use **short upstream names** (e.g. `gum`, `lazygit`).
 The installed package name may differ, always check `produces[]` in `package.yml`.
 
 Packages compiled or repackaged under the omakasui namespace are installed as
-`omakasui-<name>` and include `Conflicts/Replaces/Provides` for the upstream name,
-making them drop-in replacements. The folder under `packages/` and the GitHub release
-tag always use the short key (e.g. `packages/gum/`, tag `gum-0.17.0`).
+`omakasui-<name>` and may include `Conflicts/Replaces/Provides` for the upstream name,
+making them drop-in replacements. Some packages (`omakasui-aether`, `omakasui-nvim`,
+`omakasui-walker`, `omakasui-zellij`) also produce `omakub-<name>` and `omadeb-<name>`
+variants from the same build via `produces[]` in `package.yml`. The folder under
+`packages/` and the GitHub release tag always use the short key (e.g. `packages/gum/`,
+tag `gum-0.17.0`).
 
 ## Package types
 
@@ -61,7 +64,6 @@ In both cases the workflow passes `--build-arg VERSION=<version>` — declare `A
 package-name:
   version: "1.2.3"
   depends_on: []    # sibling packages required at build time (installed before docker build)
-  triggers: []      # sibling packages to rebuild whenever this one is rebuilt
 ```
 
 Pushing a change here triggers a build for the affected packages only.
@@ -80,9 +82,15 @@ description: >
   Short one-line description.
   Additional lines become the long description.
 produces:             # installed package names — used for filenames and Depends: fields
-  - omakasui-example
+  - omakasui-example  # list multiple names to emit one .deb per name (e.g. omakub-*, omadeb-*)
 runtime_depends:      # runtime Depends: entries (package names, not keys)
   - libfoo1
+conflicts:            # Conflicts: entries — optional
+  - upstream-name
+replaces:             # Replaces: entries — optional
+  - upstream-name
+provides:             # Provides: entries — optional
+  - upstream-name
 distros:
   - debian13
   - ubuntu2404
