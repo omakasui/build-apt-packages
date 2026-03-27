@@ -1,4 +1,4 @@
-# Builds gnome-extension-grimble-tiling-wm from source.
+# Builds gnome-shell-extension-grimble-tiling-wm from source.
 # Upstream author: Erwan Lemattre <erwan.lemattre@hotmail.com>
 # Extension: https://github.com/erwanlem/grimble-tiling-wm (GPL-2.0)
 # This package is built from the omakasui fork:

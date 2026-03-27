@@ -1,4 +1,4 @@
-name: gnome-extension-grimble-tiling-wm
+name: gnome-shell-extension-grimble-tiling-wm
 type: build
 arch: all
 section: gnome
