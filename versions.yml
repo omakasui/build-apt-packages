@@ -89,7 +89,7 @@ omakasui-nvim:
     - nvim
 
 omakasui-walker:
-  version: "2.15.1"
+  version: "20260327.1"
   depends_on: []
 
 omakasui-zellij:
