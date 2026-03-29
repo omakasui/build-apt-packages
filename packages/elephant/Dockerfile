@@ -77,9 +77,6 @@ RUN set -e; \
     printf "Package: %s\nVersion: %s\nArchitecture: %s\nMaintainer: omakasui <packages@omakasui.org>\nInstalled-Size: %s\nSection: utils\nPriority: optional\nHomepage: https://github.com/abenz1267/elephant\nDescription: Elephant - powerful data provider daemon for application launchers.\n Communicates via Unix sockets and Protocol Buffers.\n Install provider packages to add functionality.\n" \
       "$PKG" "$VERSION" "$ARCH" "$SIZE" > "${ROOT}/DEBIAN/control"
 
-COPY postinst /output/deb/elephant/DEBIAN/postinst
-RUN chmod 0755 /output/deb/elephant/DEBIAN/postinst
-
 RUN set -e; \
     ARCH="${TARGETARCH:-amd64}"; \
     mkdir -p /output; \
@@ -106,10 +103,6 @@ RUN set -e; \
       esac; \
       printf "Package: %s\nVersion: %s\nArchitecture: %s\nMaintainer: omakasui <packages@omakasui.org>\nInstalled-Size: %s\nDepends: elephant (= %s)%s\nSection: utils\nPriority: optional\nHomepage: https://github.com/abenz1267/elephant\nDescription: Elephant ${provider} provider plugin for the walker application launcher.\n Installs ${provider}.so into /usr/lib/elephant/.\n" \
         "$PKG" "$VERSION" "$ARCH" "$SIZE" "$VERSION" "$EXTRA_DEPS" > "${ROOT}/DEBIAN/control"; \
-      if [ "$provider" = "files" ]; then \
-        printf '#!/bin/sh\nset -e\ncase "$1" in\n  configure)\n    if ! command -v fd >/dev/null 2>&1 && command -v fdfind >/dev/null 2>&1; then\n      ln -sf /usr/bin/fdfind /usr/local/bin/fd\n    fi\n    ;;\nesac\nexit 0\n' > "${ROOT}/DEBIAN/postinst"; \
-        chmod 0755 "${ROOT}/DEBIAN/postinst"; \
-      fi; \
       fakeroot dpkg-deb --build "${ROOT}" \
         "/output/${PKG}_${VERSION}_${ARCH}.deb"; \
       echo "Built: $(ls -lh /output/${PKG}_${VERSION}_${ARCH}.deb)"; \
