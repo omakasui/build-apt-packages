@@ -2,7 +2,7 @@
 # depends_on: list of sibling packages required at build time (empty [] if none).
 
 aether:
-  version: "4.5.0"
+  version: "4.6.1"
   depends_on: []
 
 alacritty:
