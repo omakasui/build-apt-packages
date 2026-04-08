@@ -14,7 +14,7 @@ cascadia-mono-nf:
   depends_on: []
 
 cliamp:
-  version: "1.31.7"
+  version: "1.35.0"
   depends_on: []
 
 elephant:
