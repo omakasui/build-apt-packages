@@ -95,7 +95,7 @@ omakasui-walker:
     - elephant
 
 omakasui-zellij:
-  version: "20260327.1"
+  version: "20260408.1"
   depends_on:
     - zellij
 
