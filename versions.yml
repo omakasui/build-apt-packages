@@ -71,7 +71,7 @@ nautilus-open-any-terminal:
   depends_on: []
 
 nvim:
-  version: "0.12.0"
+  version: "0.12.1"
   depends_on: []
 
 omakasui-aether:
