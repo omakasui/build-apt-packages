@@ -34,10 +34,6 @@ glab:
   version: "1.91.0"
   depends_on: []
 
-gnome-shell-extension-grimble-tiling-wm:
-  version: "1.2.0-omakasui1"
-  depends_on: []
-
 gtk4-layer-shell:
   version: "1.1.0"
   depends_on: []
