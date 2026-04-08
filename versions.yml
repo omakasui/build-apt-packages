@@ -125,7 +125,7 @@ yaru-theme:
   depends_on: []
 
 zellij:
-  version: "0.44.0"
+  version: "0.44.1"
   depends_on: []
 
 zoxide:
