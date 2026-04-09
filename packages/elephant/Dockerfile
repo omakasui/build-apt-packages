@@ -28,10 +28,8 @@ ARG TARGETARCH
 
 WORKDIR /build
 
-# RUN git clone --depth 1 --branch "v${VERSION}" \
-#     https://github.com/abenz1267/elephant.git elephant
 RUN git clone --depth 1 --branch "v${VERSION}" \
-     https://github.com/omakasui/elephant.git elephant
+    https://github.com/abenz1267/elephant.git elephant
 
 WORKDIR /build/elephant
 

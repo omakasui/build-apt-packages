@@ -18,7 +18,7 @@ cliamp:
   depends_on: []
 
 elephant:
-  version: "2.20.3-omakasui1"
+  version: "2.21.0"
   depends_on: []
 
 fastfetch:
