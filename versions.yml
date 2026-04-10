@@ -62,6 +62,10 @@ lazydocker:
   version: "0.25.0"
   depends_on: []
 
+localsend:
+  version: "1.17.0"
+  depends_on: []
+
 makima:
   version: "0.10.3"
   depends_on: []

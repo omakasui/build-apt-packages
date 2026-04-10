@@ -1,0 +1,16 @@
+name: localsend
+type: repackage
+section: net
+priority: optional
+homepage: https://localsend.org
+description: >
+  LocalSend - share files and messages with nearby devices over LAN.
+  No internet connection required. Cross-platform: Linux, macOS, Windows,
+  Android, iOS. Repackaged from the official upstream .deb release.
+
+produces:
+  - localsend
+
+distros:
+  - debian13
+  - ubuntu2404
