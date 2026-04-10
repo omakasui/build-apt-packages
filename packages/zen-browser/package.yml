@@ -1,0 +1,17 @@
+name: zen-browser
+type: repackage
+section: web
+priority: optional
+homepage: https://zen-browser.app
+description: >
+  Zen Browser - a privacy-focused Firefox-based browser.
+  Features vertical tabs, workspaces, tab splitting and theming.
+  Installed to /opt/zen with a symlink at /usr/bin/zen.
+  Updates are handled by the browser's built-in auto-updater.
+
+produces:
+  - zen-browser
+
+distros:
+  - debian13
+  - ubuntu2404
