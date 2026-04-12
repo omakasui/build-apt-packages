@@ -66,10 +66,6 @@ localsend:
   version: "1.17.0"
   depends_on: []
 
-makima:
-  version: "0.10.3"
-  depends_on: []
-
 nautilus-open-any-terminal:
   version: "0.8.1"
   depends_on: []
