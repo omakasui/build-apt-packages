@@ -1,0 +1,21 @@
+name: pinta
+type: build
+section: graphics
+priority: optional
+homepage: https://www.pinta-project.com
+description: >
+  Simple GTK4 paint and image editing program.
+  Built from source with .NET 8 and libadwaita.
+  Bundles the .NET 8 runtime in /opt/dotnet-pinta/ — no external
+  dotnet package required. Features layers, effects, unlimited undo,
+  and GNOME integration with automatic light/dark theme switching.
+
+runtime_depends:
+  - libadwaita-1-0
+
+produces:
+  - pinta
+
+distros:
+  - debian13
+  - ubuntu2404
