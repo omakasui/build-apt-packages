@@ -13,6 +13,10 @@ asdcontrol:
   version: "0.5"
   depends_on: []
 
+btop:
+  version: "1.4.6"
+  depends_on: []
+
 cascadia-mono-nf:
   version: "3.4.0"
   depends_on: []

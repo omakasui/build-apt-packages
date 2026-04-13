@@ -1,0 +1,25 @@
+name: btop
+type: build
+section: utils
+priority: optional
+homepage: https://github.com/aristocratos/btop
+description: >
+  Resource monitor showing usage and stats for processor, memory,
+  disks, network and processes. Statically linked musl binary with
+  GPU support. Replaces the outdated distro package.
+
+conflicts:
+  - btop
+
+replaces:
+  - btop
+
+provides:
+  - btop
+
+produces:
+  - btop
+
+distros:
+  - debian13
+  - ubuntu2404
