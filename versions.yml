@@ -82,6 +82,10 @@ nautilus-open-any-terminal:
   version: "0.8.1"
   depends_on: []
 
+niri:
+  version: "25.11"
+  depends_on: []
+
 nvim:
   version: "0.12.1"
   depends_on: []
