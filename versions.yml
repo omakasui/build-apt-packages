@@ -9,6 +9,10 @@ alacritty:
   version: "0.17.0"
   depends_on: []
 
+asdcontrol:
+  version: "1.0.0"
+  depends_on: []
+
 cascadia-mono-nf:
   version: "3.4.0"
   depends_on: []

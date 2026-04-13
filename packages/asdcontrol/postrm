@@ -1,0 +1,13 @@
+#!/bin/sh
+# postrm for asdcontrol
+
+set -e
+
+case "$1" in
+    remove|purge)
+        # Reload udev rules after the package's rules file has been removed.
+        udevadm control --reload-rules 2>/dev/null || true
+        ;;
+esac
+
+exit 0
