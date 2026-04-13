@@ -1,6 +1,4 @@
-# Repackages the official fastfetch .deb.
 # Upstream: https://github.com/fastfetch-cli/fastfetch
-# Release assets: fastfetch_<version>_amd64.deb / fastfetch_<version>_arm64.deb
 
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE:-debian:trixie-slim}

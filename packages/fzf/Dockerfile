@@ -1,5 +1,3 @@
-# Packages the upstream fzf static binary into a staged tree.
-# Downloads the prebuilt binary from GitHub Releases.
 # Upstream: https://github.com/junegunn/fzf
 
 ARG BASE_IMAGE

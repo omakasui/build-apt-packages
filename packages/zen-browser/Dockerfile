@@ -1,11 +1,6 @@
-# Packages the upstream Zen Browser tarball into a .deb.
 # Installs the browser bundle to /opt/zen, adds a symlink at /usr/bin/zen,
 # and installs a .desktop file for GNOME/application menus.
 # Upstream: https://github.com/zen-browser/desktop
-#
-# Asset naming convention:
-#   amd64 → zen.linux-x86_64.tar.xz
-#   arm64 → zen.linux-aarch64.tar.xz
 
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE:-debian:trixie-slim}

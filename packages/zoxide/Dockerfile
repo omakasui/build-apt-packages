@@ -1,5 +1,3 @@
-# Packages the upstream zoxide static binary into a staged tree.
-# Downloads the musl-linked binary from GitHub Releases.
 # Upstream: https://github.com/ajeetdsouza/zoxide
 
 ARG BASE_IMAGE

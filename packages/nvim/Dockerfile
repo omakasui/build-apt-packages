@@ -1,7 +1,4 @@
-# Downloads and stages the official Neovim release binary from GitHub.
 # Upstream: https://github.com/neovim/neovim
-# Supports amd64 and arm64.
-# Conflicts with and replaces the distro neovim package.
 
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE:-debian:trixie-slim}

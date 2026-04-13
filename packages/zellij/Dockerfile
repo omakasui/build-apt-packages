@@ -1,6 +1,4 @@
-# Downloads the official zellij release binary (musl, static) from GitHub and stages it.
 # Upstream: https://github.com/zellij-org/zellij
-# Supports amd64 and arm64.
 
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE:-debian:trixie-slim}

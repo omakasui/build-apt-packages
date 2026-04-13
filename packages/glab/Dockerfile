@@ -1,5 +1,3 @@
-# Repackages the upstream official glab .deb under the omakasui namespace.
-# Downloads the prebuilt .deb from GitLab releases for the target arch.
 # Upstream: https://gitlab.com/gitlab-org/cli
 
 ARG BASE_IMAGE

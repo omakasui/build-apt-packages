@@ -1,4 +1,3 @@
-# Builds asdcontrol from source using g++.
 # A simple C++ tool to control brightness of Apple Pro Display XDR / Studio Display on Linux.
 # Fork: https://github.com/omakasui/asdcontrol
 

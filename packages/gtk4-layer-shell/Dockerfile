@@ -1,4 +1,3 @@
-# Builds gtk4-layer-shell from source using Meson/Ninja.
 # Produces libgtk4-layer-shell.so + GObject Introspection typelib.
 # Upstream: https://github.com/wmww/gtk4-layer-shell
 

@@ -1,7 +1,4 @@
-# Packages omakasui/omakub/omadeb-aether setup scripts.
-# No compilation — depends on the standalone `aether` package for binaries.
-# Each variant gets a project-specific setup script that symlinks
-# Aether's theme directory into the project's theme list.
+# Packages the aether configuration for omakasui/omakub/omadeb variants.
 # Upstream: https://github.com/bjarneo/aether
 
 ARG BASE_IMAGE

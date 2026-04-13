@@ -1,10 +1,4 @@
-# Repackages the upstream LocalSend .deb under the omakasui namespace.
-# Downloads the prebuilt .deb from GitHub Releases for the target arch.
 # Upstream: https://github.com/localsend/localsend
-#
-# Asset naming convention:
-#   amd64 → LocalSend-<VERSION>-linux-x86-64.deb
-#   arm64 → LocalSend-<VERSION>-linux-arm-64.deb
 
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE:-debian:trixie-slim}

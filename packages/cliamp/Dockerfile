@@ -1,5 +1,3 @@
-# Packages the upstream cliamp prebuilt binary into a staged tree.
-# Downloads the statically-linked binary from GitHub Releases.
 # Upstream: https://github.com/bjarneo/cliamp
 
 ARG BASE_IMAGE

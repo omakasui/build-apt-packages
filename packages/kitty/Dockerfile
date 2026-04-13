@@ -1,6 +1,3 @@
-# Repackages the upstream kitty precompiled Linux bundle into a .deb.
-# Upstream publishes x86_64/arm64 tarballs on GitHub Releases.
-# The bundle is self-contained (Python + libs bundled) — no system lib deps.
 # Installs to /opt/kitty; symlinks kitty and kitten into /usr/bin.
 # Upstream: https://github.com/kovidgoyal/kitty
 

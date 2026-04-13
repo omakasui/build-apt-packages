@@ -1,6 +1,5 @@
 # Packages the ufw-docker shell script from upstream.
 # Upstream: https://github.com/chaifeng/ufw-docker
-# The script is downloaded directly from the tagged commit — no build required.
 
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE:-debian:trixie-slim}

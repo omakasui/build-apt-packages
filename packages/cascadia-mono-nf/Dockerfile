@@ -1,4 +1,3 @@
-# Downloads CascadiaMono Nerd Font from ryanoasis/nerd-fonts and stages all TTFs.
 # Upstream: https://github.com/ryanoasis/nerd-fonts
 
 ARG BASE_IMAGE

@@ -1,6 +1,4 @@
-# Repackages nautilus-open-any-terminal (renames from upstream nautilus-extension-any-terminal).
 # Upstream: https://github.com/Stunkymonkey/nautilus-open-any-terminal
-# Release assets: nautilus-open-any-terminal_<version>_all.deb
 
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE:-debian:trixie-slim}

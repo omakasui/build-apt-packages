@@ -1,5 +1,3 @@
-# Packages the upstream starship static binary (musl) into a staged tree.
-# Downloads the prebuilt tarball from GitHub Releases for the target arch.
 # Upstream: https://github.com/starship/starship
 
 ARG BASE_IMAGE

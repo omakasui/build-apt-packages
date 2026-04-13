@@ -1,4 +1,3 @@
-# Builds ghostty terminal from source (Zig).
 # Upstream: https://github.com/ghostty-org/ghostty
 
 ARG BASE_IMAGE

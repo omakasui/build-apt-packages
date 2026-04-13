@@ -1,6 +1,4 @@
-# Repackages the official bjarneo/aether .deb.
 # Upstream: https://github.com/bjarneo/aether
-# Release assets: aether_<version>_amd64.deb / aether_<version>_arm64.deb
 
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE:-debian:trixie-slim}

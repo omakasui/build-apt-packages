@@ -1,11 +1,4 @@
-# Packages the omakub zellij configuration for omakasui/omakub/omadeb variants.
-# Produces three .deb files in /output/:
-#   omakasui-zellij_<version>_all.deb
-#   omakub-zellij_<version>_all.deb
-#   omadeb-zellij_<version>_all.deb
-# Each .deb installs:
-#   /usr/share/<project>-zellij/config/config.kdl
-#   /usr/bin/<project>-zellij-setup (generated from zellij-setup.template)
+# Packages the zellij configuration for omakasui/omakub/omadeb variants.
 # Upstream: https://github.com/zellij-org/zellij
 
 ARG BASE_IMAGE

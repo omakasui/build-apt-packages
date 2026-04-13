@@ -1,5 +1,3 @@
-# Builds Alacritty from source using Rust.
-# Upstream does not publish Linux binaries — source-only releases.
 # Upstream: https://github.com/alacritty/alacritty
 
 ARG BASE_IMAGE

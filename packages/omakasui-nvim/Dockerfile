@@ -1,10 +1,4 @@
 # Builds pre-cached LazyVim configurations for all omakasui project variants.
-# Produces three .deb files in /output/ (picked up by the repackage workflow path):
-#   omakasui-nvim_<version>_all.deb
-#   omakub-nvim_<version>_all.deb
-#   omadeb-nvim_<version>_all.deb
-# Each .deb installs /usr/share/<project>-nvim/{config,data} and
-# /usr/bin/<project>-nvim-setup (generated from nvim-setup.template).
 # Upstream LazyVim starter: https://github.com/LazyVim/starter
 
 ARG BASE_IMAGE

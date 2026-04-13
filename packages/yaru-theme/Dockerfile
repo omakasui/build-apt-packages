@@ -2,7 +2,8 @@
 # stripping the Ubuntu-only session-migration dependency for Debian compatibility.
 # Upstream: https://launchpad.net/ubuntu/+source/yaru-theme
 
-FROM debian:trixie-slim
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE:-debian:trixie-slim}
 
 RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     curl \

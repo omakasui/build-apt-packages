@@ -1,4 +1,3 @@
-# Builds uwsm from source using the upstream debian/ packaging.
 # Upstream: https://github.com/Vladimir-csp/uwsm
 
 ARG BASE_IMAGE=debian:trixie-slim

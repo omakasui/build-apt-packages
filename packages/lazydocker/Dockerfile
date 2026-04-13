@@ -1,6 +1,4 @@
-# Downloads the official lazydocker release binary from GitHub and stages it.
 # Upstream: https://github.com/jesseduffield/lazydocker
-# Supports amd64 and arm64.
 
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE:-debian:trixie-slim}

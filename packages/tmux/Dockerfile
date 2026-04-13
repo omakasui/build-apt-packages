@@ -1,4 +1,3 @@
-# Builds tmux from the upstream release tarball.
 # Upstream: https://github.com/tmux/tmux
 # Dependencies: libevent-dev, libncurses-dev (from distro packages).
 

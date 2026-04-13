@@ -1,5 +1,3 @@
-# Builds walker from source (Rust/Cargo).
-# Links against gtk4-layer-shell installed from the local deps/ directory.
 # Upstream: https://github.com/abenz1267/walker
 
 ARG BASE_IMAGE

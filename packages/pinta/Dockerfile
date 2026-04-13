@@ -1,8 +1,5 @@
-# Builds Pinta from the upstream release tarball and bundles the .NET 8
-# runtime alongside it, so no external dotnet package is needed at install time.
-# This avoids the dotnet-runtime-8 availability issue on Debian trixie.
-# Upstream: https://github.com/PintaProject/Pinta
 # Requires: GTK >= 4.12, libadwaita >= 1.4 (satisfied by trixie and noble).
+# Upstream: https://github.com/PintaProject/Pinta
 
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE:-debian:trixie-slim}

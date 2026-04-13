@@ -1,4 +1,3 @@
-# Builds elephant daemon and all provider plugins from source (Go).
 # IMPORTANT: elephant and all .so plugins MUST be compiled in the same build
 # context so that internal Go package build IDs match — otherwise the plugin
 # loader will reject them at runtime with "different version of package".
