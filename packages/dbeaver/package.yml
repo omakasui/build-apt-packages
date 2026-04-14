@@ -9,7 +9,7 @@ description: >
   Includes bundled OpenJDK 21. Repackaged from the official upstream .deb.
 
 produces:
-  - dbeaver
+  - dbeaver-ce
 
 distros:
   - debian13
