@@ -1,4 +1,4 @@
-name: libgtk4-layer-shell-0
+name: libgtk4-layer-shell0
 type: build
 section: libs
 priority: optional
@@ -9,7 +9,7 @@ description: >
   Required by GJS/GTK4 apps that use the Layer Shell protocol (e.g. omakasui-aether).
 
 produces:
-  - libgtk4-layer-shell-0
+  - libgtk4-layer-shell0
 
 runtime_depends:
   - libgtk-4-1
@@ -18,18 +18,15 @@ runtime_depends:
 
 conflicts:
   - gtk4-layer-shell
-  - libgtk4-layer-shell0
   - libgtk4-layer-shell-dev
 
 replaces:
   - gtk4-layer-shell
-  - libgtk4-layer-shell0
   - libgtk4-layer-shell-dev
   - gir1.2-gtk4layershell-1.0
 
 provides:
   - gtk4-layer-shell
-  - libgtk4-layer-shell0
   - gir1.2-gtk4layershell-1.0
 
 distros:

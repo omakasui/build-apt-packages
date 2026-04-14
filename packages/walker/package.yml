@@ -12,7 +12,7 @@ runtime_depends:
   - libgtk-4-1
   - libcairo2
   - libpoppler-glib8
-  - libgtk4-layer-shell-0
+  - libgtk4-layer-shell0
   - elephant
 
 distros:
