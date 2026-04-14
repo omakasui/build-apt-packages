@@ -18,15 +18,18 @@ runtime_depends:
 
 conflicts:
   - gtk4-layer-shell
+  - libgtk4-layer-shell0
   - libgtk4-layer-shell-dev
 
 replaces:
   - gtk4-layer-shell
+  - libgtk4-layer-shell0
   - libgtk4-layer-shell-dev
   - gir1.2-gtk4layershell-1.0
 
 provides:
   - gtk4-layer-shell
+  - libgtk4-layer-shell0
   - gir1.2-gtk4layershell-1.0
 
 distros:
