@@ -9,6 +9,12 @@ description: >
   Patched with Nerd Fonts icons for use in terminals and code editors.
 
 produces:
+  - fonts-cascadia-mono-nf
+
+conflicts:
+  - font-cascadia-mono-nf
+
+replaces:
   - font-cascadia-mono-nf
 
 distros:

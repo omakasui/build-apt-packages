@@ -1,5 +1,5 @@
 #!/bin/bash
-# postinst for font-jetbrains-mono
+# postinst for fonts-jetbrains-mono
 
 set -e
 

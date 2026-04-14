@@ -1,5 +1,5 @@
 #!/bin/bash
-# postinst for font-cascadia-mono-nf
+# postinst for fonts-cascadia-mono-nf
 
 set -e
 

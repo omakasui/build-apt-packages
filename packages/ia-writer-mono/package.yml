@@ -9,6 +9,12 @@ description: >
   Designed for writing and coding, used by the iA Writer app.
 
 produces:
+  - fonts-ia-writer-mono
+
+conflicts:
+  - font-ia-writer-mono
+
+replaces:
   - font-ia-writer-mono
 
 distros:

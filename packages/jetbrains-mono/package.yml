@@ -9,16 +9,13 @@ description: >
   A free and open-source typeface designed for developers.
 
 produces:
-  - font-jetbrains-mono
+  - fonts-jetbrains-mono
 
 conflicts:
-  - fonts-jetbrains-mono
+  - font-jetbrains-mono
 
 replaces:
-  - fonts-jetbrains-mono
-
-provides:
-  - fonts-jetbrains-mono
+  - font-jetbrains-mono
 
 distros:
   - debian13

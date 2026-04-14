@@ -1,5 +1,5 @@
 #!/bin/bash
-# postinst for font-ia-writer-mono
+# postinst for fonts-ia-writer-mono
 
 set -e
 
