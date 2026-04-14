@@ -19,7 +19,6 @@ runtime_depends:
 conflicts:
   - gtk4-layer-shell
   - libgtk4-layer-shell-dev
-  - gir1.2-gtk4layershell-1.0
 
 replaces:
   - gtk4-layer-shell
