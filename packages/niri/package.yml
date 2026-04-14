@@ -20,8 +20,9 @@ runtime_depends:
   - libinput10
   - libdbus-1-3
   - libsystemd0
-  - libdisplay-info1
+  - libdisplay-info1 | libdisplay-info2
   - libpangocairo-1.0-0
+  - libwayland-server0
 
 produces:
   - niri
