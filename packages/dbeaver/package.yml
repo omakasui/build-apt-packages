@@ -8,6 +8,17 @@ description: >
   Supports MySQL, PostgreSQL, SQLite, Oracle, DB2, SQL Server and more.
   Includes bundled OpenJDK 21. Repackaged from the official upstream .deb.
 
+conflicts:
+  - dbeaver-ce
+  - dbeaver
+
+replaces:
+  - dbeaver-ce
+  - dbeaver
+
+provides:
+  - dbeaver-ce
+
 produces:
   - dbeaver-ce
 
