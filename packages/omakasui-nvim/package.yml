@@ -6,8 +6,7 @@ priority: optional
 homepage: https://github.com/LazyVim/LazyVim
 description: >
   Pre-built LazyVim configuration with cached plugins.
-  Builds three variants: omakasui-nvim, omakub-nvim, omadeb-nvim.
-  Each installs to /usr/share/<project>-nvim/ and provides a setup script.
+
 runtime_depends:
   - nvim
   - git
@@ -17,6 +16,7 @@ produces:
   - omakasui-nvim
   - omakub-nvim
   - omadeb-nvim
+  - omari-nvim
 
 distros:
   - debian13

@@ -5,10 +5,8 @@ section: utils
 priority: optional
 homepage: https://zellij.dev
 description: >
-  Zellij configuration for omakasui/omakub/omadeb.
-  Builds three variants: omakasui-zellij, omakub-zellij, omadeb-zellij.
-  Each installs the omakub-based config and a setup script that links
-  the active theme and sets zellij as the alacritty shell.
+  Zellij configuration for Omakasui.
+
 runtime_depends:
   - zellij
   - gum
@@ -19,6 +17,7 @@ produces:
   - omakasui-zellij
   - omakub-zellij
   - omadeb-zellij
+  - omari-zellij
 
 distros:
   - debian13

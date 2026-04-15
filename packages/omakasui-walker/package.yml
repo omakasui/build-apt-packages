@@ -5,13 +5,14 @@ section: utils
 priority: optional
 homepage: https://github.com/omakasui/omakasui
 description: >
-  omakasui-walker — metapackage for walker and elephant providers.
+  Omakasui metapackage for walker and elephant providers.
   Installs walker, elephant, and all elephant provider packages in one shot.
 
 produces:
   - omakasui-walker
   - omadeb-walker
   - omakub-walker
+  - omari-walker
 
 runtime_depends:
   - walker

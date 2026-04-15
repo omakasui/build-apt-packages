@@ -5,7 +5,7 @@ section: gnome
 priority: optional
 homepage: https://github.com/bjarneo/aether
 description: >
-  Aether theme integration for omakasui/omakub/omadeb.
+  Aether theme integration for Omakasui.
   Setup script that links Aether themes into the project theme list.
   Requires the standalone aether package for binaries.
 
@@ -17,6 +17,7 @@ produces:
   - omakasui-aether
   - omakub-aether
   - omadeb-aether
+  - omari-aether
 
 distros:
   - debian13
