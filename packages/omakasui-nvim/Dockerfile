@@ -66,7 +66,7 @@ RUN nvim --headless "+Lazy! sync" "+qa!" || true
 # Build all three .deb files.
 RUN set -e; \
     mkdir -p /output; \
-    for PROJECT in omakasui omakub omadeb; do \
+    for PROJECT in omakasui omakub omadeb omari; do \
       PKG_NAME="${PROJECT}-nvim"; \
       SHARE_DIR="/usr/share/${PKG_NAME}"; \
       STAGED="/tmp/staged-${PROJECT}"; \
