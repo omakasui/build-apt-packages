@@ -1,0 +1,27 @@
+name: xdg-terminal-exec
+type: build
+arch: all
+section: utils
+priority: optional
+homepage: https://github.com/Vladimir-csp/xdg-terminal-exec
+description: >
+  Shell-based implementation of the proposed XDG Default Terminal Execution
+  Specification. Launches the user's preferred terminal emulator, selected
+  via desktop entries and configuration files in the XDG hierarchy.
+  Used by GNOME/GLib as the first-choice mechanism for opening terminals.
+
+runtime_depends:
+  - bash
+
+conflicts:
+  - xdg-terminal-exec
+
+replaces:
+  - xdg-terminal-exec
+
+produces:
+  - xdg-terminal-exec
+
+distros:
+  - debian13
+  - ubuntu2404

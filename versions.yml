@@ -140,6 +140,10 @@ walker:
   depends_on:
     - gtk4-layer-shell
 
+xdg-terminal-exec:
+  version: "0.14.2"
+  depends_on: []
+
 yaru-theme:
   version: "25.04.1-0ubuntu1"
   depends_on: []
