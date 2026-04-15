@@ -1,8 +1,6 @@
 # Builds xdg-terminal-exec from the upstream release tarball.
 # Pure shell script + data files installed via Makefile.
 # Upstream: https://github.com/Vladimir-csp/xdg-terminal-exec
-#
-# arch: all — no compiled code, same package for amd64 and arm64.
 
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE:-debian:trixie-slim}
@@ -16,6 +14,7 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
     make \
+    scdoc \
   && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /build
