@@ -1,0 +1,30 @@
+name: swaybg
+type: build
+section: x11
+priority: optional
+homepage: https://github.com/swaywm/swaybg
+description: >
+  Wallpaper tool for Wayland compositors.
+  Compatible with any compositor implementing wlr-layer-shell and
+  wl_output version 4, including sway, niri, hyprland and others.
+
+conflicts:
+  - swaybg
+
+replaces:
+  - swaybg
+
+provides:
+  - swaybg
+
+runtime_depends:
+  - libwayland-client0
+  - libpng16-16t64 | libpng16-16
+  - libjpeg62-turbo | libjpeg-turbo8
+
+produces:
+  - swaybg
+
+distros:
+  - debian13
+  - ubuntu2404

@@ -123,6 +123,10 @@ starship:
   version: "1.24.2"
   depends_on: []
 
+swaybg:
+  version: "1.2.2-omakasui1"
+  depends_on: []
+
 tmux:
   version: "3.6a"
   depends_on: []
