@@ -22,7 +22,7 @@ cascadia-mono-nf:
   depends_on: []
 
 cliamp:
-  version: "1.35.0"
+  version: "1.35.1"
   depends_on: []
 
 dbeaver:
