@@ -19,6 +19,7 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     gcc \
     libwayland-dev \
     wayland-protocols \
+    libcairo2-dev \
     libpng-dev \
     libjpeg-dev \
   && rm -rf /var/lib/apt/lists/*
