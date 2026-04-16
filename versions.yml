@@ -140,6 +140,10 @@ walker:
   depends_on:
     - gtk4-layer-shell
 
+wiremix:
+  version: "0.10.0"
+  depends_on: []
+
 xdg-terminal-exec:
   version: "0.14.2"
   depends_on: []

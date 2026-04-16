@@ -1,0 +1,20 @@
+name: wiremix
+type: build
+section: sound
+priority: optional
+homepage: https://github.com/tsowell/wiremix
+description: >
+  Simple TUI audio mixer for PipeWire.
+  Adjust volumes, route audio between devices and applications,
+  and configure audio device settings like ports and profiles.
+  Interface inspired by ncpamixer and pavucontrol.
+
+runtime_depends:
+  - libpipewire-0.3-0
+
+produces:
+  - wiremix
+
+distros:
+  - debian13
+  - ubuntu2404
