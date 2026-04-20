@@ -1,0 +1,16 @@
+name: yazi
+type: build
+section: utils
+priority: optional
+homepage: https://github.com/sxyazi/yazi
+description: >
+  Blazing fast terminal file manager written in Rust.
+  Provides async I/O, built-in code highlighting, image previews,
+  and a plugin system. Includes the ya command-line helper.
+
+produces:
+  - yazi
+
+distros:
+  - debian13
+  - ubuntu2404

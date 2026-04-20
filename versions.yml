@@ -160,6 +160,10 @@ yaru-theme:
   version: "25.04.1-0ubuntu1"
   depends_on: []
 
+yazi:
+  version: "26.1.22"
+  depends_on: []
+
 zellij:
   version: "0.44.1"
   depends_on: []
