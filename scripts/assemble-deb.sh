@@ -1,16 +1,9 @@
 #!/usr/bin/env bash
-# assemble-deb.sh — Assemble a .deb from a staged directory tree and a package.yml.
-#
-# Usage:
-#   assemble-deb.sh --staged <dir> --pkg-yaml <file> --key <name> --version <ver> \
-#                   --arch <amd64|arm64> --distro <distro> --output-dir <dir> \
-#                   [--extra-depends <str>]
-#
-# Reads from package.yml: produces[], arch, section, priority, homepage,
-#                         description, runtime_depends
-# If arch: all is set in package.yml, overrides --arch for control file and filename.
+# assemble-deb.sh — Build a .deb from a staged tree and package.yml.
 
-set -euo pipefail
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=lib/common.sh
+source "${SCRIPT_DIR}/lib/common.sh"
 
 STAGED_DIR=""
 PKG_YAML=""
@@ -31,21 +24,19 @@ while [[ $# -gt 0 ]]; do
     --distro)       DISTRO="$2";      shift 2 ;;
     --output-dir)   OUTPUT_DIR="$2";  shift 2 ;;
     --extra-depends) EXTRA_DEPENDS="$2"; shift 2 ;;
-    *) echo "ERROR: unknown argument: $1" >&2; exit 1 ;;
+    *) die "unknown argument: $1" ;;
   esac
 done
 
-[[ -z "$STAGED_DIR"  ]] && { echo "ERROR: --staged is required";     exit 1; }
-[[ -z "$PKG_YAML"    ]] && { echo "ERROR: --pkg-yaml is required";   exit 1; }
-[[ -z "$PKG_KEY"     ]] && { echo "ERROR: --key is required";        exit 1; }
-[[ -z "$VERSION"     ]] && { echo "ERROR: --version is required";    exit 1; }
-[[ -z "$ARCH"        ]] && { echo "ERROR: --arch is required";       exit 1; }
-[[ -z "$DISTRO"      ]] && { echo "ERROR: --distro is required";     exit 1; }
-[[ -z "$OUTPUT_DIR"  ]] && { echo "ERROR: --output-dir is required"; exit 1; }
+[[ -z "$STAGED_DIR"  ]] && die "--staged is required"
+[[ -z "$PKG_YAML"    ]] && die "--pkg-yaml is required"
+[[ -z "$PKG_KEY"     ]] && die "--key is required"
+[[ -z "$VERSION"     ]] && die "--version is required"
+[[ -z "$ARCH"        ]] && die "--arch is required"
+[[ -z "$DISTRO"      ]] && die "--distro is required"
+[[ -z "$OUTPUT_DIR"  ]] && die "--output-dir is required"
 
-command -v yq      >/dev/null || { echo "ERROR: yq not found";      exit 1; }
-command -v fakeroot >/dev/null || { echo "ERROR: fakeroot not found"; exit 1; }
-command -v dpkg-deb >/dev/null || { echo "ERROR: dpkg-deb not found"; exit 1; }
+require_cmd yq fakeroot dpkg-deb
 
 # If package.yml declares arch: all, use it regardless of the build arch.
 PKG_ARCH="$(yq e '.arch // ""' "$PKG_YAML")"
@@ -54,8 +45,6 @@ PKG_ARCH="$(yq e '.arch // ""' "$PKG_YAML")"
 # Resolve all package names to produce (produces[] or fallback to pkg key).
 mapfile -t PRODUCE_NAMES < <(yq e '.produces // [] | .[]' "$PKG_YAML")
 [[ ${#PRODUCE_NAMES[@]} -eq 0 ]] && PRODUCE_NAMES=("${PKG_KEY}")
-
-DEB_NAME="${PRODUCE_NAMES[0]}"  # primary name (kept for backward-compat logging)
 
 SECTION="$(yq e '.section'   "$PKG_YAML")"
 PRIORITY="$(yq e '.priority' "$PKG_YAML")"
@@ -74,9 +63,12 @@ fi
 
 SIZE="$(du -sk "$STAGED_DIR" | cut -f1)"
 
+BUILD_TMP="$(mktemp -d)"
+trap 'rm -rf "$BUILD_TMP"' EXIT
+
 mkdir -p "$OUTPUT_DIR"
 for DEB_NAME in "${PRODUCE_NAMES[@]}"; do
-  DEB_ROOT="/tmp/deb/${DEB_NAME}_${VERSION}_${ARCH}"
+  DEB_ROOT="${BUILD_TMP}/${DEB_NAME}_${VERSION}_${ARCH}"
   mkdir -p "${DEB_ROOT}/DEBIAN"
   cp -r "${STAGED_DIR}/." "${DEB_ROOT}/"
 

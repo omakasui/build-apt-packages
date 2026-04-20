@@ -1,18 +1,6 @@
 #!/usr/bin/env bash
-# repackage-deb.sh — Extract, rename, and rebuild an upstream .deb under the omakasui namespace.
-#
-# Usage:
-#   repackage-deb.sh <input.deb> <upstream-package-name> <new-package-name> <output.deb>
-#
-# Example:
-#   repackage-deb.sh gum_1.0.0_amd64.deb gum omakasui-gum /output/omakasui-gum_1.0.0_amd64.deb
-#
-# What it does:
-#   1. Extracts the upstream .deb
-#   2. Renames the Package field in DEBIAN/control
-#   3. Cleans empty conffiles (dpkg-deb rejects non-absolute paths)
-#   4. Adds Conflicts / Replaces / Provides pointing to the upstream name
-#   5. Rebuilds the .deb to the output path
+# repackage-deb.sh — Repackage an upstream .deb under the omakasui namespace.
+# Usage: repackage-deb.sh <input.deb> <upstream-name> <new-name> <output.deb>
 
 set -euo pipefail
 
@@ -31,8 +19,7 @@ echo "Extracting ${INPUT_DEB}..."
 mkdir -p "$EXTRACTED"
 dpkg-deb -R "$INPUT_DEB" "$EXTRACTED"
 
-# Keep only the first stanza — some upstreams (e.g. fastfetch) ship multi-entry control files.
-awk 'BEGIN{p=1} /^$/{p=0} p{print}' "$CTRL" > /tmp/control.clean && mv /tmp/control.clean "$CTRL"
+awk 'BEGIN{p=1} /^$/{p=0} p{print}' "$CTRL" > "${WORK_DIR}/control.clean" && mv "${WORK_DIR}/control.clean" "$CTRL"
 
 echo "Renaming Package: ${UPSTREAM_NAME} -> ${NEW_NAME}..."
 sed -i "s/^Package: ${UPSTREAM_NAME}$/Package: ${NEW_NAME}/" "$CTRL"

@@ -44,85 +44,10 @@ jobs:
         id: resolve
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            PACKAGES="${{ inputs.package }}"
+            bash scripts/detect-changes.sh --mode dispatch --package "${{ inputs.package }}"
           else
-            git show HEAD~1:versions.yml > /tmp/old_versions.yml 2>/dev/null \
-              || echo "---" > /tmp/old_versions.yml
-            PACKAGES=""
-            while IFS= read -r pkg; do
-              OLD_VER=$(yq e ".${pkg}.version // \"\"" /tmp/old_versions.yml)
-              NEW_VER=$(yq e ".${pkg}.version // \"\"" versions.yml)
-              if [[ "$OLD_VER" != "$NEW_VER" ]]; then
-                PACKAGES="$PACKAGES $pkg"
-              fi
-            done < <(yq e 'keys | .[]' versions.yml)
-            PACKAGES=$(echo "$PACKAGES" | xargs)
+            bash scripts/detect-changes.sh --mode push
           fi
-
-          # Expand triggers: if a changed package declares triggers[], add them too.
-          TRIGGERED=""
-          for PKG in $PACKAGES; do
-            if yq e ".${PKG}.triggers" versions.yml | grep -qv 'null'; then
-              while IFS= read -r triggered; do
-                [[ -z "$triggered" || "$triggered" == "null" ]] && continue
-                # Only add if not already in the list.
-                echo "$PACKAGES $TRIGGERED" | grep -qw "$triggered" ||                   TRIGGERED="$TRIGGERED $triggered"
-              done < <(yq e ".${PKG}.triggers[]" versions.yml 2>/dev/null)
-            fi
-          done
-          PACKAGES=$(echo "$PACKAGES $TRIGGERED" | xargs)
-
-          if [[ -z "$PACKAGES" ]]; then
-            echo "No package changes detected."
-            echo 'builds=[]' >> "$GITHUB_OUTPUT"
-            echo 'build_matrix={"include":[]}' >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          BUILDS='[]'
-          FLAT_MATRIX='[]'
-
-          for PKG in $PACKAGES; do
-            if ! yq e ".${PKG}.version" versions.yml | grep -qv 'null'; then
-              echo "WARNING: ${PKG} not found in versions.yml, skipping."
-              continue
-            fi
-
-            VERSION=$(yq e ".${PKG}.version" versions.yml)
-            DEPENDS=$(yq e ".${PKG}.depends_on | join(\",\")" versions.yml)
-            PKG_DISTROS=$(yq e '.distros[]' packages/${PKG}/package.yml)
-
-            MATRIX_INCLUDES='[]'
-            while IFS= read -r distro; do
-              BASE=$(yq e ".distros.${distro}.base_image" build-matrix.yml)
-              SUITE=$(yq e ".distros.${distro}.suite"     build-matrix.yml)
-              while IFS= read -r arch; do
-                MATRIX_INCLUDES=$(echo "$MATRIX_INCLUDES" | \
-                  jq --arg d "$distro" --arg b "$BASE" --arg s "$SUITE" --arg a "$arch" \
-                     '. += [{"distro": $d, "base": $b, "suite": $s, "arch": $a}]')
-
-                FLAT_MATRIX=$(echo "$FLAT_MATRIX" | \
-                  jq --arg pkg "$PKG" --arg d "$distro" --arg b "$BASE" --arg s "$SUITE" --arg a "$arch" \
-                     '. += [{"package": $pkg, "distro": $d, "base": $b, "suite": $s, "arch": $a}]')
-              done < <(yq e ".distros.${distro}.architectures[]" build-matrix.yml)
-            done <<< "$PKG_DISTROS"
-
-            PRODUCES=$(yq e '.produces // [] | join(",")' packages/${PKG}/package.yml)
-
-            ENTRY=$(jq -n \
-              --arg pkg "$PKG" \
-              --arg ver "$VERSION" \
-              --arg deps "$DEPENDS" \
-              --arg prods "$PRODUCES" \
-              --argjson matrix "{\"include\": $MATRIX_INCLUDES}" \
-              '{package: $pkg, version: $ver, depends_on: $deps, produces: ($prods | if . == "" then [] else split(",") end), matrix: $matrix}')
-
-            BUILDS=$(echo "$BUILDS" | jq ". += [$ENTRY]")
-            echo "==> Queued: ${PKG} ${VERSION}"
-          done
-
-          echo "builds=$(echo "$BUILDS" | jq -c .)" >> "$GITHUB_OUTPUT"
-          echo "build_matrix=$(echo "{\"include\": $FLAT_MATRIX}" | jq -c .)" >> "$GITHUB_OUTPUT"
 
   build:
     name: Build ${{ matrix.package }} / ${{ matrix.distro }} / ${{ matrix.arch }}
@@ -163,21 +88,11 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.APT_PKG_DISPATCH_TOKEN }}
         run: |
-          PKG="${{ steps.meta.outputs.package }}"
-          DISTRO="${{ matrix.distro }}"
-          ARCH="${{ matrix.arch }}"
-          mkdir -p "packages/${PKG}/deps"
-
-          IFS=',' read -ra DEPS <<< "${{ steps.meta.outputs.depends_on }}"
-          for dep in "${DEPS[@]}"; do
-            DEP_VERSION=$(yq e ".${dep}.version" versions.yml)
-            DEP_NAME=$(bash scripts/resolve-dep-name.sh "$dep")
-            echo "Downloading dep: ${dep} (${DEP_NAME}) ${DEP_VERSION} for ${DISTRO}/${ARCH}..."
-            gh release download "${dep}-${DEP_VERSION}" \
-              --repo omakasui/build-apt-packages \
-              --pattern "${DEP_NAME}_${DEP_VERSION}_${DISTRO}_${ARCH}.deb" \
-              --output "packages/${PKG}/deps/${DEP_NAME}_${DEP_VERSION}_${ARCH}.deb"
-          done
+          bash scripts/download-deps.sh \
+            --package "${{ steps.meta.outputs.package }}" \
+            --distro "${{ matrix.distro }}" \
+            --arch "${{ matrix.arch }}" \
+            --depends-on "${{ steps.meta.outputs.depends_on }}"
 
       - name: Resolve arch:all skip
         id: archcheck
@@ -207,62 +122,14 @@ jobs:
       - name: Extract and assemble .deb
         if: steps.archcheck.outputs.skip != 'true'
         run: |
-          PKG="${{ steps.meta.outputs.package }}"
-          VERSION="${{ steps.meta.outputs.version }}"
-          ARCH="${{ matrix.arch }}"
-          DISTRO="${{ matrix.distro }}"
-
-          PKG_TYPE=$(yq e '.type // "build"' "packages/${PKG}/package.yml")
-          CID=$(docker create --platform "linux/${ARCH}" "omakasui-build-${PKG}:local")
-          mkdir -p output
-
-          if [[ "$PKG_TYPE" == "repackage" ]]; then
-            # Dockerfile writes final .debs to /output/; inject distro into filename.
-            mkdir -p /tmp/repack_out
-            docker cp "${CID}:/output/." /tmp/repack_out/
-            docker rm "$CID"
-            for f in /tmp/repack_out/*.deb; do
-              [[ -f "$f" ]] || continue
-              base="$(basename "$f")"
-              stripped="${base%_*.deb}"
-              # Preserve arch:all — Dockerfile outputs _all.deb for arch-independent packages.
-              if [[ "$base" == *_all.deb ]]; then
-                mv "$f" "output/${stripped}_${DISTRO}_all.deb"
-              else
-                mv "$f" "output/${stripped}_${DISTRO}_${ARCH}.deb"
-              fi
-            done
-            ls -lh output/
-
-          else
-            # Dockerfile stages content under /output/staged/; assemble .deb via helper.
-            mkdir -p /tmp/staged
-            docker cp "${CID}:/output/staged/." /tmp/staged/
-            docker rm "$CID"
-
-            # Build extra depends string from depends_on versions.
-            EXTRA_DEPS=""
-            if [[ -n "${{ steps.meta.outputs.depends_on }}" ]]; then
-              IFS=',' read -ra DEPS <<< "${{ steps.meta.outputs.depends_on }}"
-              for dep in "${DEPS[@]}"; do
-                DEP_VERSION=$(yq e ".${dep}.version" versions.yml)
-                DEP_NAME=$(bash scripts/resolve-dep-name.sh "$dep")
-                EXTRA_DEPS="${EXTRA_DEPS:+${EXTRA_DEPS}, }${DEP_NAME} (>= ${DEP_VERSION})"
-              done
-            fi
-
-            bash scripts/assemble-deb.sh \
-              --staged      /tmp/staged \
-              --pkg-yaml    "packages/${PKG}/package.yml" \
-              --key         "${PKG}" \
-              --version     "${VERSION}" \
-              --arch        "${ARCH}" \
-              --distro      "${DISTRO}" \
-              --output-dir  output \
-              --extra-depends "${EXTRA_DEPS}"
-
-            ls -lh output/
-          fi
+          bash scripts/extract-and-assemble.sh \
+            --image      "omakasui-build-${{ steps.meta.outputs.package }}:local" \
+            --package    "${{ steps.meta.outputs.package }}" \
+            --version    "${{ steps.meta.outputs.version }}" \
+            --arch       "${{ matrix.arch }}" \
+            --distro     "${{ matrix.distro }}" \
+            --output-dir output \
+            --depends-on "${{ steps.meta.outputs.depends_on }}"
 
       - name: Upload artifact
         if: steps.archcheck.outputs.skip != 'true'

@@ -7,10 +7,22 @@ Builds and publishes APT packages distributed via [omakasui/apt-packages](https:
 ```
 versions.yml          — source of truth for versions
 build-matrix.yml      — supported distros and architectures
+Makefile              — developer commands (make help)
 packages/<name>/
   Dockerfile          — build environment (receives ARG VERSION)
   package.yml         — package metadata
-scripts/              — shared helpers called by the workflow
+scripts/
+  lib/common.sh       — shared shell functions (logging, paths, require_cmd)
+  lib/metadata.sh     — YAML metadata helpers (versions, deps, matrix)
+  build-local.sh      — local package build driver
+  detect-changes.sh   — detect changed packages and emit CI matrices
+  download-deps.sh    — download dependency .debs from GitHub Releases
+  extract-and-assemble.sh — extract Docker output → .deb (used by CI and local)
+  assemble-deb.sh     — staged tree → .deb assembly
+  repackage-deb.sh    — upstream .deb repackaging
+  resolve-dep-name.sh — dependency name resolution
+  lint-package.sh     — package definition validator
+  install-yq.sh       — CI yq installer (idempotent)
 ```
 
 ## Naming convention
@@ -113,3 +125,31 @@ the build starts — no manual copying required.
 
 GitHub > Actions > **Build package** > Run workflow > enter the short package name
 (e.g. `gum`, not `omakasui-gum`). Version is always read from `versions.yml`.
+
+## Local build
+
+Build and test a package on your machine without pushing to CI.
+
+### Prerequisites
+
+`docker` (with buildx), `yq` ([mikefarah/yq](https://github.com/mikefarah/yq)), `fakeroot`, `dpkg-deb`.
+For arm64 cross-builds: `qemu-user-static`.
+For packages with `depends_on`: `gh` CLI (authenticated).
+
+### Makefile targets
+
+```bash
+make help                          # show all targets
+make build PKG=fzf                 # build (default: debian13/amd64)
+make build PKG=ghostty DISTRO=ubuntu2404
+make build PKG=starship ARCH=arm64
+make lint                          # validate all packages
+make lint PKG=fzf                  # validate one package
+make list                          # list packages with versions
+make info PKG=fzf                  # show package metadata
+make shell PKG=fzf                 # open shell in build container
+make clean                         # remove output/
+make clean-images                  # remove build Docker images
+```
+
+Output `.deb` files are written to `output/<package>/`.
