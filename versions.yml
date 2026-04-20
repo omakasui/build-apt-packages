@@ -33,6 +33,10 @@ elephant:
   version: "2.21.0"
   depends_on: []
 
+eza:
+  version: "0.23.4"
+  depends_on: []
+
 fastfetch:
   version: "2.61.0"
   depends_on: []

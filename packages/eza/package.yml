@@ -1,0 +1,25 @@
+name: eza
+type: build
+section: utils
+priority: optional
+homepage: https://github.com/eza-community/eza
+description: >
+  A modern replacement for ls.
+  Colours, Git integration, tree view, and more.
+  Statically linked binary, replaces the outdated distro package.
+
+conflicts:
+  - eza
+
+replaces:
+  - eza
+
+provides:
+  - eza
+
+produces:
+  - eza
+
+distros:
+  - debian13
+  - ubuntu2404
