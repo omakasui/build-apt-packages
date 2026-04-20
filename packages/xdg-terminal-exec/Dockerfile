@@ -1,5 +1,3 @@
-# Builds xdg-terminal-exec from the upstream release tarball.
-# Pure shell script + data files installed via Makefile.
 # Upstream: https://github.com/Vladimir-csp/xdg-terminal-exec
 
 ARG BASE_IMAGE

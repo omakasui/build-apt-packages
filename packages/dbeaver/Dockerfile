@@ -1,10 +1,4 @@
-# Repackages the upstream DBeaver Community Edition .deb.
-# Downloads the prebuilt .deb from GitHub Releases for the target arch.
 # Upstream: https://github.com/dbeaver/dbeaver
-#
-# Asset naming convention:
-#   amd64 → dbeaver-ce-<VERSION>-linux-x86_64.deb
-#   arm64 → dbeaver-ce-<VERSION>-linux-aarch64.deb
 
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE:-debian:trixie-slim}

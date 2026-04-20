@@ -1,4 +1,3 @@
-# Builds wiremix from the upstream release tarball using cargo.
 # Upstream: https://github.com/tsowell/wiremix
 # Dependencies: libpipewire-0.3-dev, pkg-config, clang, Rust (via rustup).
 

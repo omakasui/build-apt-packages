@@ -1,4 +1,3 @@
-# Builds swaybg from the upstream release tarball using meson/ninja.
 # Upstream: https://github.com/swaywm/swaybg
 # Fork: https://github.com/omakasui/swaybg
 
