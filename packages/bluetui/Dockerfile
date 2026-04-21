@@ -11,6 +11,7 @@ ARG VERSION
 ARG TARGETARCH
 
 RUN apt-get update -qq && apt-get install -y --no-install-recommends \
+    build-essential \
     curl \
     ca-certificates \
     pkg-config \
