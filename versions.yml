@@ -70,6 +70,10 @@ ia-writer-mono:
   version: "20260310"
   depends_on: []
 
+impala:
+  version: "0.7.4"
+  depends_on: []
+
 jetbrains-mono:
   version: "2.304"
   depends_on: []

@@ -1,0 +1,21 @@
+name: impala
+type: build
+section: utils
+priority: optional
+homepage: https://github.com/pythops/impala
+description: >
+  TUI for managing WiFi on Linux.
+  Discover, connect and manage WiFi networks directly from the terminal.
+  Requires iwd as the WiFi backend (not NetworkManager/wpa_supplicant).
+  Supports WPA2-Enterprise, hidden networks, QR code sharing and access
+  point mode.
+
+runtime_depends:
+  - iwd
+
+produces:
+  - impala
+
+distros:
+  - debian13
+  - ubuntu2404
