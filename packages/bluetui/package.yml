@@ -1,0 +1,20 @@
+name: bluetui
+type: build
+section: utils
+priority: optional
+homepage: https://github.com/pythops/bluetui
+description: >
+  TUI for managing bluetooth devices on Linux.
+  Discover, pair, connect and manage bluetooth devices
+  directly from the terminal using the BlueZ stack.
+
+runtime_depends:
+  - bluez
+  - dbus
+
+produces:
+  - bluetui
+
+distros:
+  - debian13
+  - ubuntu2404

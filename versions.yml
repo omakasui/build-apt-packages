@@ -13,6 +13,10 @@ asdcontrol:
   version: "0.5"
   depends_on: []
 
+bluetui:
+  version: "0.8.1"
+  depends_on: []
+
 btop:
   version: "1.4.6"
   depends_on: []
