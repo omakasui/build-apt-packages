@@ -6,6 +6,30 @@
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE:-debian:trixie-slim}
 
+ENV ELEPHANT_PROVIDERS="\
+  1password \
+  bitwarden \
+  bluetooth \
+  bookmarks \
+  calc \
+  clipboard \
+  desktopapplications \
+  files \
+  menus \
+  niriactions \
+  nirisessions \
+  playerctl \
+  providerlist \
+  runner \
+  snippets \
+  symbols \
+  todo \
+  unicode \
+  websearch \
+  windows \
+  wireplumber \
+"
+
 RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
@@ -46,7 +70,7 @@ RUN go build \
 # Build all provider plugins in the same build context.
 # Each provider is a Go plugin — they must share the same build environment
 # as the main binary to avoid internal/goarch build ID mismatches.
-RUN for provider in calc clipboard desktopapplications files menus providerlist runner symbols todo unicode websearch; do \
+RUN for provider in $ELEPHANT_PROVIDERS; do \
       PROVIDER_DIR="./internal/providers/${provider}"; \
       if [ -d "$PROVIDER_DIR" ]; then \
         CGO_ENABLED=1 go build \
@@ -85,7 +109,7 @@ RUN set -e; \
 
 RUN set -e; \
     ARCH="${TARGETARCH:-amd64}"; \
-    for provider in calc clipboard desktopapplications files menus providerlist runner symbols todo unicode websearch; do \
+    for provider in $ELEPHANT_PROVIDERS; do \
       SO="/tmp/${provider}.so"; \
       [ -f "$SO" ] || { echo "SKIP: ${provider}.so not built"; continue; }; \
       PKG="elephant-${provider}"; \
