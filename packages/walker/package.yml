@@ -8,6 +8,7 @@ description: >
   Fast, highly customizable, GTK4-based.
   Requires omakasui-elephant to be running as a user service.
   Start with "walker --gapplication-service" for faster subsequent launches.
+
 runtime_depends:
   - libgtk-4-1
   - libcairo2

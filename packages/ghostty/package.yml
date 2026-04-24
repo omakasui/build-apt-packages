@@ -6,6 +6,7 @@ homepage: https://github.com/ghostty-org/ghostty
 description: >
   Ghostty - fast, feature-rich, and cross-platform terminal emulator
   that uses platform-native UI and GPU acceleration.
+
 runtime_depends:
   - libgtk-4-1
   - libadwaita-1-0
