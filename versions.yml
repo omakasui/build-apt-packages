@@ -156,6 +156,11 @@ walker:
   depends_on:
     - gtk4-layer-shell
 
+waybar:
+  version: "0.15.0"
+  depends_on:
+    - gtk4-layer-shell
+
 wiremix:
   version: "0.10.0"
   depends_on: []

@@ -1,0 +1,36 @@
+name: waybar
+type: build
+section: x11
+priority: optional
+homepage: https://github.com/Alexays/Waybar
+description: >
+  Highly customizable Wayland bar for Sway, niri, Hyprland and other
+  wlroots-based compositors. Supports workspaces, battery, network,
+  audio, clock, MPD, custom modules and more.
+
+conflicts:
+  - waybar
+
+replaces:
+  - waybar
+
+provides:
+  - waybar
+
+runtime_depends:
+  - libgtk-3-0t64 | libgtk-3-0
+  - libgtkmm-3.0-1t64 | libgtkmm-3.0-1
+  - libjsoncpp25 | libjsoncpp24
+  - libpulse0
+  - libnl-3-200
+  - libnl-genl-3-200
+  - libevdev2
+  - libdbusmenu-gtk3-4
+  - libgtk-layer-shell0
+
+produces:
+  - waybar
+
+distros:
+  - debian13
+  - ubuntu2404
