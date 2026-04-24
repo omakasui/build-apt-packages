@@ -42,10 +42,10 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
 WORKDIR /build
 
 RUN curl -fsSL \
-    "https://github.com/Alexays/Waybar/releases/download/${VERSION}/waybar-${VERSION}.tar.gz" \
+    "https://github.com/Alexays/Waybar/archive/refs/tags/${VERSION}.tar.gz" \
     -o waybar.tar.gz && \
     tar -xzf waybar.tar.gz && \
-    mv waybar-${VERSION} waybar
+    mv Waybar-${VERSION} waybar
 
 WORKDIR /build/waybar
 
