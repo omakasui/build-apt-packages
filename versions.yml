@@ -99,7 +99,7 @@ nautilus-open-any-terminal:
   depends_on: []
 
 niri:
-  version: "25.11"
+  version: "26.04"
   depends_on: []
 
 nvim:
