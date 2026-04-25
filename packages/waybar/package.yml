@@ -20,7 +20,7 @@ provides:
 runtime_depends:
   - libgtk-3-0t64 | libgtk-3-0
   - libgtkmm-3.0-1t64 | libgtkmm-3.0-1
-  - libjsoncpp25 | libjsoncpp24
+  - libjsoncpp26 | libjsoncpp25 | libjsoncpp24
   - libpulse0
   - libnl-3-200
   - libnl-genl-3-200
