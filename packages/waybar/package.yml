@@ -28,6 +28,11 @@ runtime_depends:
   - libdbusmenu-gtk3-4
   - libgtk-layer-shell0
   - libfmt10 | libfmt9
+  - libmpdclient2t64 | libmpdclient2
+  - libspdlog1.15 | libspdlog1.12
+  - libxkbregistry0
+  - libinput10
+  - libwayland-client0
 
 produces:
   - waybar
