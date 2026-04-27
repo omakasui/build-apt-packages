@@ -27,7 +27,7 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
 WORKDIR /build
 
 RUN curl -fsSL \
-    "https://github.com/omakasui/swaybg/archive/refs/tags/v${VERSION}.tar.gz" \
+    "https://github.com/swaywm/swaybg/archive/refs/tags/v${VERSION}.tar.gz" \
     -o swaybg.tar.gz && \
     tar -xzf swaybg.tar.gz && \
     mv swaybg-${VERSION} swaybg
