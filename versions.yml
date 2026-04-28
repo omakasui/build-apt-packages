@@ -152,7 +152,7 @@ uwsm:
   depends_on: []
 
 walker:
-  version: "2.16.0-omakasui1"
+  version: "2.16.1-omakasui1"
   depends_on:
     - gtk4-layer-shell
 
