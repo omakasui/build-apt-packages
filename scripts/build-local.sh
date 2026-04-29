@@ -40,9 +40,13 @@ PKG_DIR="packages/${PKG}"
 BASE_IMAGE=$(matrix_base_image "$DISTRO")
 DEPENDS_ON=$(pkg_depends_on "$PKG")
 
-# Skip arm64 for arch:all packages
-if [[ "$(pkg_arch "$PKG")" == "all" && "$ARCH" == "arm64" ]]; then
+# Skip builds for packages that declare a specific arch
+PKG_ARCH="$(pkg_arch "$PKG")"
+if [[ "$PKG_ARCH" == "all" && "$ARCH" == "arm64" ]]; then
   info "Package declares arch: all — skipping arm64 build."
+  exit 0
+elif [[ -n "$PKG_ARCH" && "$PKG_ARCH" != "all" && "$PKG_ARCH" != "$ARCH" ]]; then
+  info "Package declares arch: ${PKG_ARCH} — skipping ${ARCH} build."
   exit 0
 fi
 

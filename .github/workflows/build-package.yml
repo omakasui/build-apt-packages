@@ -101,6 +101,8 @@ jobs:
           PKG_ARCH="$(yq e '.arch // ""' "packages/${PKG}/package.yml")"
           if [[ "$PKG_ARCH" == "all" && "${{ matrix.arch }}" == "arm64" ]]; then
             echo "skip=true" >> "$GITHUB_OUTPUT"
+          elif [[ -n "$PKG_ARCH" && "$PKG_ARCH" != "all" && "$PKG_ARCH" != "${{ matrix.arch }}" ]]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
           else
             echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
