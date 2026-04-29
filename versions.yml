@@ -13,6 +13,10 @@ asdcontrol:
   version: "0.5"
   depends_on: []
 
+bitwarden:
+  version: "2026.3.1"
+  depends_on: []
+
 bluetui:
   version: "0.8.1"
   depends_on: []
