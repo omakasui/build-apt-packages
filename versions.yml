@@ -53,6 +53,7 @@ glab:
   depends_on: []
 gtk4-layer-shell:
   version: "1.1.0"
+  auto_update: false
   depends_on: []
 gum:
   version: "0.17.0"
