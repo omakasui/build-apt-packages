@@ -54,6 +54,10 @@ elephant:
   upstream: "github:abenz1267/elephant"
   tag_prefix: "v"
 
+elephant-all:
+  upstream: "github:abenz1267/elephant"
+  tag_prefix: "v"
+
 eza:
   upstream: "github:eza-community/eza"
   tag_prefix: "v"

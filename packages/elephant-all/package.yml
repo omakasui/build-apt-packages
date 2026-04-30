@@ -1,0 +1,39 @@
+name: elephant-all
+type: build
+section: utils
+priority: optional
+homepage: https://github.com/abenz1267/elephant
+description: >
+  Meta-package for all Elephant providers.
+  Installs the main elephant package and all providers.
+
+produces:
+  - elephant-all
+
+runtime_depends:
+  - elephant
+  - elephant-1password
+  - elephant-bitwarden
+  - elephant-bluetooth
+  - elephant-bookmarks
+  - elephant-calc
+  - elephant-clipboard
+  - elephant-desktopapplications
+  - elephant-files
+  - elephant-menus
+  - elephant-niriactions
+  - elephant-nirisessions
+  - elephant-playerctl
+  - elephant-providerlist
+  - elephant-runner
+  - elephant-snippets
+  - elephant-symbols
+  - elephant-todo
+  - elephant-unicode
+  - elephant-websearch
+  - elephant-windows
+  - elephant-wireplumber
+
+distros:
+  - debian13
+  - ubuntu2404

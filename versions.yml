@@ -35,6 +35,11 @@ dbeaver:
 elephant:
   version: "2.21.0"
   depends_on: []
+elephant-all:
+  version: "2.21.0"
+  auto_update: false
+  depends_on:
+    - elephant
 eza:
   version: "0.23.4"
   depends_on: []
