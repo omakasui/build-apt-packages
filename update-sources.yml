@@ -4,6 +4,8 @@
 # tag_prefix:       Strip this from the tag to get the bare version ("" if the tag IS the version).
 # filter_releases:  (optional) Pick first release whose tag starts with tag_prefix.
 #                   Use when multiple products share the same repo (e.g. bitwarden/clients).
+# use_tags:         (optional) Use git tags instead of GitHub releases.
+#                   Use for repos that publish tags only, without GitHub releases.
 # prerelease:       (optional) Include GitHub pre-release entries when looking for the latest.
 
 aether:
@@ -67,6 +69,7 @@ fzf:
 ghostty:
   upstream: "github:ghostty-org/ghostty"
   tag_prefix: "v"
+  use_tags: true
 
 glab:
   upstream: "gitlab:gitlab-org/cli"
@@ -143,6 +146,7 @@ ufw-docker:
 uwsm:
   upstream: "github:Vladimir-csp/uwsm"
   tag_prefix: "v"
+  use_tags: true
 
 walker:
   upstream: "github:abenz1267/walker"
@@ -155,10 +159,12 @@ waybar:
 wiremix:
   upstream: "github:tsowell/wiremix"
   tag_prefix: "v"
+  use_tags: true
 
 xdg-terminal-exec:
   upstream: "github:Vladimir-csp/xdg-terminal-exec"
   tag_prefix: "v"
+  use_tags: true
 
 yaru-theme:
   upstream: ""

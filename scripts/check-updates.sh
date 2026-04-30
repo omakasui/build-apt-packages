@@ -13,11 +13,11 @@ skip() { echo "[check-updates] SKIP $1 — $2"; }
 info() { echo "[check-updates] INFO $1 — $2"; }
 
 github_latest_release() {
-  gh api "repos/$1/releases/latest" --jq '.tag_name' 2>/dev/null || true
+  gh api "repos/$1/releases/latest" --jq '.tag_name // empty' 2>/dev/null || true
 }
 
 github_latest_release_prerelease() {
-  gh api "repos/$1/releases?per_page=1" --jq '.[0].tag_name' 2>/dev/null || true
+  gh api "repos/$1/releases?per_page=1" --jq '.[0].tag_name // empty' 2>/dev/null || true
 }
 
 # Used when multiple products share the same repo (e.g. bitwarden/clients).
@@ -25,8 +25,13 @@ github_latest_release_filtered() {
   local owner_repo="$1" prefix="$2"
   gh api "repos/${owner_repo}/releases?per_page=50" \
     --jq --arg p "$prefix" \
-    '[.[] | select(.draft == false and .prerelease == false and (.tag_name | startswith($p))) | .tag_name] | first' \
+    '[.[] | select(.draft == false and .prerelease == false and (.tag_name | startswith($p))) | .tag_name] | first // empty' \
     2>/dev/null || true
+}
+
+# For repos that publish git tags instead of GitHub releases.
+github_latest_tag() {
+  gh api "repos/$1/tags?per_page=1" --jq '.[0].name // empty' 2>/dev/null || true
 }
 
 gitlab_latest_release() {
@@ -115,6 +120,7 @@ for pkg in $PACKAGES; do
   tag_prefix=$(yq e ".${pkg}.tag_prefix" "$SOURCES_FILE")
   filter_releases=$(yq e ".${pkg}.filter_releases // false" "$SOURCES_FILE")
   use_prerelease=$(yq e ".${pkg}.prerelease // false" "$SOURCES_FILE")
+  use_tags=$(yq e ".${pkg}.use_tags // false" "$SOURCES_FILE")
 
   # yq wraps plain strings in quotes; strip them
   upstream="${upstream//\"/}"
@@ -134,6 +140,8 @@ for pkg in $PACKAGES; do
     owner_repo="${upstream#github:}"
     if [[ "$filter_releases" == "true" ]]; then
       raw_tag=$(github_latest_release_filtered "$owner_repo" "$tag_prefix")
+    elif [[ "$use_tags" == "true" ]]; then
+      raw_tag=$(github_latest_tag "$owner_repo")
     elif [[ "$use_prerelease" == "true" ]]; then
       raw_tag=$(github_latest_release_prerelease "$owner_repo")
     else
