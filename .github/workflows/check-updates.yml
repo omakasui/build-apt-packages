@@ -47,13 +47,7 @@ jobs:
       - name: Run update check
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Limit to a single package when triggered via workflow_dispatch
           CHECK_PACKAGE: ${{ inputs.package }}
         run: |
-          if [[ -n "$CHECK_PACKAGE" ]]; then
-            # Single-package mode: temporarily filter versions.yml output
-            # The script iterates over yq keys, so we pass the name via env
-            # and let the script skip everything else.
-            export CHECK_SINGLE_PACKAGE="$CHECK_PACKAGE"
-          fi
+          [[ -n "$CHECK_PACKAGE" ]] && export CHECK_SINGLE_PACKAGE="$CHECK_PACKAGE"
           bash scripts/check-updates.sh

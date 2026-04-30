@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 # check-updates.sh — Check upstream releases for all packages and open one PR per update.
-# Requires: yq (v4), gh (GitHub CLI), jq, curl, git
+# Requires: yq v4 (mikefarah), gh (GitHub CLI), jq, curl, git
 
 set -euo pipefail
+
+# Ensure mikefarah yq v4 takes precedence over Python yq or other variants.
+export PATH="/usr/local/bin:$PATH"
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 VERSIONS_FILE="$REPO_ROOT/versions.yml"
@@ -13,25 +16,25 @@ skip() { echo "[check-updates] SKIP $1 — $2"; }
 info() { echo "[check-updates] INFO $1 — $2"; }
 
 github_latest_release() {
-  gh api "repos/$1/releases/latest" --jq '.tag_name // empty' 2>/dev/null || true
+  gh api "repos/$1/releases/latest" 2>/dev/null | jq -r '.tag_name // empty' 2>/dev/null || true
 }
 
 github_latest_release_prerelease() {
-  gh api "repos/$1/releases?per_page=1" --jq '.[0].tag_name // empty' 2>/dev/null || true
+  gh api "repos/$1/releases?per_page=1" 2>/dev/null | jq -r '.[0].tag_name // empty' 2>/dev/null || true
 }
 
 # Used when multiple products share the same repo (e.g. bitwarden/clients).
 github_latest_release_filtered() {
   local owner_repo="$1" prefix="$2"
-  gh api "repos/${owner_repo}/releases?per_page=50" \
-    --jq --arg p "$prefix" \
-    '[.[] | select(.draft == false and .prerelease == false and (.tag_name | startswith($p))) | .tag_name] | first // empty' \
+  gh api "repos/${owner_repo}/releases?per_page=50" 2>/dev/null \
+    | jq -r --arg p "$prefix" \
+      '[.[] | select(.draft == false and .prerelease == false and (.tag_name | startswith($p))) | .tag_name] | first // empty' \
     2>/dev/null || true
 }
 
 # For repos that publish git tags instead of GitHub releases.
 github_latest_tag() {
-  gh api "repos/$1/tags?per_page=1" --jq '.[0].name // empty' 2>/dev/null || true
+  gh api "repos/$1/tags?per_page=1" 2>/dev/null | jq -r '.[0].name // empty' 2>/dev/null || true
 }
 
 gitlab_latest_release() {
@@ -110,7 +113,8 @@ if [[ -n "${CHECK_SINGLE_PACKAGE:-}" ]]; then
 fi
 
 for pkg in $PACKAGES; do
-  auto_update=$(yq e ".${pkg}.auto_update // true" "$VERSIONS_FILE")
+  # Read raw value: avoid `// true` since jq `//` treats `false` as falsy.
+  auto_update=$(yq e ".${pkg}.auto_update" "$VERSIONS_FILE")
   if [[ "$auto_update" == "false" ]]; then
     skip "$pkg" "auto_update is false"
     continue
