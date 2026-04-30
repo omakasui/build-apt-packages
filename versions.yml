@@ -1,5 +1,6 @@
 # Source of truth for package versions. Pushing a change here triggers a build.
 # depends_on: list of sibling packages required at build time (empty [] if none).
+# auto_update: set to false to exclude a package from the daily version check.
 
 aether:
   version: "4.15.2"
@@ -76,6 +77,7 @@ gum:
 
 ia-writer-mono:
   version: "20260310"
+  auto_update: false
   depends_on: []
 
 impala:
@@ -124,6 +126,7 @@ starship:
 
 swaybg:
   version: "1.2.2-omakasui1"
+  auto_update: false
   depends_on: []
 
 tmux:
@@ -132,6 +135,7 @@ tmux:
 
 ufw-docker:
   version: "251123"
+  auto_update: false
   depends_on: []
 
 uwsm:
@@ -140,6 +144,7 @@ uwsm:
 
 walker:
   version: "2.16.1-omakasui1"
+  auto_update: false
   depends_on:
     - gtk4-layer-shell
 
@@ -158,6 +163,7 @@ xdg-terminal-exec:
 
 yaru-theme:
   version: "25.04.1-0ubuntu1"
+  auto_update: false
   depends_on: []
 
 yazi:

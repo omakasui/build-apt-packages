@@ -1,0 +1,181 @@
+# Upstream version sources for the daily auto-update check.
+#
+# upstream:         "github:owner/repo" or "gitlab:owner/repo"
+# tag_prefix:       Strip this from the tag to get the bare version ("" if the tag IS the version).
+# filter_releases:  (optional) Pick first release whose tag starts with tag_prefix.
+#                   Use when multiple products share the same repo (e.g. bitwarden/clients).
+# prerelease:       (optional) Include GitHub pre-release entries when looking for the latest.
+
+aether:
+  upstream: "github:bjarneo/aether"
+  tag_prefix: "v"
+
+alacritty:
+  upstream: "github:alacritty/alacritty"
+  tag_prefix: "v"
+
+asdcontrol:
+  upstream: "github:omakasui/asdcontrol"
+  tag_prefix: "v"
+
+bitwarden:
+  upstream: "github:bitwarden/clients"
+  tag_prefix: "desktop-v"
+  filter_releases: true
+
+bitwarden-cli:
+  upstream: "github:bitwarden/clients"
+  tag_prefix: "cli-v"
+  filter_releases: true
+
+bluetui:
+  upstream: "github:pythops/bluetui"
+  tag_prefix: "v"
+
+btop:
+  upstream: "github:aristocratos/btop"
+  tag_prefix: "v"
+
+cascadia-mono-nf:
+  upstream: "github:ryanoasis/nerd-fonts"
+  tag_prefix: "v"
+
+cliamp:
+  upstream: "github:bjarneo/cliamp"
+  tag_prefix: "v"
+
+dbeaver:
+  upstream: "github:dbeaver/dbeaver"
+  tag_prefix: ""
+
+elephant:
+  upstream: "github:abenz1267/elephant"
+  tag_prefix: "v"
+
+eza:
+  upstream: "github:eza-community/eza"
+  tag_prefix: "v"
+
+fastfetch:
+  upstream: "github:fastfetch-cli/fastfetch"
+  tag_prefix: ""
+
+fzf:
+  upstream: "github:junegunn/fzf"
+  tag_prefix: "v"
+
+ghostty:
+  upstream: "github:ghostty-org/ghostty"
+  tag_prefix: "v"
+
+glab:
+  upstream: "gitlab:gitlab-org/cli"
+  tag_prefix: "v"
+
+gtk4-layer-shell:
+  upstream: "github:wmww/gtk4-layer-shell"
+  tag_prefix: "v"
+
+gum:
+  upstream: "github:charmbracelet/gum"
+  tag_prefix: "v"
+
+ia-writer-mono:
+  upstream: "github:iaolo/iA-Fonts"
+  tag_prefix: ""
+
+impala:
+  upstream: "github:pythops/impala"
+  tag_prefix: "v"
+
+jetbrains-mono:
+  upstream: "github:JetBrains/JetBrainsMono"
+  tag_prefix: "v"
+
+kitty:
+  upstream: "github:kovidgoyal/kitty"
+  tag_prefix: "v"
+
+lazydocker:
+  upstream: "github:jesseduffield/lazydocker"
+  tag_prefix: "v"
+
+lazygit:
+  upstream: "github:jesseduffield/lazygit"
+  tag_prefix: "v"
+
+localsend:
+  upstream: "github:localsend/localsend"
+  tag_prefix: "v"
+
+nautilus-open-any-terminal:
+  upstream: "github:Stunkymonkey/nautilus-open-any-terminal"
+  tag_prefix: "v"
+
+niri:
+  upstream: "github:niri-wm/niri"
+  tag_prefix: "v"
+
+nvim:
+  upstream: "github:neovim/neovim"
+  tag_prefix: "v"
+
+pinta:
+  upstream: "github:PintaProject/Pinta"
+  tag_prefix: ""
+
+starship:
+  upstream: "github:starship/starship"
+  tag_prefix: "v"
+
+swaybg:
+  upstream: "github:swaywm/swaybg"
+  tag_prefix: "v"
+
+tmux:
+  upstream: "github:tmux/tmux"
+  tag_prefix: ""
+
+ufw-docker:
+  upstream: "github:chaifeng/ufw-docker"
+  tag_prefix: ""
+
+uwsm:
+  upstream: "github:Vladimir-csp/uwsm"
+  tag_prefix: "v"
+
+walker:
+  upstream: "github:abenz1267/walker"
+  tag_prefix: "v"
+
+waybar:
+  upstream: "github:Alexays/Waybar"
+  tag_prefix: "v"
+
+wiremix:
+  upstream: "github:tsowell/wiremix"
+  tag_prefix: "v"
+
+xdg-terminal-exec:
+  upstream: "github:Vladimir-csp/xdg-terminal-exec"
+  tag_prefix: "v"
+
+yaru-theme:
+  upstream: ""
+  tag_prefix: ""
+
+yazi:
+  upstream: "github:sxyazi/yazi"
+  tag_prefix: "v"
+
+zellij:
+  upstream: "github:zellij-org/zellij"
+  tag_prefix: "v"
+
+zen-browser:
+  upstream: "github:zen-browser/desktop"
+  tag_prefix: ""
+
+zoxide:
+  upstream: "github:ajeetdsouza/zoxide"
+  tag_prefix: "v"

@@ -1,0 +1,59 @@
+# Runs every morning at 06:00 UTC (or on demand) and opens one PR per package
+# that has a new upstream release.  Only versions.yml is changed per PR.
+name: Check for upstream updates
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+
+  workflow_dispatch:
+    inputs:
+      package:
+        description: 'Check a single package only (leave empty to check all)'
+        required: false
+        default: ''
+        type: string
+
+# Prevent concurrent runs: a scheduled and a manual run could otherwise both
+# create PRs for the same packages or interfere with each other's git state.
+concurrency:
+  group: check-updates
+  cancel-in-progress: false
+
+jobs:
+  check:
+    name: Check upstream versions
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          # Full history so we can push branches and create PRs
+          fetch-depth: 0
+
+      - name: Install yq
+        run: bash scripts/install-yq.sh
+
+      - name: Configure git identity
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Run update check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Limit to a single package when triggered via workflow_dispatch
+          CHECK_PACKAGE: ${{ inputs.package }}
+        run: |
+          if [[ -n "$CHECK_PACKAGE" ]]; then
+            # Single-package mode: temporarily filter versions.yml output
+            # The script iterates over yq keys, so we pass the name via env
+            # and let the script skip everything else.
+            export CHECK_SINGLE_PACKAGE="$CHECK_PACKAGE"
+          fi
+          bash scripts/check-updates.sh
