@@ -9,7 +9,7 @@ alacritty:
   version: "0.17.0"
   depends_on: []
 asdcontrol:
-  version: "0.5"
+  version: "0.6.0"
   depends_on: []
 bitwarden:
   version: "2026.3.1"
