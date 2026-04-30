@@ -3,181 +3,139 @@
 # auto_update: set to false to exclude a package from the daily version check.
 
 aether:
-  version: "4.15.2"
+  version: "4.15.3"
   depends_on: []
-
 alacritty:
   version: "0.17.0"
   depends_on: []
-
 asdcontrol:
   version: "0.5"
   depends_on: []
-
 bitwarden:
   version: "2026.3.1"
   depends_on: []
-
 bitwarden-cli:
   version: "2026.4.1"
   depends_on: []
-
 bluetui:
   version: "0.8.1"
   depends_on: []
-
 btop:
   version: "1.4.6"
   depends_on: []
-
 cascadia-mono-nf:
   version: "3.4.0"
   depends_on: []
-
 cliamp:
   version: "1.39.1"
   depends_on: []
-
 dbeaver:
   version: "26.0.3"
   depends_on: []
-
 elephant:
   version: "2.21.0"
   depends_on: []
-
 eza:
   version: "0.23.4"
   depends_on: []
-
 fastfetch:
   version: "2.62.1"
   depends_on: []
-
 fzf:
   version: "0.72.0"
   depends_on: []
-
 ghostty:
   version: "1.3.1"
   depends_on:
     - gtk4-layer-shell
-
 glab:
   version: "1.93.0"
   depends_on: []
-
 gtk4-layer-shell:
   version: "1.1.0"
   depends_on: []
-
 gum:
   version: "0.17.0"
   depends_on: []
-
 ia-writer-mono:
   version: "20260310"
   auto_update: false
   depends_on: []
-
 impala:
   version: "0.7.4"
   depends_on: []
-
 jetbrains-mono:
   version: "2.304"
   depends_on: []
-
 kitty:
   version: "0.46.2"
   depends_on: []
-
 lazygit:
   version: "0.61.0"
   depends_on: []
-
 lazydocker:
   version: "0.25.2"
   depends_on: []
-
 localsend:
   version: "1.17.0"
   depends_on: []
-
 nautilus-open-any-terminal:
   version: "0.8.1"
   depends_on: []
-
 niri:
   version: "26.04"
   depends_on: []
-
 nvim:
   version: "0.12.2"
   depends_on: []
-
 pinta:
   version: "3.0.5"
   depends_on: []
-
 starship:
   version: "1.25.0"
   depends_on: []
-
 swaybg:
   version: "1.2.2-omakasui1"
   auto_update: false
   depends_on: []
-
 tmux:
   version: "3.6a"
   depends_on: []
-
 ufw-docker:
   version: "251123"
   auto_update: false
   depends_on: []
-
 uwsm:
   version: "0.26.4"
   depends_on: []
-
 walker:
   version: "2.16.1-omakasui1"
   auto_update: false
   depends_on:
     - gtk4-layer-shell
-
 waybar:
   version: "0.15.0"
   depends_on:
     - gtk4-layer-shell
-
 wiremix:
   version: "0.10.0"
   depends_on: []
-
 xdg-terminal-exec:
   version: "0.14.2"
   depends_on: []
-
 yaru-theme:
   version: "25.04.1-0ubuntu1"
   auto_update: false
   depends_on: []
-
 yazi:
   version: "26.1.22"
   depends_on: []
-
 zellij:
   version: "0.44.1"
   depends_on: []
-
 zen-browser:
   version: "1.19.10b"
   depends_on: []
-
 zoxide:
   version: "0.9.9"
   depends_on: []
