@@ -58,6 +58,15 @@ create_pr() {
     return 0
   fi
 
+  # Close any stale auto-update PRs for this package targeting a different version.
+  gh pr list --label "auto-update" --json number,headRefName 2>/dev/null \
+    | jq -r --arg pkg "$pkg" --arg b "$branch" \
+      '.[] | select(.headRefName | startswith("auto-update/\($pkg)/")) | select(.headRefName != $b) | .number | tostring' \
+    | while read -r stale_num; do
+      gh pr close "$stale_num" --comment "Superseded by a newer version bump to \`${new_ver}\`." 2>/dev/null || true
+      log "$pkg: closed stale PR #${stale_num} (superseded by ${new_ver})"
+    done
+
   log "$pkg: ${current} → ${new_ver} — creating PR"
 
   trap 'git checkout main 2>/dev/null || true' RETURN
