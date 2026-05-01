@@ -3,7 +3,7 @@
 # auto_update: set to false to exclude a package from the daily version check.
 
 aether:
-  version: "4.15.3"
+  version: "4.15.4"
   depends_on: []
 alacritty:
   version: "0.17.0"
