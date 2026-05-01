@@ -99,7 +99,7 @@ pinta:
   auto_update: false
   depends_on: []
 starship:
-  version: "1.25.0"
+  version: "1.25.1"
   depends_on: []
 swaybg:
   version: "1.2.2-omakasui1"
