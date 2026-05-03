@@ -36,14 +36,8 @@ RUN set -e; \
 
 WORKDIR /build
 
-# RUN curl -fsSL \
-#     "https://github.com/abenz1267/walker/archive/refs/tags/v${VERSION}.tar.gz" \
-#     -o src.tar.gz && \
-#     tar -xzf src.tar.gz && \
-#     mv "walker-${VERSION}" walker
-
 RUN curl -fsSL \
-    "https://github.com/omakasui/walker/archive/refs/tags/v${VERSION}.tar.gz" \
+    "https://github.com/abenz1267/walker/archive/refs/tags/v${VERSION}.tar.gz" \
     -o src.tar.gz && \
     tar -xzf src.tar.gz && \
     mv "walker-${VERSION}" walker
