@@ -30,7 +30,7 @@ cliamp:
   version: "1.40.0"
   depends_on: []
 dbeaver:
-  version: "26.0.3"
+  version: "26.0.4"
   depends_on: []
 elephant:
   version: "2.21.0"
