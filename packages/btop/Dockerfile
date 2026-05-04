@@ -23,9 +23,9 @@ RUN set -e; \
       *)      echo "ERROR: unsupported arch ${TARGETARCH}"; exit 1 ;; \
     esac; \
     curl -fsSL \
-      "https://github.com/aristocratos/btop/releases/download/v${VERSION}/btop-${UPSTREAM_ARCH}-unknown-linux-musl.tbz" \
-      -o btop.tbz; \
-    tar -xjf btop.tbz; \
+      "https://github.com/aristocratos/btop/releases/download/v${VERSION}/btop-${UPSTREAM_ARCH}-unknown-linux-musl.tar.gz" \
+      -o btop.tar.gz; \
+    tar -xzf btop.tar.gz; \
     \
     # Binary.
     install -Dm755 btop/bin/btop /output/staged/usr/bin/btop; \
