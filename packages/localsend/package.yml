@@ -6,7 +6,7 @@ homepage: https://localsend.org
 description: >
   LocalSend - share files and messages with nearby devices over LAN.
   No internet connection required. Cross-platform: Linux, macOS, Windows,
-  Android, iOS. Repackaged from the official upstream .deb release.
+  Android, iOS.
 
 produces:
   - localsend

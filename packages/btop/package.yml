@@ -6,7 +6,7 @@ homepage: https://github.com/aristocratos/btop
 description: >
   Resource monitor showing usage and stats for processor, memory,
   disks, network and processes. Statically linked musl binary with
-  GPU support. Replaces the outdated distro package.
+  GPU support.
 
 conflicts:
   - btop

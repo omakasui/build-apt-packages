@@ -4,7 +4,7 @@ section: admin
 priority: optional
 homepage: https://github.com/tmux/tmux
 description: >
-  Terminal multiplexer. Built from source, newer than the distro package.
+  Terminal multiplexer.
   Allows creating multiple terminal sessions within a single window,
   with persistent sessions that survive disconnections.
 

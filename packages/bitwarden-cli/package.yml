@@ -5,8 +5,6 @@ priority: optional
 homepage: https://bitwarden.com/help/cli/
 description: >
   Bitwarden CLI — command-line interface for Bitwarden password manager.
-  Installs the official upstream pre-built binary for amd64 and arm64.
-  Self-contained Node.js executable, no runtime dependencies required.
 
 distros:
   - debian13

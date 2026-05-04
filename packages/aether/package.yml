@@ -7,7 +7,6 @@ description: >
   Aether - wallpaper-based color extraction and desktop theming.
   Go/Wails GTK4 app. Supports animated wallpapers (GIF, MP4, WebM),
   wallhaven.cc browsing, color presets, Base16 import, and per-app templates.
-  Repackaged from official GitHub release binaries.
 
 distros:
   - debian13

@@ -3,8 +3,7 @@ type: repackage
 arch: all
 section: gnome
 description: >
-  Yaru GNOME theme (omakasui repackage).
-  Repackaged from Ubuntu upstream with session-migration dep stripped for Debian.
+  Yaru GNOME theme.
 
 produces:
   - yaru-theme-gtk

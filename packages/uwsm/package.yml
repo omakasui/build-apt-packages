@@ -4,7 +4,6 @@ arch: all
 section: x11
 description: >
   Universal Wayland Session Manager.
-  Builds from upstream source with the included debian/ packaging.
   Provides a lightweight, modular session management framework
   for Wayland environments based on systemd user units.
 

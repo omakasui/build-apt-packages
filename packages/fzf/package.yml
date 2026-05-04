@@ -7,7 +7,7 @@ homepage: https://junegunn.github.io/fzf/
 description: >
   A general-purpose command-line fuzzy finder.
   Interactive filter for files, command history, processes, git commits
-  and more. Statically linked binary, replaces the outdated distro package.
+  and more.
 
 conflicts:
   - fzf

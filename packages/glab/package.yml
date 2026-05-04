@@ -7,7 +7,6 @@ description: >
   The official GitLab CLI tool.
   Brings GitLab to your terminal: manage issues, merge requests,
   pipelines, releases and more without leaving the command line.
-  Repackaged from the upstream official .deb release.
 
 conflicts:
   - glab

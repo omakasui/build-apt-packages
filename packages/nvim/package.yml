@@ -5,7 +5,6 @@ priority: optional
 homepage: https://github.com/neovim/neovim
 description: >
   Neovim - hyperextensible Vim-based text editor.
-  Packaged from official GitHub release binaries for amd64 and arm64.
   Conflicts with and replaces the distro neovim package.
 
 conflicts:

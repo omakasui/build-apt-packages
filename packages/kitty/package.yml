@@ -6,8 +6,6 @@ homepage: https://sw.kovidgoyal.net/kitty/
 description: >
   GPU-accelerated terminal emulator with advanced features.
   Includes kitten extensions, graphics protocol, and window splits.
-  Installs the upstream precompiled bundle to /opt/kitty.
-  Binaries are symlinked from /usr/bin/kitty and /usr/bin/kitten.
 
 conflicts:
   - kitty

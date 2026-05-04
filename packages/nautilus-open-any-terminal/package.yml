@@ -5,7 +5,6 @@ section: gnome
 homepage: https://github.com/Stunkymonkey/nautilus-open-any-terminal
 description: >
   Nautilus extension to open any terminal emulator from the context menu.
-  Repackaged from the official upstream GitHub release .deb.
   Supports alacritty, kitty, foot, tilix, and many other terminals.
 
 distros:

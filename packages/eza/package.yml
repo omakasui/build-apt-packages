@@ -6,7 +6,6 @@ homepage: https://github.com/eza-community/eza
 description: >
   A modern replacement for ls.
   Colours, Git integration, tree view, and more.
-  Statically linked binary, replaces the outdated distro package.
 
 conflicts:
   - eza

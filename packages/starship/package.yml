@@ -6,8 +6,6 @@ priority: optional
 homepage: https://starship.rs
 description: >
   The minimal, blazing-fast, and infinitely customizable prompt for any shell.
-  Statically linked binary, works on any Linux distribution.
-  Installs to /usr/bin/starship.
 
 produces:
   - starship

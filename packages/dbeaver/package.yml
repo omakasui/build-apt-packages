@@ -6,7 +6,7 @@ homepage: https://dbeaver.io
 description: >
   DBeaver Community Edition — free universal database management tool.
   Supports MySQL, PostgreSQL, SQLite, Oracle, DB2, SQL Server and more.
-  Includes bundled OpenJDK 21. Repackaged from the official upstream .deb.
+  Includes bundled OpenJDK 21.
 
 conflicts:
   - dbeaver-ce

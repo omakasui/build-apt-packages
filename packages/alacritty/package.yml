@@ -4,8 +4,8 @@ section: x11
 priority: optional
 homepage: https://github.com/alacritty/alacritty
 description: >
-  GPU-accelerated terminal emulator, built from source.
-  Upstream releases do not provide Linux binaries.
+  A fast, cross-platform, OpenGL terminal emulator.
+
 runtime_depends:
   - libfontconfig1
   - libfreetype6

@@ -5,7 +5,7 @@ priority: optional
 homepage: https://github.com/omakasui/asdcontrol
 description: >
   Apple Display Brightness Control for Pro Display XDR and Studio Display on Linux.
-  Built from source. Includes udev rules for sudo-less HID device access.
+  Includes udev rules for sudo-less HID device access.
 
 produces:
   - asdcontrol

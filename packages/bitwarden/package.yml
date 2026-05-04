@@ -6,7 +6,6 @@ priority: optional
 homepage: https://bitwarden.com
 description: >
   Bitwarden desktop application — open-source password manager.
-  Repackaged from the official upstream .deb (amd64 only; no arm64 upstream .deb available).
 
 distros:
   - debian13
