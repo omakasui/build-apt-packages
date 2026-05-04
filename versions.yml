@@ -27,7 +27,7 @@ cascadia-mono-nf:
   version: "3.4.0"
   depends_on: []
 cliamp:
-  version: "1.40.0"
+  version: "1.41.0"
   depends_on: []
 dbeaver:
   version: "26.0.4"
