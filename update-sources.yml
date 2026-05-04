@@ -182,6 +182,10 @@ yazi:
   upstream: "github:sxyazi/yazi"
   tag_prefix: "v"
 
+zed:
+  upstream: "github:zed-industries/zed"
+  tag_prefix: "v"
+
 zellij:
   upstream: "github:zellij-org/zellij"
   tag_prefix: "v"

@@ -1,0 +1,15 @@
+name: zed
+type: repackage
+section: editors
+priority: optional
+homepage: https://zed.dev
+description: >
+  Zed — a high-performance, collaborative code editor built in Rust.
+  Features AI integration, real-time collaboration, and fast startup.
+
+produces:
+  - zed
+
+distros:
+  - debian13
+  - ubuntu2404
