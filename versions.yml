@@ -94,6 +94,9 @@ niri:
 nvim:
   version: "0.12.2"
   depends_on: []
+obsidian:
+  version: "1.12.7"
+  depends_on: []
 pinta:
   version: "3.0.5"
   auto_update: false

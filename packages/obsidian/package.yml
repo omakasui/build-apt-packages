@@ -1,0 +1,15 @@
+name: obsidian
+type: repackage
+section: utils
+priority: optional
+homepage: https://obsidian.md
+description: >
+  Obsidian — a powerful knowledge base that works on top of a local folder
+  of plain text Markdown files. Supports plugins, themes, and graph view.
+
+produces:
+  - obsidian
+
+distros:
+  - debian13
+  - ubuntu2404

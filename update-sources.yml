@@ -127,6 +127,10 @@ nvim:
   upstream: "github:neovim/neovim"
   tag_prefix: "v"
 
+obsidian:
+  upstream: "github:obsidianmd/obsidian-releases"
+  tag_prefix: "v"
+
 pinta:
   upstream: "github:PintaProject/Pinta"
   tag_prefix: ""
