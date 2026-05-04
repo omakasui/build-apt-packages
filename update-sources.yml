@@ -55,6 +55,9 @@ fastfetch:
 fzf:
   upstream: "github:junegunn/fzf"
   tag_prefix: "v"
+gh:
+  upstream: "github:cli/cli"
+  tag_prefix: "v"
 ghostty:
   upstream: "github:ghostty-org/ghostty"
   tag_prefix: "v"

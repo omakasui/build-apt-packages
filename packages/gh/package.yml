@@ -1,0 +1,25 @@
+name: gh
+type: repackage
+section: devel
+priority: optional
+homepage: https://github.com/cli/cli
+description: >
+  The official GitHub CLI tool.
+  Brings GitHub to your terminal: manage issues, pull requests,
+  releases, workflows and more without leaving the command line.
+
+conflicts:
+  - gh
+
+replaces:
+  - gh
+
+provides:
+  - gh
+
+produces:
+  - gh
+
+distros:
+  - debian13
+  - ubuntu2404
