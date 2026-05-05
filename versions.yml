@@ -146,7 +146,7 @@ zed:
   version: "1.0.1"
   depends_on: []
 zellij:
-  version: "0.44.1"
+  version: "0.44.2"
   depends_on: []
 zen-browser:
   version: "1.19.11b"
