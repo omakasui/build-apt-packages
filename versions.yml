@@ -143,7 +143,7 @@ yazi:
   version: "26.5.6"
   depends_on: []
 zed:
-  version: "1.0.1"
+  version: "1.1.6"
   depends_on: []
 zellij:
   version: "0.44.2"
