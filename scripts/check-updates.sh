@@ -45,6 +45,8 @@ gitlab_latest_release() {
 ensure_label() {
   gh label create "auto-update" --color "0075ca" --description "Automated version bump" \
     2>/dev/null || true
+  gh label create "auto-update-lock" --color "e4e669" --description "Freeze auto-updates until this PR is closed" \
+    2>/dev/null || true
 }
 
 create_pr() {
@@ -55,6 +57,17 @@ create_pr() {
   existing=$(gh pr list --head "$branch" --json number --jq '.[0].number' 2>/dev/null || true)
   if [[ -n "$existing" ]]; then
     skip "$pkg" "PR #${existing} for ${new_ver} already open"
+    return 0
+  fi
+
+  # If any open PR for this package carries the lock label, do not create or supersede it.
+  local locked_num
+  locked_num=$(gh pr list --label "auto-update-lock" --json number,headRefName 2>/dev/null \
+    | jq -r --arg pkg "$pkg" \
+      '[.[] | select(.headRefName | startswith("auto-update/\($pkg)/"))] | .[0].number // empty' \
+    2>/dev/null || true)
+  if [[ -n "$locked_num" ]]; then
+    skip "$pkg" "PR #${locked_num} is locked (label 'auto-update-lock') — remove the label or close the PR to resume auto-updates"
     return 0
   fi
 
@@ -87,18 +100,32 @@ create_pr() {
     release_url="(unknown)"
   fi
 
-  gh pr create \
-    --title "chore(${pkg}): update to ${new_ver}" \
-    --body "Automated version bump for \`${pkg}\`: \`${current}\` → \`${new_ver}\`.
+  # Create the PR with retry logic; apply the label separately to avoid label-fetch timeouts.
+  local pr_url="" pr_created=false
+  for attempt in 1 2 3; do
+    if pr_url=$(gh pr create \
+          --title "chore(${pkg}): update to ${new_ver}" \
+          --body "Automated version bump for \`${pkg}\`: \`${current}\` → \`${new_ver}\`.
 
 **Release notes:** ${release_url}
 
 ---
 *Created automatically by the [daily update check](../../actions/workflows/check-updates.yml).*
 *Only \`versions.yml\` is changed — merging triggers the build workflow.*" \
-    --head "$branch" \
-    --base main \
-    --label "auto-update" || true
+          --head "$branch" \
+          --base main 2>&1); then
+      pr_created=true
+      gh pr edit "$pr_url" --add-label "auto-update" 2>/dev/null || true
+      break
+    fi
+    log "$pkg: PR creation attempt ${attempt}/3 failed — ${pr_url}"
+    [[ $attempt -lt 3 ]] && sleep $((attempt * 15))
+  done
+  if [[ "$pr_created" == false ]]; then
+    log "$pkg: WARNING — PR creation failed after 3 attempts. Branch '${branch}' is already pushed."
+    log "$pkg: SUGGESTION — Retry with:  CHECK_SINGLE_PACKAGE=${pkg} bash scripts/check-updates.sh"
+    log "$pkg:              Or directly:  gh pr create --title 'chore(${pkg}): update to ${new_ver}' --head '${branch}' --base main --label 'auto-update'"
+  fi
 }
 
 # ---------------------------------------------------------------------------
