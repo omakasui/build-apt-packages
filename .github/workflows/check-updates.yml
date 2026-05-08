@@ -1,10 +1,10 @@
-# Runs every morning at 06:00 UTC (or on demand) and opens one PR per package
+# Runs every 6 hours (or on demand) and opens one PR per package
 # that has a new upstream release.  Only versions.yml is changed per PR.
 name: Check for upstream updates
 
 on:
   schedule:
-    - cron: '0 6 * * *'
+    - cron: '0 */6 * * *'
 
   workflow_dispatch:
     inputs:
