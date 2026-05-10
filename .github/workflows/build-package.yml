@@ -186,18 +186,21 @@ jobs:
         run: |
           # Build a JSON array of {package, version, suites, produces, channel} entries
           # from the full builds list — one dispatch, processed in sequence by update.yml.
-          # Push-triggered builds always land on dev; stable promotion is done via promote.yml.
+          # Push-triggered builds use the per-package channel from versions.yml
+          # (stable_release: true → stable, otherwise dev).
+          # Dispatch-triggered builds use the manually-selected channel input (overrides all).
           CHANNEL="${{ inputs.channel }}"
-          CHANNEL="${CHANNEL:-dev}"
-          PAYLOAD=$(echo '${{ needs.detect.outputs.builds }}' | jq -c --arg channel "$CHANNEL" '[
-            .[] | {
+          EVENT="${{ github.event_name }}"
+          PAYLOAD=$(echo '${{ needs.detect.outputs.builds }}' | jq -c \
+            --arg global_channel "$CHANNEL" \
+            --arg event "$EVENT" \
+            '[.[] | {
               package: .package,
               version: .version,
               suites: ( .matrix.include | map(.suite) | unique | join(" ") ),
               produces: .produces,
-              channel: $channel
-            }
-          ]')
+              channel: (if $event == "workflow_dispatch" then $global_channel else (.channel // "dev") end)
+            }]')
 
           BODY=$(jq -cn --argjson packages "$PAYLOAD" '{
             event_type: "packages-updated",

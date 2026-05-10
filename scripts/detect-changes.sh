@@ -102,13 +102,18 @@ for PKG in $PACKAGES; do
 
   PRODUCES=$(yq e '.produces // [] | join(",")' "$(repo_root)/packages/${PKG}/package.yml")
 
+  STABLE_RELEASE=$(yq e ".${PKG}.stable_release // false" "$(repo_root)/versions.yml")
+  PKG_CHANNEL="dev"
+  [[ "$STABLE_RELEASE" == "true" ]] && PKG_CHANNEL="stable"
+
   ENTRY=$(jq -n \
     --arg pkg "$PKG" \
     --arg ver "$VERSION" \
     --arg deps "$DEPENDS" \
     --arg prods "$PRODUCES" \
+    --arg channel "$PKG_CHANNEL" \
     --argjson matrix "{\"include\": $MATRIX_INCLUDES}" \
-    '{package: $pkg, version: $ver, depends_on: $deps, produces: ($prods | if . == "" then [] else split(",") end), matrix: $matrix}')
+    '{package: $pkg, version: $ver, depends_on: $deps, produces: ($prods | if . == "" then [] else split(",") end), channel: $channel, matrix: $matrix}')
 
   BUILDS=$(echo "$BUILDS" | jq ". += [$ENTRY]")
   info "Queued: ${PKG} ${VERSION}"
