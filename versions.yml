@@ -1,6 +1,7 @@
 # Source of truth for package versions. Pushing a change here triggers a build.
-# depends_on: list of sibling packages required at build time (empty [] if none).
-# auto_update: set to false to exclude a package from the daily version check.
+# depends_on:      list of sibling packages required at build time (empty [] if none).
+# auto_update:     set to false to exclude a package from the daily version check.
+# stable_release:  set to true to publish directly to stable (skips dev) on every version bump.
 
 aether:
   version: "4.16.1"
@@ -13,9 +14,11 @@ asdcontrol:
   depends_on: []
 bitwarden:
   version: "2026.3.1"
+  stable_release: true
   depends_on: []
 bitwarden-cli:
   version: "2026.4.1"
+  stable_release: true
   depends_on: []
 bluetui:
   version: "0.8.1"
@@ -99,6 +102,7 @@ nvim:
   depends_on: []
 obsidian:
   version: "1.12.7"
+  stable_release: true
   depends_on: []
 pinta:
   version: "3.0.5"
@@ -144,12 +148,14 @@ yazi:
   depends_on: []
 zed:
   version: "1.1.7"
+  stable_release: true
   depends_on: []
 zellij:
   version: "0.44.2"
   depends_on: []
 zen-browser:
   version: "1.19.12b"
+  stable_release: true
   depends_on: []
 zoxide:
   version: "0.9.9"
