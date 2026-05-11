@@ -14,3 +14,4 @@ produces:
 distros:
   - debian13
   - ubuntu2404
+  - ubuntu2604

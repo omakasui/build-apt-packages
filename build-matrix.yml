@@ -14,3 +14,10 @@ distros:
     architectures:
       - amd64
       - arm64
+
+  ubuntu2604:
+    base_image: ubuntu:26.04
+    suite: resolute
+    architectures:
+      - amd64
+      - arm64
