@@ -44,7 +44,10 @@ RUN curl -fsSL \
 
 WORKDIR /build/walker
 
-RUN cargo build --release
+RUN set -e; \
+    PC_DIR=$(find /usr -name 'gtk4-layer-shell-0.pc' -exec dirname {} \; 2>/dev/null | head -1); \
+    [ -n "$PC_DIR" ] && export PKG_CONFIG_PATH="${PC_DIR}${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"; \
+    cargo build --release
 
 # Stage binary.
 RUN mkdir -p /output/staged/usr/bin && \
