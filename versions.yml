@@ -2,6 +2,7 @@
 # depends_on:      list of sibling packages required at build time (empty [] if none).
 # auto_update:     set to false to exclude a package from the daily version check.
 # stable_release:  set to true to publish directly to stable (skips dev) on every version bump.
+# frozen_suites:   list of suites to exclude from updates (e.g. if a package version is incompatible with an older distro release).
 
 aether:
   version: "4.16.1"
@@ -107,6 +108,7 @@ obsidian:
   depends_on: []
 pinta:
   version: "3.0.5"
+  frozen_suites: [noble]
   auto_update: false
   depends_on: []
 starship:
