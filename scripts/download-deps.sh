@@ -52,8 +52,10 @@ for dep in "${DEPS[@]}"; do
   fi
 
   step "Downloading: ${DEP_NAME} v${DEP_VERSION} (${DISTRO}/${ARCH})..."
-  gh release download "${dep}-${DEP_VERSION}" \
+  if ! gh release download "${dep}-${DEP_VERSION}" \
     --repo omakasui/build-apt-packages \
     --pattern "${DEP_NAME}_${DEP_VERSION}_${DISTRO}_${ARCH}.deb" \
-    --output "$DEP_FILE" || warn "failed to download ${DEP_NAME}"
+    --output "$DEP_FILE"; then
+    die "Failed to download dep '${DEP_NAME} ${DEP_VERSION}' for ${DISTRO}/${ARCH}. Build '${dep}' for ${DISTRO} first."
+  fi
 done
