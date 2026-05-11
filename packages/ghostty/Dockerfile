@@ -73,7 +73,7 @@ RUN set -e; \
     curl -fsSL "https://ziglang.org/download/0.15.2/zig-${ZIG_ARCH}-linux-0.15.2.tar.xz" \
       -o /tmp/zig.tar.xz && \
     tar -xf /tmp/zig.tar.xz -C /usr/local && \
-    ln -sf "/usr/local/zig-linux-${ZIG_ARCH}-0.15.2/zig" /usr/local/bin/zig && \
+    ln -sf "/usr/local/zig-${ZIG_ARCH}-linux-0.15.2/zig" /usr/local/bin/zig && \
     rm /tmp/zig.tar.xz
 
 WORKDIR /build
