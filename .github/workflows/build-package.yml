@@ -11,9 +11,18 @@ on:
   workflow_dispatch:
     inputs:
       package:
-        description: 'Package to build (must exist in versions.yml)'
-        required: true
+        description: 'Package to build (must exist in versions.yml). Leave empty when using distro.'
+        required: false
         type: string
+      distro:
+        description: 'Build ALL packages for a specific distro (e.g. ubuntu2604). Leave empty when using package.'
+        required: false
+        type: choice
+        options:
+          - ''
+          - debian13
+          - ubuntu2404
+          - ubuntu2604
       channel:
         description: 'Publishing channel (stable or dev)'
         required: false
@@ -44,7 +53,11 @@ jobs:
         id: resolve
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            bash scripts/detect-changes.sh --mode dispatch --package "${{ inputs.package }}"
+            if [[ -n "${{ inputs.distro }}" ]]; then
+              bash scripts/detect-changes.sh --mode distro --distro "${{ inputs.distro }}"
+            else
+              bash scripts/detect-changes.sh --mode dispatch --package "${{ inputs.package }}"
+            fi
           else
             bash scripts/detect-changes.sh --mode push
           fi

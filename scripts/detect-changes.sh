@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # detect-changes.sh — Detect changed packages and build CI matrices.
-# Usage: detect-changes.sh --mode push|dispatch [--package <name>]
+# Usage: detect-changes.sh --mode push|dispatch|distro [--package <name>] [--distro <name>]
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=lib/common.sh
@@ -12,16 +12,18 @@ require_cmd yq jq
 
 MODE=""
 MANUAL_PKG=""
+FILTER_DISTRO=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --mode)    MODE="$2";       shift 2 ;;
-    --package) MANUAL_PKG="$2"; shift 2 ;;
+    --mode)    MODE="$2";          shift 2 ;;
+    --package) MANUAL_PKG="$2";    shift 2 ;;
+    --distro)  FILTER_DISTRO="$2"; shift 2 ;;
     *) die "unknown argument: $1" ;;
   esac
 done
 
-[[ -z "$MODE" ]] && die "--mode is required (push or dispatch)"
+[[ -z "$MODE" ]] && die "--mode is required (push, dispatch, or distro)"
 
 cd "$(repo_root)"
 
@@ -33,7 +35,17 @@ _output() {
   fi
 }
 
-if [[ "$MODE" == "dispatch" ]]; then
+if [[ "$MODE" == "distro" ]]; then
+  [[ -z "$FILTER_DISTRO" ]] && die "--distro is required for distro mode"
+  # Queue all packages that include this distro (and are not frozen for its suite).
+  PACKAGES=""
+  while IFS= read -r pkg; do
+    if pkg_distros "$pkg" | grep -qx "$FILTER_DISTRO"; then
+      PACKAGES="$PACKAGES $pkg"
+    fi
+  done < <(pkg_all_keys)
+  PACKAGES=$(echo "$PACKAGES" | xargs)
+elif [[ "$MODE" == "dispatch" ]]; then
   [[ -z "$MANUAL_PKG" ]] && die "--package is required for dispatch mode"
   PACKAGES="$MANUAL_PKG"
 else
@@ -88,6 +100,8 @@ for PKG in $PACKAGES; do
   FROZEN_SUITES=$(yq e ".${PKG}.frozen_suites // [] | join(\" \")" versions.yml)
   MATRIX_INCLUDES='[]'
   while IFS= read -r distro; do
+    # In distro mode, only include the requested distro.
+    [[ -n "$FILTER_DISTRO" && "$distro" != "$FILTER_DISTRO" ]] && continue
     BASE=$(matrix_base_image "$distro")
     SUITE=$(yq e ".distros.${distro}.suite" "$(repo_root)/build-matrix.yml")
     if [[ -n "$FROZEN_SUITES" ]] && echo " $FROZEN_SUITES " | grep -q " $SUITE "; then
