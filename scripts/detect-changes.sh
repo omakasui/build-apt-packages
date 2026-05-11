@@ -85,10 +85,15 @@ for PKG in $PACKAGES; do
 
   DEPENDS=$(pkg_depends_on "$PKG")
 
+  FROZEN_SUITES=$(yq e ".${PKG}.frozen_suites // [] | join(\" \")" versions.yml)
   MATRIX_INCLUDES='[]'
   while IFS= read -r distro; do
     BASE=$(matrix_base_image "$distro")
     SUITE=$(yq e ".distros.${distro}.suite" "$(repo_root)/build-matrix.yml")
+    if [[ -n "$FROZEN_SUITES" ]] && echo " $FROZEN_SUITES " | grep -q " $SUITE "; then
+      info "Skip: ${PKG}/${SUITE} is frozen (frozen_suites in versions.yml)"
+      continue
+    fi
     while IFS= read -r arch; do
       MATRIX_INCLUDES=$(echo "$MATRIX_INCLUDES" | \
         jq --arg d "$distro" --arg b "$BASE" --arg s "$SUITE" --arg a "$arch" \
