@@ -70,7 +70,7 @@ RUN set -e; \
       arm64) ZIG_ARCH="aarch64" ;; \
       *) echo "Unsupported arch: ${TARGETARCH}"; exit 1 ;; \
     esac; \
-    curl -fsSL "https://ziglang.org/download/0.15.2/zig-linux-${ZIG_ARCH}-0.15.2.tar.xz" \
+    curl -fsSL "https://ziglang.org/download/0.15.2/zig-${ZIG_ARCH}-linux-0.15.2.tar.xz" \
       -o /tmp/zig.tar.xz && \
     tar -xf /tmp/zig.tar.xz -C /usr/local && \
     ln -sf "/usr/local/zig-linux-${ZIG_ARCH}-0.15.2/zig" /usr/local/bin/zig && \
