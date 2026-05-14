@@ -142,6 +142,9 @@ wiremix:
 xdg-terminal-exec:
   version: "0.14.2"
   depends_on: []
+xwayland-satellite:
+  version: "0.8.1"
+  depends_on: []
 yaru-theme:
   version: "25.04.1-0ubuntu1"
   auto_update: false
