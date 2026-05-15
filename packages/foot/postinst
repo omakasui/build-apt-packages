@@ -1,0 +1,15 @@
+#!/bin/sh
+# postinst for foot
+
+set -e
+
+case "$1" in
+    configure)
+        # Register foot as an x-terminal-emulator alternative.
+        update-alternatives --install /usr/bin/x-terminal-emulator \
+            x-terminal-emulator /usr/bin/foot 50 \
+            2>/dev/null || true
+        ;;
+esac
+
+exit 0

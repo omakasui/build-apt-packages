@@ -1,0 +1,16 @@
+#!/bin/sh
+# preinst for foot
+
+set -e
+
+case "$1" in
+    install|upgrade)
+        # Pre-emptively remove the x-terminal-emulator alternative that may have
+        # been registered by a previously installed foot package. This avoids
+        # conflicts when dpkg runs the old package's prerm script.
+        update-alternatives --remove x-terminal-emulator /usr/bin/foot \
+            2>/dev/null || true
+        ;;
+esac
+
+exit 0

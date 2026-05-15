@@ -51,6 +51,9 @@ eza:
 fastfetch:
   version: "2.63.1"
   depends_on: []
+foot:
+  version: "1.27.0"
+  depends_on: []
 fzf:
   version: "0.72.0"
   depends_on: []

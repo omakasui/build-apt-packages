@@ -1,0 +1,35 @@
+name: foot
+type: build
+section: x11
+priority: optional
+homepage: https://codeberg.org/dnkl/foot
+description: >
+  Fast, lightweight, and minimalistic Wayland terminal emulator.
+  Supports sixel graphics, scrollback search, URL detection, and more.
+
+runtime_depends:
+  - libfontconfig1
+  - libfreetype6
+  - libpixman-1-0
+  - libwayland-client0
+  - libwayland-cursor0
+  - libxkbcommon0
+  - libutf8proc2
+  - libutempter0
+
+conflicts:
+  - foot
+
+replaces:
+  - foot
+
+provides:
+  - foot
+
+produces:
+  - foot
+
+distros:
+  - debian13
+  - ubuntu2404
+  - ubuntu2604

@@ -52,6 +52,9 @@ eza:
 fastfetch:
   upstream: "github:fastfetch-cli/fastfetch"
   tag_prefix: ""
+foot:
+  upstream: "codeberg:dnkl/foot"
+  tag_prefix: ""
 fzf:
   upstream: "github:junegunn/fzf"
   tag_prefix: "v"
