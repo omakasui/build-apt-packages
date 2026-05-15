@@ -42,6 +42,11 @@ gitlab_latest_release() {
     | jq -r '.[0].tag_name // empty' 2>/dev/null || true
 }
 
+codeberg_latest_release() {
+  curl -fsSL "https://codeberg.org/api/v1/repos/$1/releases?limit=1" \
+    | jq -r '.[0].tag_name // empty' 2>/dev/null || true
+}
+
 ensure_label() {
   gh label create "auto-update" --color "0075ca" --description "Automated version bump" \
     2>/dev/null || true
@@ -96,6 +101,9 @@ create_pr() {
   elif [[ "$upstream" == gitlab:* ]]; then
     owner_repo="${upstream#gitlab:}"
     release_url="https://gitlab.com/${owner_repo}/-/releases"
+  elif [[ "$upstream" == codeberg:* ]]; then
+    owner_repo="${upstream#codeberg:}"
+    release_url="https://codeberg.org/${owner_repo}/releases"
   else
     release_url="(unknown)"
   fi
@@ -190,6 +198,9 @@ for pkg in $PACKAGES; do
   elif [[ "$upstream" == gitlab:* ]]; then
     owner_repo="${upstream#gitlab:}"
     raw_tag=$(gitlab_latest_release "$owner_repo")
+  elif [[ "$upstream" == codeberg:* ]]; then
+    owner_repo="${upstream#codeberg:}"
+    raw_tag=$(codeberg_latest_release "$owner_repo")
   else
     skip "$pkg" "unknown upstream scheme: ${upstream}"
     continue
