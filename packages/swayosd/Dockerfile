@@ -11,6 +11,7 @@ ARG TARGETARCH
 RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
+    gcc \
     meson \
     ninja-build \
     pkg-config \
