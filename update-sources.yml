@@ -116,6 +116,9 @@ starship:
 swaybg:
   upstream: "github:swaywm/swaybg"
   tag_prefix: "v"
+swayosd:
+  upstream: "github:ErikReider/SwayOSD"
+  tag_prefix: "v"
 tmux:
   upstream: "github:tmux/tmux"
   tag_prefix: ""

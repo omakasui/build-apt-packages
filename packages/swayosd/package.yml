@@ -1,0 +1,34 @@
+name: swayosd
+type: build
+section: utils
+priority: optional
+homepage: https://github.com/ErikReider/SwayOSD
+description: >
+  SwayOSD is a GTK4-based on-screen display for Wayland compositors.
+  Shows OSD indicators for volume, mute, brightness, caps lock, scroll lock
+  and num lock. Includes a libinput backend for automatic key detection and
+  supports Sway, Hyprland and other wlroots-based compositors.
+
+conflicts:
+  - swayosd
+
+replaces:
+  - swayosd
+
+provides:
+  - swayosd
+
+runtime_depends:
+  - libgtk-4-1
+  - libgtk4-layer-shell0
+  - libpulse0
+  - libinput10
+  - libevdev2
+
+produces:
+  - swayosd
+
+distros:
+  - debian13
+  - ubuntu2404
+  - ubuntu2604
