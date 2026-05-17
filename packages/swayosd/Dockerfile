@@ -21,6 +21,9 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     libpulse-dev \
     libinput-dev \
     libevdev-dev \
+    libdbus-1-dev \
+    libudev-dev \
+    libsystemd-dev \
   && rm -rf /var/lib/apt/lists/*
 
 # Install Rust via rustup (stable).
