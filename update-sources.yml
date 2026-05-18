@@ -139,6 +139,9 @@ wiremix:
   upstream: "github:tsowell/wiremix"
   tag_prefix: "v"
   use_tags: true
+wl-clip-persist:
+  upstream: "github:Linus789/wl-clip-persist"
+  tag_prefix: "v"
 xdg-terminal-exec:
   upstream: "github:Vladimir-csp/xdg-terminal-exec"
   tag_prefix: "v"

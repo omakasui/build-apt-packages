@@ -146,6 +146,9 @@ waybar:
 wiremix:
   version: "0.10.0"
   depends_on: []
+wl-clip-persist:
+  version: "0.5.0"
+  depends_on: []
 xdg-terminal-exec:
   version: "0.14.2"
   depends_on: []
