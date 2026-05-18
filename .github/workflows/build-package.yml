@@ -213,7 +213,7 @@ jobs:
               suites: ( .matrix.include | map(.suite) | unique | join(" ") ),
               produces: .produces,
               channel: (if $event == "workflow_dispatch" then $global_channel else (.channel // "dev") end)
-            }]')
+            } | if $event != "workflow_dispatch" and .channel == "stable" then ., (. + {channel: "dev"}) else . end]')
 
           BODY=$(jq -cn --argjson packages "$PAYLOAD" '{
             event_type: "packages-updated",
