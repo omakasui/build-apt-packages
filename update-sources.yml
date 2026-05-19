@@ -142,6 +142,9 @@ wiremix:
 wl-clip-persist:
   upstream: "github:Linus789/wl-clip-persist"
   tag_prefix: "v"
+wooz:
+  upstream: "github:negrel/wooz"
+  tag_prefix: "v"
 xdg-terminal-exec:
   upstream: "github:Vladimir-csp/xdg-terminal-exec"
   tag_prefix: "v"

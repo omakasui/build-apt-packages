@@ -1,0 +1,21 @@
+name: wooz
+type: build
+section: x11
+priority: optional
+homepage: https://github.com/negrel/wooz
+description: >
+  Zoom / magnifier utility for Wayland compositors.
+  A powerful and customizable screen magnifier with mouse and keyboard
+  controls. Supports zooming, panning and mouse tracking on
+  wlroots-based compositors.
+
+runtime_depends:
+  - libwayland-client0
+
+produces:
+  - wooz
+
+distros:
+  - debian13
+  - ubuntu2404
+  - ubuntu2604
