@@ -12,6 +12,7 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
     gcc \
+    libc-dev \
     meson \
     ninja-build \
     pkg-config \
