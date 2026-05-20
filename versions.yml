@@ -126,7 +126,7 @@ swayosd:
   depends_on:
     - gtk4-layer-shell
 tmux:
-  version: "3.6a"
+  version: "3.6b"
   depends_on: []
 ufw-docker:
   version: "251123"
