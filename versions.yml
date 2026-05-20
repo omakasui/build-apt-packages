@@ -18,7 +18,7 @@ bitwarden:
   stable_release: true
   depends_on: []
 bitwarden-cli:
-  version: "2026.4.1"
+  version: "2026.4.2"
   stable_release: true
   depends_on: []
 bluetui:
