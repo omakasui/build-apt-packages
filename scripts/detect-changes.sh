@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# detect-changes.sh — Detect changed packages and build CI matrices.
+# detect-changes.sh — Detect changed packages and emit CI matrices.
 # Usage: detect-changes.sh --mode push|dispatch|distro [--package <name>] [--distro <name>]
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -37,7 +37,7 @@ _output() {
 
 if [[ "$MODE" == "distro" ]]; then
   [[ -z "$FILTER_DISTRO" ]] && die "--distro is required for distro mode"
-  # Queue all packages that include this distro (and are not frozen for its suite).
+  # Queue all packages that target this distro.
   PACKAGES=""
   while IFS= read -r pkg; do
     if pkg_distros "$pkg" | grep -qx "$FILTER_DISTRO"; then
@@ -65,7 +65,7 @@ else
   PACKAGES=$(echo "$PACKAGES" | xargs)
 fi
 
-# Expand triggers: if a changed package declares triggers[], add them too.
+# Expand triggers: packages listed in triggers[] are built alongside the changed package.
 TRIGGERED=""
 for PKG in $PACKAGES; do
   if yq e ".${PKG}.triggers" versions.yml | grep -qv 'null'; then
@@ -100,7 +100,7 @@ for PKG in $PACKAGES; do
   FROZEN_SUITES=$(yq e ".${PKG}.frozen_suites // [] | join(\" \")" versions.yml)
   MATRIX_INCLUDES='[]'
   while IFS= read -r distro; do
-    # In distro mode, only include the requested distro.
+    # In distro mode, skip packages that don't target the requested distro.
     [[ -n "$FILTER_DISTRO" && "$distro" != "$FILTER_DISTRO" ]] && continue
     BASE=$(matrix_base_image "$distro")
     SUITE=$(yq e ".distros.${distro}.suite" "$(repo_root)/build-matrix.yml")

@@ -38,11 +38,11 @@ done
 
 require_cmd yq fakeroot dpkg-deb
 
-# If package.yml declares arch: all, use it regardless of the build arch.
+# Use arch:all if declared in package.yml, regardless of the build arch.
 PKG_ARCH="$(yq e '.arch // ""' "$PKG_YAML")"
 [[ "$PKG_ARCH" == "all" ]] && ARCH="all"
 
-# Resolve all package names to produce (produces[] or fallback to pkg key).
+# Resolve package names to produce (produces[] or fall back to the package key).
 mapfile -t PRODUCE_NAMES < <(yq e '.produces // [] | .[]' "$PKG_YAML")
 [[ ${#PRODUCE_NAMES[@]} -eq 0 ]] && PRODUCE_NAMES=("${PKG_KEY}")
 
@@ -56,7 +56,7 @@ CONFLICTS="$(yq e '.conflicts // [] | join(", ")' "$PKG_YAML")"
 REPLACES="$(yq e '.replaces  // [] | join(", ")' "$PKG_YAML")"
 PROVIDES="$(yq e '.provides  // [] | join(", ")' "$PKG_YAML")"
 
-# Append extra depends (e.g. from depends_on in versions.yml).
+# Append extra depends from depends_on in versions.yml.
 if [[ -n "$EXTRA_DEPENDS" ]]; then
   RUNTIME_DEPS="${RUNTIME_DEPS:+${RUNTIME_DEPS}, }${EXTRA_DEPENDS}"
 fi

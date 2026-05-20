@@ -24,7 +24,7 @@ awk 'BEGIN{p=1} /^$/{p=0} p{print}' "$CTRL" > "${WORK_DIR}/control.clean" && mv 
 echo "Renaming Package: ${UPSTREAM_NAME} -> ${NEW_NAME}..."
 sed -i "s/^Package: ${UPSTREAM_NAME}$/Package: ${NEW_NAME}/" "$CTRL"
 
-# Remove empty/blank lines from conffiles — dpkg-deb rejects non-absolute paths.
+# Remove blank lines from conffiles — dpkg-deb rejects non-absolute paths.
 if [ -f "${EXTRACTED}/DEBIAN/conffiles" ]; then
   sed -i '/^[[:space:]]*$/d' "${EXTRACTED}/DEBIAN/conffiles"
   [ ! -s "${EXTRACTED}/DEBIAN/conffiles" ] && rm "${EXTRACTED}/DEBIAN/conffiles"

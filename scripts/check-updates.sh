@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # check-updates.sh — Check upstream releases for all packages and open one PR per update.
-# Requires: yq v4 (mikefarah), gh (GitHub CLI), jq, curl, git
 
 set -euo pipefail
 
@@ -23,7 +22,7 @@ github_latest_release_prerelease() {
   gh api "repos/$1/releases?per_page=1" 2>/dev/null | jq -r '.[0].tag_name // empty' 2>/dev/null || true
 }
 
-# Used when multiple products share the same repo (e.g. bitwarden/clients).
+# For repos that publish multiple products sharing the same upstream repo.
 github_latest_release_filtered() {
   local owner_repo="$1" prefix="$2"
   gh api "repos/${owner_repo}/releases?per_page=50" 2>/dev/null \
@@ -32,7 +31,7 @@ github_latest_release_filtered() {
     2>/dev/null || true
 }
 
-# For repos that publish git tags instead of GitHub releases.
+# For repos that publish tags instead of GitHub Releases.
 github_latest_tag() {
   gh api "repos/$1/tags?per_page=1" 2>/dev/null | jq -r '.[0].name // empty' 2>/dev/null || true
 }
@@ -65,7 +64,7 @@ create_pr() {
     return 0
   fi
 
-  # If any open PR for this package carries the lock label, do not create or supersede it.
+  # Respect the auto-update-lock label: do not create or supersede a locked PR.
   local locked_num
   locked_num=$(gh pr list --label "auto-update-lock" --json number,headRefName 2>/dev/null \
     | jq -r --arg pkg "$pkg" \
@@ -76,7 +75,7 @@ create_pr() {
     return 0
   fi
 
-  # Close any stale auto-update PRs for this package targeting a different version.
+  # Close any stale auto-update PRs targeting a different version.
   gh pr list --label "auto-update" --json number,headRefName 2>/dev/null \
     | jq -r --arg pkg "$pkg" --arg b "$branch" \
       '.[] | select(.headRefName | startswith("auto-update/\($pkg)/")) | select(.headRefName != $b) | .number | tostring' \
@@ -108,7 +107,7 @@ create_pr() {
     release_url="(unknown)"
   fi
 
-  # Create the PR with retry logic; apply the label separately to avoid label-fetch timeouts.
+  # Retry PR creation; apply the label separately to avoid label-fetch timeouts.
   local pr_url="" pr_created=false
   for attempt in 1 2 3; do
     if pr_url=$(gh pr create \
@@ -157,7 +156,7 @@ if [[ -n "${CHECK_SINGLE_PACKAGE:-}" ]]; then
 fi
 
 for pkg in $PACKAGES; do
-  # Read raw value: avoid `// true` since jq `//` treats `false` as falsy.
+  # Read raw value without `// true` — jq `//` treats `false` as falsy.
   auto_update=$(yq e ".${pkg}.auto_update" "$VERSIONS_FILE")
   if [[ "$auto_update" == "false" ]]; then
     skip "$pkg" "auto_update is false"
@@ -170,7 +169,7 @@ for pkg in $PACKAGES; do
   use_prerelease=$(yq e ".${pkg}.prerelease // false" "$SOURCES_FILE")
   use_tags=$(yq e ".${pkg}.use_tags // false" "$SOURCES_FILE")
 
-  # yq wraps plain strings in quotes; strip them
+  # Strip surrounding quotes added by yq.
   upstream="${upstream//\"/}"
   tag_prefix="${tag_prefix//\"/}"
 

@@ -21,7 +21,6 @@ lint_one() {
 
   CHECKED=$((CHECKED + 1))
 
-  # versions.yml entry
   local ver
   ver=$(yq e ".${key}.version // \"\"" versions.yml)
   if [[ -z "$ver" || "$ver" == "null" ]]; then
@@ -30,13 +29,11 @@ lint_one() {
     return
   fi
 
-  # Dockerfile
   if [[ ! -f "${pkg_dir}/Dockerfile" ]]; then
     warn "${key}: missing Dockerfile"
     ERRORS=$((ERRORS + 1))
   fi
 
-  # package.yml existence
   local yaml="${pkg_dir}/package.yml"
   if [[ ! -f "$yaml" ]]; then
     warn "${key}: missing package.yml"
@@ -44,7 +41,7 @@ lint_one() {
     return
   fi
 
-  # Required fields for type: build
+  # Validate required fields for type: build.
   local pkg_type
   pkg_type=$(yq e '.type // "build"' "$yaml")
   if [[ "$pkg_type" == "build" ]]; then
@@ -58,7 +55,7 @@ lint_one() {
     done
   fi
 
-  # distros exist in build-matrix.yml
+  # Check that declared distros exist in build-matrix.yml.
   local valid_distros
   valid_distros=$(matrix_distro_keys | tr '\n' ' ')
   while IFS= read -r distro; do
@@ -69,7 +66,7 @@ lint_one() {
     fi
   done < <(yq e '.distros // [] | .[]' "$yaml")
 
-  # No distros declared at all
+  # Warn if no distros are declared.
   local distro_count
   distro_count=$(yq e '.distros | length' "$yaml" 2>/dev/null || echo 0)
   if [[ "$distro_count" == "0" || "$distro_count" == "null" ]]; then
@@ -77,7 +74,7 @@ lint_one() {
     ERRORS=$((ERRORS + 1))
   fi
 
-  # depends_on entries have package dirs
+  # Check that depends_on entries have package directories.
   local deps_csv
   deps_csv=$(yq e ".${key}.depends_on | join(\",\")" versions.yml)
   if [[ -n "$deps_csv" ]]; then
