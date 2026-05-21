@@ -128,7 +128,7 @@ swayosd:
   depends_on:
     - gtk4-layer-shell
 terminaltexteffects:
-  version: "0.15.0"
+  version: "release-0.15.0"
   depends_on: []
 tmux:
   version: "3.6b"
