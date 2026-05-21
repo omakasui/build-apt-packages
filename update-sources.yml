@@ -121,7 +121,7 @@ swayosd:
   tag_prefix: "v"
 terminaltexteffects:
   upstream: "github:ChrisBuilds/terminaltexteffects"
-  tag_prefix: "v"
+  tag_prefix: "release-"
 tmux:
   upstream: "github:tmux/tmux"
   tag_prefix: ""
