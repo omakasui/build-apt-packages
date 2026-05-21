@@ -119,6 +119,9 @@ swaybg:
 swayosd:
   upstream: "github:ErikReider/SwayOSD"
   tag_prefix: "v"
+terminaltexteffects:
+  upstream: "github:ChrisBuilds/terminaltexteffects"
+  tag_prefix: "v"
 tmux:
   upstream: "github:tmux/tmux"
   tag_prefix: ""
