@@ -101,6 +101,9 @@ localsend:
 nautilus-open-any-terminal:
   version: "0.8.1"
   depends_on: []
+netpala:
+  version: "1.3.0"
+  depends_on: []
 niri:
   version: "26.04"
   depends_on: []

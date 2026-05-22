@@ -98,6 +98,9 @@ localsend:
 nautilus-open-any-terminal:
   upstream: "github:Stunkymonkey/nautilus-open-any-terminal"
   tag_prefix: "v"
+netpala:
+  upstream: "github:joel-sgc/netpala"
+  tag_prefix: "v"
 niri:
   upstream: "github:niri-wm/niri"
   tag_prefix: "v"
