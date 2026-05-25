@@ -55,7 +55,7 @@ foot:
   version: "1.27.0"
   depends_on: []
 fzf:
-  version: "0.73.0"
+  version: "0.73.1"
   depends_on: []
 gh:
   version: "2.92.0"
