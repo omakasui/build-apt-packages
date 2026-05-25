@@ -197,11 +197,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.APT_PKG_DISPATCH_TOKEN }}
         run: |
-          # Build a JSON array of {package, version, suites, produces, channel} entries
-          # from the full builds list — one dispatch, processed in sequence by update.yml.
-          # Push-triggered builds use the per-package channel from versions.yml
-          # (stable_release: true → stable, otherwise dev).
-          # Dispatch-triggered builds use the manually-selected channel input (overrides all).
+          # workflow_dispatch: all packages use inputs.channel.
+          # push: per-package channel from versions.yml; stable → registered to both stable and dev.
           CHANNEL="${{ inputs.channel }}"
           EVENT="${{ github.event_name }}"
           PAYLOAD=$(echo '${{ needs.detect.outputs.builds }}' | jq -c \
