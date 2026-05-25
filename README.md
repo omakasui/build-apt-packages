@@ -2,87 +2,62 @@
 
 Builds and publishes APT packages distributed via [omakasui/apt-packages](https://github.com/omakasui/apt-packages).
 
-## Adding a package
-
-1. Add an entry in `versions.yml` with the short upstream name (without the `omakasui-` prefix).
-2. Create `packages/<name>/Dockerfile` and `packages/<name>/package.yml`.
-3. Push - the workflow automatically detects the new entry.
-
 ## versions.yml
 
 ```yaml
 package-name:
   version: "1.2.3"
-  depends_on: []    # sibling packages required at build time
+  depends_on: []        # sibling keys required at build time; workflow installs their .deb
+  stable_release: false # true → publish to stable channel on push (default: dev only)
+  auto_update: true     # false → exclude from automated version-update workflow
+  frozen_suites: []     # suites to skip during builds
 ```
-
-Only `version` is required.
-
-`depends_on` is optional - it allows you to reference other packages in the repo without hardcoding versions. The workflow downloads the latest release's `.deb` files and installs them in the build container before building the new package.
-
-`auto_update` - set to false to exclude from the update workflow. By default all packages are included.
-
-`stable_release` - set to true to mark the package as stable and include it in the stable release workflow. By default all packages are built for dev releases.
-
-`frozen_suites` - list of Debian/Ubuntu suites to exclude from the update workflow. By default all suites are included.
 
 ## package.yml
 
 ```yaml
-name: omakasui-example
-type: build           # build (default) | repackage
-arch: any             # any (default) | all (amd64 only)
+name: package-example
+type: build             # build (default) | repackage
+arch: any               # any (default) | all (amd64-only)
 section: utils
 priority: optional
 homepage: https://...
-description: >
-  Short description.
-produces:             # installed package names -> used for filename and Depends
-  - omakasui-example
-runtime_depends:
-  - libfoo1
-conflicts:            # optional
-  - upstream-name
-replaces:             # optional
-  - upstream-name
-provides:             # optional
-  - upstream-name
-distros:
-  - debian13
-  - ubuntu2404
+description: Short description.
+produces: [package-example]  # installed names — used for filenames and Depends:
+runtime_depends: []          # Depends: entries (package names, not keys)
+distros: [debian13, ubuntu2404]
 ```
 
-## Package types
+`type: build` — Dockerfile stages files under `/output/staged/`. The workflow assembles the `.deb`.
+`type: repackage` — Dockerfile writes complete `.deb` files to `/output/`. The workflow tags filenames.
+`ARG VERSION` must be declared in every Dockerfile. `BASE_IMAGE` and `TARGETARCH` are also available.
+`conflicts`, `replaces`, `provides` are optional Debian control fields.
 
-**`type: build`** - the Dockerfile compiles and writes files under `/output/staged/`. The workflow assembles the `.deb` from the `package.yml` metadata. Any maintainer scripts go in `/output/staged/DEBIAN/`.
+## Adding a package
 
-**`type: repackage`** - the Dockerfile produces complete `.deb` packages directly in `/output/`. The workflow adds distro and arch tags to the filename.
+1. Add an entry to `versions.yml` with the short upstream name.
+2. Create `packages/<name>/Dockerfile` and `packages/<name>/package.yml`.
+3. Push — the workflow detects the new entry and builds it automatically.
 
-In both cases the workflow passes `--build-arg VERSION=<version>` - declare `ARG VERSION` in every Dockerfile.
+Manual trigger: GitHub > Actions > **Build package** > Run workflow.
 
 ## Inter-package dependencies
 
-`depends_on` accepts sibling keys. The workflow downloads already-built `.deb` files from the latest release and installs them in the container before building - no manual copying.
-
-## Workflow
-
-**Automatic build** - every push that modifies `versions.yml` or `packages/<name>/` triggers the build only for the affected packages.
-
-**Manual build** - GitHub > Actions > **Build package** > Run workflow > enter the short package name (e.g. `gum`, not `omakasui-gum`).
+List sibling package keys in `depends_on`. The workflow downloads their `.deb` from the latest release and installs it in the build container before the build starts.
 
 ## Local build
 
-Prerequisites: `docker` (with buildx), `yq`, `fakeroot`, `dpkg-deb`. For arm64 cross-builds: `qemu-user-static`. For packages with `depends_on`: authenticated `gh` CLI.
+Prerequisites: `docker` (with buildx), `yq`, `fakeroot`, `dpkg-deb`. For arm64: `qemu-user-static`. For `depends_on`: authenticated `gh`.
 
 ```bash
-make help                            # show all targets
-make build PKG=fzf                   # build (default: debian13/amd64)
+make help
+make build PKG=fzf                   # default: debian13/amd64
 make build PKG=ghostty DISTRO=ubuntu2404
 make build PKG=starship ARCH=arm64
-make lint PKG=fzf                    # validate a package
-make shell PKG=fzf                   # shell into the build container
-make list                            # list packages with versions
-make clean                           # remove output/
+make lint PKG=fzf
+make shell PKG=fzf
+make list
+make clean
 ```
 
-The `.deb` files are written to `output/<package>/`.
+Output: `output/<package>/`.
