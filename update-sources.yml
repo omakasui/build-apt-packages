@@ -138,9 +138,6 @@ uwsm:
 walker:
   upstream: "github:abenz1267/walker"
   tag_prefix: "v"
-waybar:
-  upstream: "github:Alexays/Waybar"
-  tag_prefix: "v"
 wiremix:
   upstream: "github:tsowell/wiremix"
   tag_prefix: "v"
