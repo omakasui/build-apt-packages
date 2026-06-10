@@ -1,9 +1,9 @@
-name: opencode
+name: opencode-desktop
 type: repackage
 section: utils
 homepage: https://github.com/anomalyco/opencode
 description: >
-  OpenCode — AI coding agent CLI and TUI.
+  OpenCode Desktop — Electron-based desktop app for the OpenCode AI coding agent.
   Supports multiple AI providers, MCP tools, and collaborative sessions.
 
 distros:

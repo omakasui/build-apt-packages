@@ -113,6 +113,9 @@ obsidian:
 opencode:
   upstream: "github:anomalyco/opencode"
   tag_prefix: "v"
+opencode-desktop:
+  upstream: "github:anomalyco/opencode"
+  tag_prefix: "v"
 pinta:
   upstream: "github:PintaProject/Pinta"
   tag_prefix: ""
