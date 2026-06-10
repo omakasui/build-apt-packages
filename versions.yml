@@ -114,6 +114,9 @@ obsidian:
   version: "1.12.7"
   stable_release: true
   depends_on: []
+opencode:
+  version: "1.17.0"
+  depends_on: []
 pinta:
   version: "3.0.5"
   frozen_suites: [noble]
