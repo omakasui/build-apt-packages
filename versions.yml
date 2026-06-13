@@ -189,7 +189,7 @@ zellij:
   version: "0.44.3"
   depends_on: []
 zen-browser:
-  version: "1.21b"
+  version: "1.21.1b"
   stable_release: true
   depends_on: []
 zoxide:
