@@ -149,7 +149,7 @@ ufw-docker:
   auto_update: false
   depends_on: []
 uwsm:
-  version: "0.26.4"
+  version: "0.26.5"
   depends_on: []
 walker:
   version: "2.16.2"
