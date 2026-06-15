@@ -119,7 +119,7 @@ opencode:
   stable_release: true
   depends_on: []
 opencode-desktop:
-  version: "1.17.6"
+  version: "1.17.7"
   stable_release: true
   depends_on: []
 pinta:
