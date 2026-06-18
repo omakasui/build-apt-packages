@@ -182,7 +182,7 @@ yazi:
   version: "26.5.6"
   depends_on: []
 zed:
-  version: "1.6.3"
+  version: "1.7.2"
   stable_release: true
   depends_on: []
 zellij:
