@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: fastfetch
+Upstream-Contact: https://github.com/fastfetch-cli/fastfetch
+Source: https://github.com/fastfetch-cli/fastfetch
+
+Files: *
+Copyright: Linus Dierheimer and contributors
+License: MIT
+ Refer to the upstream repository for the full license text:
+ https://github.com/fastfetch-cli/fastfetch

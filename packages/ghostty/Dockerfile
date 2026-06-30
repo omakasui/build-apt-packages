@@ -109,7 +109,7 @@ RUN mv ./zig-out/usr/share/zsh/site-functions \
 # Remove bundled terminfo (conflicts with system ncurses).
 RUN rm -rf ./zig-out/usr/share/terminfo/g || true
 
-# Stage output for assemble-deb.sh
+# Stage output for assembly by build.sh
 RUN mkdir -p /output/staged && \
     cp -r ./zig-out/usr /output/staged/ && \
     echo "Staged: $(find /output/staged -type f | wc -l) files"

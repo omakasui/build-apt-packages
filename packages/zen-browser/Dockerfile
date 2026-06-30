@@ -14,8 +14,6 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
     xz-utils \
-    fakeroot \
-    dpkg-dev \
   && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /build
@@ -71,23 +69,7 @@ RUN set -e; \
       'Exec=/opt/zen/zen --ProfileManager' \
       > staged/usr/share/applications/zen-browser.desktop
 
-RUN set -e; \
-    DEB_ROOT="/tmp/deb-zen"; \
-    mkdir -p "${DEB_ROOT}/DEBIAN"; \
-    cp -r staged/. "${DEB_ROOT}/"; \
-    SIZE=$(du -sk staged | cut -f1); \
-    printf 'Package: zen-browser\n'                             >  "${DEB_ROOT}/DEBIAN/control"; \
-    printf 'Version: %s\n'         "${VERSION}"                >> "${DEB_ROOT}/DEBIAN/control"; \
-    printf 'Architecture: %s\n'    "${TARGETARCH}"             >> "${DEB_ROOT}/DEBIAN/control"; \
-    printf 'Maintainer: omakasui <packages@omakasui.org>\n'    >> "${DEB_ROOT}/DEBIAN/control"; \
-    printf 'Installed-Size: %s\n'  "${SIZE}"                   >> "${DEB_ROOT}/DEBIAN/control"; \
-    printf 'Section: web\n'                                    >> "${DEB_ROOT}/DEBIAN/control"; \
-    printf 'Priority: optional\n'                              >> "${DEB_ROOT}/DEBIAN/control"; \
-    printf 'Homepage: https://zen-browser.app\n'               >> "${DEB_ROOT}/DEBIAN/control"; \
-    printf 'Description: Privacy-focused Firefox-based browser\n' >> "${DEB_ROOT}/DEBIAN/control"; \
-    printf ' Features vertical tabs, workspaces and tab splitting.\n' >> "${DEB_ROOT}/DEBIAN/control"; \
-    printf ' Installed to /opt/zen. Updates via the built-in auto-updater.\n' >> "${DEB_ROOT}/DEBIAN/control"; \
-    mkdir -p /output; \
-    fakeroot dpkg-deb --build "${DEB_ROOT}" \
-      "/output/zen-browser_${VERSION}_${TARGETARCH}.deb"; \
-    echo "Built: $(ls -lh /output/zen-browser_${VERSION}_${TARGETARCH}.deb)"
+# Copy staged tree to output for external assembly by build.sh.
+RUN mkdir -p /output/staged && cp -r staged/. /output/staged/
+
+RUN echo "Staged: $(find /output/staged -type f | wc -l) files"

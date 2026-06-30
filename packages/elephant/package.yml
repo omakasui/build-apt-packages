@@ -1,13 +1,5 @@
 name: elephant
 type: repackage
-section: utils
-priority: optional
-homepage: https://github.com/abenz1267/elephant
-description: >
-  Elephant - powerful data provider daemon for application launchers.
-  Communicates via Unix sockets and Protocol Buffers.
-  Install provider packages (e.g. elephant-desktopapplications) to add functionality.
-
 produces:
   - elephant
   - elephant-1password
@@ -31,7 +23,6 @@ produces:
   - elephant-websearch
   - elephant-windows
   - elephant-wireplumber
-
 distros:
   - debian13
   - ubuntu2404

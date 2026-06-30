@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: pinta
+Upstream-Contact: https://github.com/PintaProject/Pinta
+Source: https://github.com/PintaProject/Pinta
+
+Files: *
+Copyright: The Pinta Project contributors
+License: MIT
+ Refer to the upstream repository for the full license text:
+ https://github.com/PintaProject/Pinta

@@ -70,23 +70,3 @@ matrix_distro_keys() {
 matrix_arches() {
   yq e ".distros.${1}.architectures[]" "$(repo_root)/build-matrix.yml"
 }
-
-resolve_dep_name() {
-  local dep_key="$1"
-  local produces
-  produces=$(yq e '.produces[0] // ""' "$(repo_root)/packages/${dep_key}/package.yml" 2>/dev/null || true)
-  echo "${produces:-${dep_key}}"
-}
-
-build_extra_depends() {
-  local deps_csv="$1" result=""
-  [[ -z "$deps_csv" ]] && return
-  IFS=',' read -ra deps <<< "$deps_csv"
-  for dep in "${deps[@]}"; do
-    local ver name
-    ver=$(pkg_version "$dep")
-    name=$(resolve_dep_name "$dep")
-    result="${result:+${result}, }${name} (>= ${ver})"
-  done
-  echo "$result"
-}

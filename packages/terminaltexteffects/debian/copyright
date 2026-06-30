@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: terminaltexteffects
+Upstream-Contact: https://github.com/ChrisBuilds/terminaltexteffects
+Source: https://github.com/ChrisBuilds/terminaltexteffects
+
+Files: *
+Copyright: Chris Builds
+License: MIT
+ Refer to the upstream repository for the full license text:
+ https://github.com/ChrisBuilds/terminaltexteffects

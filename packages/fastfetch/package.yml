@@ -1,12 +1,8 @@
-name: fastfetch
-type: repackage
-section: utils
-homepage: https://github.com/fastfetch-cli/fastfetch
-description: >
-  Fastfetch - a fast and highly customizable system information tool.
-  Provides detailed system information in the terminal with various themes.
-
+type: passthrough
 distros:
   - debian13
   - ubuntu2404
   - ubuntu2604
+source:
+  url_amd64: "https://github.com/fastfetch-cli/fastfetch/releases/download/@VERSION@/fastfetch-linux-amd64.deb"
+  url_arm64: "https://github.com/fastfetch-cli/fastfetch/releases/download/@VERSION@/fastfetch-linux-aarch64.deb"

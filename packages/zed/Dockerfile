@@ -11,8 +11,6 @@ ARG TARGETARCH
 RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
-    fakeroot \
-    dpkg-dev \
   && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /build
@@ -47,22 +45,7 @@ RUN set -e; \
       zed.app/share/applications/dev.zed.Zed.desktop \
       > staged/usr/share/applications/dev.zed.Zed.desktop
 
-RUN set -e; \
-    DEB_ROOT="/tmp/deb-zed"; \
-    mkdir -p "${DEB_ROOT}/DEBIAN"; \
-    cp -r staged/. "${DEB_ROOT}/"; \
-    SIZE=$(du -sk staged | cut -f1); \
-    printf 'Package: zed\n'                                     >  "${DEB_ROOT}/DEBIAN/control"; \
-    printf 'Version: %s\n'         "${VERSION}"                 >> "${DEB_ROOT}/DEBIAN/control"; \
-    printf 'Architecture: %s\n'    "${TARGETARCH}"              >> "${DEB_ROOT}/DEBIAN/control"; \
-    printf 'Maintainer: omakasui <packages@omakasui.org>\n'     >> "${DEB_ROOT}/DEBIAN/control"; \
-    printf 'Installed-Size: %s\n'  "${SIZE}"                    >> "${DEB_ROOT}/DEBIAN/control"; \
-    printf 'Section: editors\n'                                 >> "${DEB_ROOT}/DEBIAN/control"; \
-    printf 'Priority: optional\n'                               >> "${DEB_ROOT}/DEBIAN/control"; \
-    printf 'Homepage: https://zed.dev\n'                        >> "${DEB_ROOT}/DEBIAN/control"; \
-    printf 'Description: High-performance, collaborative code editor\n' >> "${DEB_ROOT}/DEBIAN/control"; \
-    printf ' Installed to /opt/zed.app with a symlink at /usr/bin/zed.\n' >> "${DEB_ROOT}/DEBIAN/control"; \
-    mkdir -p /output; \
-    fakeroot dpkg-deb --build "${DEB_ROOT}" \
-      "/output/zed_${VERSION}_${TARGETARCH}.deb"; \
-    echo "Built: $(ls -lh /output/zed_${VERSION}_${TARGETARCH}.deb)"
+# Copy staged tree to output for external assembly by build.sh.
+RUN mkdir -p /output/staged && cp -r staged/. /output/staged/
+
+RUN echo "Staged: $(find /output/staged -type f | wc -l) files"

@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: starship
+Upstream-Contact: https://github.com/starship/starship
+Source: https://github.com/starship/starship
+
+Files: *
+Copyright: Matan Kushner and contributors
+License: ISC
+ Refer to the upstream repository for the full license text:
+ https://github.com/starship/starship

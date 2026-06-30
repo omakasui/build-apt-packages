@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: gum
+Upstream-Contact: https://github.com/charmbracelet/gum
+Source: https://github.com/charmbracelet/gum
+
+Files: *
+Copyright: Charmbracelet Inc.
+License: MIT
+ Refer to the upstream repository for the full license text:
+ https://github.com/charmbracelet/gum

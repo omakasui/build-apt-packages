@@ -100,10 +100,6 @@ opencode:
   version: "1.17.11"
   stable_release: true
   depends_on: []
-opencode-desktop:
-  version: "1.17.11"
-  stable_release: true
-  depends_on: []
 pinta:
   version: "3.0.5"
   frozen_suites: [noble]

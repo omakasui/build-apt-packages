@@ -1,0 +1,11 @@
+Package: terminaltexteffects
+Version: @VERSION@-1+@SUITE@
+Architecture: all
+Maintainer: omakasui <packages@omakasui.org>
+Installed-Size: @INSTALLED_SIZE@
+Depends: python3
+Section: utils
+Priority: optional
+Homepage: https://github.com/ChrisBuilds/terminaltexteffects
+Description: A terminal visual effects engine.
+ Apply visual effects to text output in the terminal.

@@ -1,22 +1,7 @@
-name: cascadia-mono-nf
 type: build
 arch: all
-section: fonts
-priority: optional
-homepage: https://github.com/ryanoasis/nerd-fonts
-description: >
-  CascadiaMono Nerd Font — all TTF variants.
-  Patched with Nerd Fonts icons for use in terminals and code editors.
-
 produces:
   - fonts-cascadia-mono-nf
-
-conflicts:
-  - font-cascadia-mono-nf
-
-replaces:
-  - font-cascadia-mono-nf
-
 distros:
   - debian13
   - ubuntu2404

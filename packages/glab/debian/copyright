@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: glab
+Upstream-Contact: https://gitlab.com/gitlab-org/cli
+Source: https://gitlab.com/gitlab-org/cli
+
+Files: *
+Copyright: GitLab B.V.
+License: MIT
+ Refer to the upstream repository for the full license text:
+ https://gitlab.com/gitlab-org/cli

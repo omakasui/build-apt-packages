@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: btop
+Upstream-Contact: https://github.com/aristocratos/btop
+Source: https://github.com/aristocratos/btop
+
+Files: *
+Copyright: Jakob P. Liljenberg
+License: Apache-2.0
+ Refer to the upstream repository for the full license text:
+ https://github.com/aristocratos/btop

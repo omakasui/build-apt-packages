@@ -1,12 +1,7 @@
-name: gum
-type: repackage
-section: utils
-homepage: https://github.com/charmbracelet/gum
-description: >
-  Charmbracelet Gum - a tool for glamorous shell scripts.
-  Provides interactive TUI components for shell scripts and aliases.
-
+type: passthrough
 distros:
   - debian13
   - ubuntu2404
   - ubuntu2604
+source:
+  url: "https://github.com/charmbracelet/gum/releases/download/v@VERSION@/gum_@VERSION@_@ARCH@.deb"

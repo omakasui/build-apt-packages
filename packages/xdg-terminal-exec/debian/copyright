@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: xdg-terminal-exec
+Upstream-Contact: https://github.com/Vladimir-csp/xdg-terminal-exec
+Source: https://github.com/Vladimir-csp/xdg-terminal-exec
+
+Files: *
+Copyright: Vladimir Kudrya
+License: GPL-2.0
+ Refer to the upstream repository for the full license text:
+ https://github.com/Vladimir-csp/xdg-terminal-exec

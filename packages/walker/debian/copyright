@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: walker
+Upstream-Contact: https://github.com/abenz1267/walker
+Source: https://github.com/abenz1267/walker
+
+Files: *
+Copyright: Andrej Benz and contributors
+License: GPL-3.0
+ Refer to the upstream repository for the full license text:
+ https://github.com/abenz1267/walker

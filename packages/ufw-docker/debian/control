@@ -1,0 +1,11 @@
+Package: ufw-docker
+Version: @VERSION@-1+@SUITE@
+Architecture: all
+Maintainer: omakasui <packages@omakasui.org>
+Installed-Size: @INSTALLED_SIZE@
+Depends: ufw, docker.io | docker-ce
+Section: net
+Priority: optional
+Homepage: https://github.com/chaifeng/ufw-docker
+Description: A script to fix ufw firewall rules for Docker.
+ Prevents Docker containers from bypassing UFW firewall rules.

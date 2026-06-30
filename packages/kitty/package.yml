@@ -1,24 +1,4 @@
-name: kitty
 type: repackage
-section: x11
-priority: optional
-homepage: https://sw.kovidgoyal.net/kitty/
-description: >
-  GPU-accelerated terminal emulator with advanced features.
-  Includes kitten extensions, graphics protocol, and window splits.
-
-conflicts:
-  - kitty
-
-replaces:
-  - kitty
-
-provides:
-  - kitty
-
-produces:
-  - kitty
-
 distros:
   - debian13
   - ubuntu2404

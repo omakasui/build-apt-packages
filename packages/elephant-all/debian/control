@@ -1,0 +1,11 @@
+Package: elephant-all
+Version: @VERSION@-1+@SUITE@
+Architecture: all
+Maintainer: omakasui <packages@omakasui.org>
+Installed-Size: @INSTALLED_SIZE@
+Depends: elephant, elephant-1password, elephant-bitwarden, elephant-bluetooth, elephant-bookmarks, elephant-calc, elephant-clipboard, elephant-desktopapplications, elephant-files, elephant-menus, elephant-niriactions, elephant-nirisessions, elephant-playerctl, elephant-providerlist, elephant-runner, elephant-snippets, elephant-symbols, elephant-todo, elephant-unicode, elephant-websearch, elephant-windows, elephant-wireplumber
+Section: utils
+Priority: optional
+Homepage: https://github.com/abenz1267/elephant
+Description: Meta-package for all Elephant providers.
+ Installs the main elephant package and all providers.

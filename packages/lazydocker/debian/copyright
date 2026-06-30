@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: lazydocker
+Upstream-Contact: https://github.com/jesseduffield/lazydocker
+Source: https://github.com/jesseduffield/lazydocker
+
+Files: *
+Copyright: Jesse Duffield
+License: MIT
+ Refer to the upstream repository for the full license text:
+ https://github.com/jesseduffield/lazydocker

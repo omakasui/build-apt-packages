@@ -1,0 +1,10 @@
+Package: zoxide
+Version: @VERSION@-1+@SUITE@
+Architecture: @ARCH@
+Maintainer: omakasui <packages@omakasui.org>
+Installed-Size: @INSTALLED_SIZE@
+Section: utils
+Priority: optional
+Homepage: https://github.com/ajeetdsouza/zoxide
+Description: A smarter cd command, inspired by z and autojump.
+ Learns your most-used directories and lets you jump to them quickly.

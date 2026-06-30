@@ -1,0 +1,9 @@
+Package: fonts-jetbrains-mono
+Version: @VERSION@-1+@SUITE@
+Architecture: all
+Maintainer: omakasui <packages@omakasui.org>
+Installed-Size: @INSTALLED_SIZE@
+Section: fonts
+Priority: optional
+Homepage: https://www.jetbrains.com/lp/mono/
+Description: JetBrains Mono — a typeface for developers.

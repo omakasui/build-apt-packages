@@ -1,13 +1,4 @@
-name: lazydocker
 type: build
-section: utils
-priority: optional
-homepage: https://github.com/jesseduffield/lazydocker
-description: >
-  Lazydocker - a simple terminal UI for Docker and Docker Compose.
-  Provides a keyboard-driven interface to manage containers, images, and volumes.
-  Requires Docker (docker-ce or docker.io) to be installed separately.
-
 distros:
   - debian13
   - ubuntu2404

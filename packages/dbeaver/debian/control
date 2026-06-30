@@ -1,0 +1,7 @@
+# overlay — applied on top of the upstream control; only listed fields are changed.
+
+Maintainer: omakasui <packages@omakasui.org>
+Version: @VERSION@-1+@SUITE@
+Conflicts: dbeaver-ce, dbeaver
+Replaces: dbeaver-ce, dbeaver
+Provides: dbeaver-ce

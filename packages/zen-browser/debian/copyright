@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: zen-browser
+Upstream-Contact: https://github.com/zen-browser/desktop
+Source: https://github.com/zen-browser/desktop
+
+Files: *
+Copyright: Zen Browser contributors
+License: MPL-2.0
+ Refer to the upstream repository for the full license text:
+ https://github.com/zen-browser/desktop
