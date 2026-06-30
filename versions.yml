@@ -14,7 +14,7 @@ asdcontrol:
   version: "0.6.0"
   depends_on: []
 bitwarden:
-  version: "2026.6.0"
+  version: "2026.6.1"
   stable_release: true
   depends_on: []
 bitwarden-cli:
