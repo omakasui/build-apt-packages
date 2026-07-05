@@ -108,7 +108,7 @@ niri:
   version: "26.04"
   depends_on: []
 nvim:
-  version: "0.12.3"
+  version: "0.12.4"
   depends_on: []
 obsidian:
   version: "1.12.7"
