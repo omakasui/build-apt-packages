@@ -46,7 +46,7 @@ info: ## Show package metadata  (PKG= required)
 	echo "Arch     : $$(yq e '.arch // "any"' packages/$(PKG)/package.yml)"; \
 	echo "Distros  : $$(yq e '.distros | join(", ")' packages/$(PKG)/package.yml)"; \
 	echo "Deps     : $$(yq e '.$(PKG).depends_on // [] | join(", ")' versions.yml)"; \
-	echo "Homepage : $$(grep '^Homepage:' packages/$(PKG)/debian/control 2>/dev/null | awk '{print $$2}')"; \
+	echo "Homepage : $$(grep '^Homepage:' packages/$(PKG)/debian/control packages/$(PKG)/packaging/control 2>/dev/null | head -1 | awk '{print $$2}')"; \
 	echo ""
 
 .PHONY: shell
