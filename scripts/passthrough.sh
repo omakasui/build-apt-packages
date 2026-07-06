@@ -140,7 +140,7 @@ for DEB_NAME in "${PRODUCE_NAMES[@]}"; do
   # overrides Maintainer/Version and any other fields listed in the overlay.
   if [[ -f "${DEBIAN_DIR}/control" ]]; then
     OVERLAY_PROCESSED=$(sed \
-      -e "s|@VERSION@|${VERSION}-1+${SUITE}|g" \
+      -e "s|@VERSION@|${VERSION}|g" \
       -e "s|@SUITE@|${SUITE}|g" \
       -e "s|@ARCH@|${CTRL_ARCH}|g" \
       -e "s|@PACKAGE@|${DEB_NAME}|g" \
@@ -179,7 +179,7 @@ for DEB_NAME in "${PRODUCE_NAMES[@]}"; do
   if [[ -f "${DEBIAN_DIR}/changelog" ]]; then
     CHANGELOG_TMP="${BUILD_TMP}/changelog.${DEB_NAME}"
     sed \
-      -e "s|@VERSION@|${VERSION}-1+${SUITE}|g" \
+      -e "s|@VERSION@|${VERSION}|g" \
       -e "s|@SUITE@|${SUITE}|g" \
       -e "s|@PACKAGE@|${DEB_NAME}|g" \
       -e "s|@DATE@|${RFC2822_DATE}|g" \
