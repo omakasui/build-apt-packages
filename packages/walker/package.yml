@@ -1,19 +1,4 @@
-name: walker
 type: build
-section: utils
-priority: optional
-homepage: https://github.com/abenz1267/walker
-description: >
-  Walker - multi-purpose application launcher for Wayland.
-  Fast, highly customizable, GTK4-based.
-
-runtime_depends:
-  - libgtk-4-1
-  - libcairo2
-  - libpoppler-glib8
-  - libgtk4-layer-shell0
-  - elephant
-
 distros:
   - debian13
   - ubuntu2404

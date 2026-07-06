@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: yaru-theme
+Upstream-Contact: https://launchpad.net/ubuntu/+source/yaru-theme
+Source: https://launchpad.net/ubuntu/+source/yaru-theme
+
+Files: *
+Copyright: Canonical Ltd. and contributors
+License: GPL-3.0
+ Refer to the upstream repository for the full license text:
+ https://github.com/ubuntu/yaru

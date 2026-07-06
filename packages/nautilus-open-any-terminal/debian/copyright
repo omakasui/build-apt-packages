@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: nautilus-open-any-terminal
+Upstream-Contact: https://github.com/Stunkymonkey/nautilus-open-any-terminal
+Source: https://github.com/Stunkymonkey/nautilus-open-any-terminal
+
+Files: *
+Copyright: Felix Bühler and contributors
+License: GPL-3.0
+ Refer to the upstream repository for the full license text:
+ https://github.com/Stunkymonkey/nautilus-open-any-terminal

@@ -1,0 +1,14 @@
+Package: fzf
+Version: @VERSION@-1+@SUITE@
+Architecture: @ARCH@
+Maintainer: omakasui <packages@omakasui.org>
+Installed-Size: @INSTALLED_SIZE@
+Conflicts: fzf
+Replaces: fzf
+Provides: fzf
+Section: utils
+Priority: optional
+Homepage: https://junegunn.github.io/fzf/
+Description: A general-purpose command-line fuzzy finder.
+ Interactive filter for files, command history, processes, git commits
+ and more.

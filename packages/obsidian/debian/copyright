@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: obsidian
+Upstream-Contact: https://github.com/obsidianmd/obsidian-releases
+Source: https://github.com/obsidianmd/obsidian-releases
+
+Files: *
+Copyright: Obsidian.md
+License: Proprietary
+ Refer to the upstream repository for the full license text:
+ https://github.com/obsidianmd/obsidian-releases

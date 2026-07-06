@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: ufw-docker
+Upstream-Contact: https://github.com/chaifeng/ufw-docker
+Source: https://github.com/chaifeng/ufw-docker
+
+Files: *
+Copyright: Chai Feng
+License: MIT
+ Refer to the upstream repository for the full license text:
+ https://github.com/chaifeng/ufw-docker

@@ -1,0 +1,11 @@
+Package: obsidian
+Version: @VERSION@-1+@SUITE@
+Architecture: @ARCH@
+Maintainer: omakasui <packages@omakasui.org>
+Installed-Size: @INSTALLED_SIZE@
+Section: utils
+Priority: optional
+Homepage: https://obsidian.md
+Description: Powerful knowledge base that works on top of local Markdown files.
+ Supports plugins, themes, and graph view. Installed to /opt/obsidian.
+ Updates via the built-in auto-updater.

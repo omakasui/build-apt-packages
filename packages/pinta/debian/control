@@ -1,0 +1,13 @@
+Package: pinta
+Version: @VERSION@-1+@SUITE@
+Architecture: @ARCH@
+Maintainer: omakasui <packages@omakasui.org>
+Installed-Size: @INSTALLED_SIZE@
+Depends: libadwaita-1-0
+Section: graphics
+Priority: optional
+Homepage: https://www.pinta-project.com
+Description: Simple GTK4 paint and image editing program.
+ Built from source with .NET 8 and libadwaita. Bundles the .NET 8 runtime
+ in /opt/dotnet-pinta/ — no external dotnet package required. Features
+ layers, effects, unlimited undo, and GNOME integration.

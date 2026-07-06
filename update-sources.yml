@@ -8,9 +8,6 @@
 #                   Use for repos that publish tags only, without GitHub releases.
 # prerelease:       (optional) Include GitHub pre-release entries when looking for the latest.
 
-aether:
-  upstream: "github:bjarneo/aether"
-  tag_prefix: "v"
 alacritty:
   upstream: "github:alacritty/alacritty"
   tag_prefix: "v"
@@ -25,9 +22,6 @@ bitwarden-cli:
   upstream: "github:bitwarden/clients"
   tag_prefix: "cli-v"
   filter_releases: true
-bluetui:
-  upstream: "github:pythops/bluetui"
-  tag_prefix: "v"
 btop:
   upstream: "github:aristocratos/btop"
   tag_prefix: "v"
@@ -52,9 +46,6 @@ eza:
 fastfetch:
   upstream: "github:fastfetch-cli/fastfetch"
   tag_prefix: ""
-foot:
-  upstream: "codeberg:dnkl/foot"
-  tag_prefix: ""
 fzf:
   upstream: "github:junegunn/fzf"
   tag_prefix: "v"
@@ -77,9 +68,6 @@ gum:
 ia-writer-mono:
   upstream: "github:iaolo/iA-Fonts"
   tag_prefix: ""
-impala:
-  upstream: "github:pythops/impala"
-  tag_prefix: "v"
 jetbrains-mono:
   upstream: "github:JetBrains/JetBrainsMono"
   tag_prefix: "v"
@@ -97,12 +85,6 @@ localsend:
   tag_prefix: "v"
 nautilus-open-any-terminal:
   upstream: "github:Stunkymonkey/nautilus-open-any-terminal"
-  tag_prefix: "v"
-netpala:
-  upstream: "github:joel-sgc/netpala"
-  tag_prefix: "v"
-niri:
-  upstream: "github:niri-wm/niri"
   tag_prefix: "v"
 nvim:
   upstream: "github:neovim/neovim"
@@ -122,12 +104,6 @@ pinta:
 starship:
   upstream: "github:starship/starship"
   tag_prefix: "v"
-swaybg:
-  upstream: "github:swaywm/swaybg"
-  tag_prefix: "v"
-swayosd:
-  upstream: "github:ErikReider/SwayOSD"
-  tag_prefix: "v"
 terminaltexteffects:
   upstream: "github:ChrisBuilds/terminaltexteffects"
   tag_prefix: "release-"
@@ -137,39 +113,16 @@ tmux:
 ufw-docker:
   upstream: "github:chaifeng/ufw-docker"
   tag_prefix: ""
-uwsm:
-  upstream: "github:Vladimir-csp/uwsm"
-  tag_prefix: "v"
-  use_tags: true
 walker:
   upstream: "github:abenz1267/walker"
-  tag_prefix: "v"
-waybar:
-  upstream: "github:Alexays/Waybar"
-  tag_prefix: "v"
-wiremix:
-  upstream: "github:tsowell/wiremix"
-  tag_prefix: "v"
-  use_tags: true
-wl-clip-persist:
-  upstream: "github:Linus789/wl-clip-persist"
-  tag_prefix: "v"
-wooz:
-  upstream: "github:negrel/wooz"
   tag_prefix: "v"
 xdg-terminal-exec:
   upstream: "github:Vladimir-csp/xdg-terminal-exec"
   tag_prefix: "v"
   use_tags: true
-xwayland-satellite:
-  upstream: "github:Supreeeme/xwayland-satellite"
-  tag_prefix: "v"
 yaru-theme:
   upstream: ""
   tag_prefix: ""
-yazi:
-  upstream: "github:sxyazi/yazi"
-  tag_prefix: "v"
 zed:
   upstream: "github:zed-industries/zed"
   tag_prefix: "v"

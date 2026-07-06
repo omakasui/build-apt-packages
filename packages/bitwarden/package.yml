@@ -1,13 +1,8 @@
-name: bitwarden
-type: repackage
+type: passthrough
 arch: amd64
-section: utils
-priority: optional
-homepage: https://bitwarden.com
-description: >
-  Bitwarden desktop application — open-source password manager.
-
 distros:
   - debian13
   - ubuntu2404
   - ubuntu2604
+source:
+  url: "https://github.com/bitwarden/clients/releases/download/desktop-v@VERSION@/Bitwarden-@VERSION@-amd64.deb"

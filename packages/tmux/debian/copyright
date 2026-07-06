@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: tmux
+Upstream-Contact: https://github.com/tmux/tmux
+Source: https://github.com/tmux/tmux
+
+Files: *
+Copyright: Nicholas Marriott and contributors
+License: ISC
+ Refer to the upstream repository for the full license text:
+ https://github.com/tmux/tmux

@@ -1,16 +1,4 @@
-name: zen-browser
-type: repackage
-section: web
-priority: optional
-homepage: https://zen-browser.app
-description: >
-  Zen Browser - a privacy-focused Firefox-based browser.
-  Features vertical tabs, workspaces, tab splitting and theming.
-  Updates are handled by the browser's built-in auto-updater.
-
-produces:
-  - zen-browser
-
+type: build
 distros:
   - debian13
   - ubuntu2404

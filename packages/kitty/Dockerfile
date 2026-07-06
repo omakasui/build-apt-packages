@@ -13,7 +13,6 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
     xz-utils \
-    fakeroot \
   && rm -rf /var/lib/apt/lists/*
 
 # Map Docker TARGETARCH to kitty's archive naming convention.
@@ -58,28 +57,7 @@ RUN set -e && \
       mkdir -p "$DEST" && cp "$SRC" "$DEST/kitty.png"; \
     done
 
-# Write DEBIAN/control and assemble .deb.
-RUN set -e && \
-    STAGED=/tmp/staged && \
-    DEB_ROOT="/tmp/deb-kitty" && \
-    mkdir -p "${DEB_ROOT}/DEBIAN" && \
-    cp -a "${STAGED}/." "${DEB_ROOT}/" && \
-    SIZE=$(du -sk "$STAGED" | cut -f1) && \
-    printf "Package: kitty\n"                                          >  "${DEB_ROOT}/DEBIAN/control" && \
-    printf "Version: %s\n"         "${VERSION}"                        >> "${DEB_ROOT}/DEBIAN/control" && \
-    printf "Architecture: %s\n"    "${TARGETARCH}"                     >> "${DEB_ROOT}/DEBIAN/control" && \
-    printf "Maintainer: omakasui <packages@omakasui.org>\n"            >> "${DEB_ROOT}/DEBIAN/control" && \
-    printf "Installed-Size: %s\n"  "${SIZE}"                           >> "${DEB_ROOT}/DEBIAN/control" && \
-    printf "Conflicts: kitty\n"                                        >> "${DEB_ROOT}/DEBIAN/control" && \
-    printf "Replaces: kitty\n"                                         >> "${DEB_ROOT}/DEBIAN/control" && \
-    printf "Provides: kitty\n"                                         >> "${DEB_ROOT}/DEBIAN/control" && \
-    printf "Section: x11\n"                                            >> "${DEB_ROOT}/DEBIAN/control" && \
-    printf "Priority: optional\n"                                      >> "${DEB_ROOT}/DEBIAN/control" && \
-    printf "Homepage: https://sw.kovidgoyal.net/kitty/\n"              >> "${DEB_ROOT}/DEBIAN/control" && \
-    printf "Description: GPU-accelerated terminal emulator\n"          >> "${DEB_ROOT}/DEBIAN/control" && \
-    printf " Self-contained bundle installed to /opt/kitty.\n"         >> "${DEB_ROOT}/DEBIAN/control" && \
-    \
-    mkdir -p /output && \
-    fakeroot dpkg-deb --build "${DEB_ROOT}" \
-      "/output/kitty_${VERSION}_${TARGETARCH}.deb" && \
-    echo "Built: $(ls -lh /output/kitty_${VERSION}_${TARGETARCH}.deb)"
+# Copy staged tree to output for external assembly by build.sh.
+RUN mkdir -p /output/staged && cp -a /tmp/staged/. /output/staged/
+
+RUN echo "Staged: $(find /output/staged -type f | wc -l) files"

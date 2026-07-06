@@ -1,0 +1,10 @@
+Package: opencode
+Version: @VERSION@-1+@SUITE@
+Architecture: @ARCH@
+Maintainer: omakasui <packages@omakasui.org>
+Installed-Size: @INSTALLED_SIZE@
+Section: utils
+Priority: optional
+Homepage: https://github.com/anomalyco/opencode
+Description: AI coding agent CLI and TUI.
+ Supports multiple AI providers, MCP tools, and collaborative sessions.

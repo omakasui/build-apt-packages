@@ -1,15 +1,4 @@
-name: lazygit
 type: build
-section: vcs
-priority: optional
-homepage: https://github.com/jesseduffield/lazygit
-description: >
-  Lazygit - a simple terminal UI for git commands.
-  Provides a keyboard-driven git interface inside any terminal.
-
-runtime_depends:
-  - git
-
 distros:
   - debian13
   - ubuntu2404

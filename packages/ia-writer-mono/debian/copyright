@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: ia-writer-mono
+Upstream-Contact: https://github.com/iaolo/iA-Fonts
+Source: https://github.com/iaolo/iA-Fonts
+
+Files: *
+Copyright: iA Inc.
+License: Custom — see upstream for license
+ Refer to the upstream repository for the full license text:
+ https://github.com/iaolo/iA-Fonts

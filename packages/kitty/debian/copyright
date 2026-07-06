@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: kitty
+Upstream-Contact: https://github.com/kovidgoyal/kitty
+Source: https://github.com/kovidgoyal/kitty
+
+Files: *
+Copyright: Kovid Goyal
+License: GPL-3.0
+ Refer to the upstream repository for the full license text:
+ https://github.com/kovidgoyal/kitty

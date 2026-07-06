@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: elephant
+Upstream-Contact: https://github.com/abenz1267/elephant
+Source: https://github.com/abenz1267/elephant
+
+Files: *
+Copyright: Andrej Benz and contributors
+License: MIT
+ Refer to the upstream repository for the full license text:
+ https://github.com/abenz1267/elephant

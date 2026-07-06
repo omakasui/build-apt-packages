@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: opencode
+Upstream-Contact: https://github.com/anomalyco/opencode
+Source: https://github.com/anomalyco/opencode
+
+Files: *
+Copyright: Anomaly Inc.
+License: MIT
+ Refer to the upstream repository for the full license text:
+ https://github.com/anomalyco/opencode

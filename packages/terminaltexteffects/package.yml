@@ -1,21 +1,5 @@
-name: terminaltexteffects
 type: build
 arch: all
-section: python
-priority: optional
-homepage: https://github.com/ChrisBuilds/terminaltexteffects
-description: >
-  TerminalTextEffects (TTE) — terminal visual effects engine.
-  A Python library and CLI tool for producing animated text effects
-  in the terminal. Includes 40+ built-in effects (rain, matrix,
-  fireworks, decrypt, and more). No third-party Python dependencies.
-
-runtime_depends:
-  - python3
-
-produces:
-  - python3-terminaltexteffects
-
 distros:
   - debian13
   - ubuntu2404

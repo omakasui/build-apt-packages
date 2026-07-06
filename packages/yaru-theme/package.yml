@@ -1,15 +1,9 @@
-name: yaru-theme
 type: repackage
 arch: all
-section: gnome
-description: >
-  Yaru GNOME theme.
-
 produces:
   - yaru-theme-gtk
   - yaru-theme-icon
   - yaru-theme-sound
   - yaru-theme-gnome-shell
-
 distros:
   - debian13

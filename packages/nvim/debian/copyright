@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: nvim
+Upstream-Contact: https://github.com/neovim/neovim
+Source: https://github.com/neovim/neovim
+
+Files: *
+Copyright: Neovim contributors
+License: Apache-2.0 and Vim
+ Refer to the upstream repository for the full license text:
+ https://github.com/neovim/neovim

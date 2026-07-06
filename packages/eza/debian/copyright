@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: eza
+Upstream-Contact: https://github.com/eza-community/eza
+Source: https://github.com/eza-community/eza
+
+Files: *
+Copyright: eza-community contributors
+License: MIT
+ Refer to the upstream repository for the full license text:
+ https://github.com/eza-community/eza

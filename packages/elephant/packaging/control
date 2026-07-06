@@ -1,0 +1,11 @@
+Package: elephant
+Version: @VERSION@-1+@SUITE@
+Architecture: @ARCH@
+Maintainer: omakasui <packages@omakasui.org>
+Installed-Size: @INSTALLED_SIZE@
+Section: utils
+Priority: optional
+Homepage: https://github.com/abenz1267/elephant
+Description: Data provider daemon for application launchers.
+ Communicates via Unix sockets and Protocol Buffers.
+ Install provider packages to add functionality.

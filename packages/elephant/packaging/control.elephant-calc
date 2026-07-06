@@ -1,0 +1,11 @@
+Package: elephant-calc
+Version: @VERSION@-1+@SUITE@
+Architecture: @ARCH@
+Maintainer: omakasui <packages@omakasui.org>
+Installed-Size: @INSTALLED_SIZE@
+Depends: elephant (= @VERSION@-1+@SUITE@), qalc
+Section: utils
+Priority: optional
+Homepage: https://github.com/abenz1267/elephant
+Description: Elephant calc provider plugin for the walker application launcher.
+ Installs calc.so into /usr/lib/elephant/. Requires qalc.

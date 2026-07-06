@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: alacritty
+Upstream-Contact: https://github.com/alacritty/alacritty
+Source: https://github.com/alacritty/alacritty
+
+Files: *
+Copyright: Christian Duerr and contributors
+License: Apache-2.0
+ Refer to the upstream repository for the full license text:
+ https://github.com/alacritty/alacritty

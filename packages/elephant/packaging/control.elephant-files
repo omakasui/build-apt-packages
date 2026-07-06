@@ -1,0 +1,11 @@
+Package: elephant-files
+Version: @VERSION@-1+@SUITE@
+Architecture: @ARCH@
+Maintainer: omakasui <packages@omakasui.org>
+Installed-Size: @INSTALLED_SIZE@
+Depends: elephant (= @VERSION@-1+@SUITE@), fd-find
+Section: utils
+Priority: optional
+Homepage: https://github.com/abenz1267/elephant
+Description: Elephant files provider plugin for the walker application launcher.
+ Installs files.so into /usr/lib/elephant/. Requires fd-find.

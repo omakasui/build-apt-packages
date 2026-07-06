@@ -1,0 +1,9 @@
+Package: fonts-ia-writer-mono
+Version: @VERSION@-1+@SUITE@
+Architecture: all
+Maintainer: omakasui <packages@omakasui.org>
+Installed-Size: @INSTALLED_SIZE@
+Section: fonts
+Priority: optional
+Homepage: https://github.com/iaolo/iA-Fonts
+Description: iA Writer Mono font family.

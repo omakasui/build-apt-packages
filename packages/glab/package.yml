@@ -1,26 +1,7 @@
-name: glab
-type: repackage
-section: devel
-priority: optional
-homepage: https://gitlab.com/gitlab-org/cli
-description: >
-  The official GitLab CLI tool.
-  Brings GitLab to your terminal: manage issues, merge requests,
-  pipelines, releases and more without leaving the command line.
-
-conflicts:
-  - glab
-
-replaces:
-  - glab
-
-provides:
-  - glab
-
-produces:
-  - glab
-
+type: passthrough
 distros:
   - debian13
   - ubuntu2404
   - ubuntu2604
+source:
+  url: "https://gitlab.com/gitlab-org/cli/-/releases/v@VERSION@/downloads/glab_@VERSION@_linux_@ARCH@.deb"

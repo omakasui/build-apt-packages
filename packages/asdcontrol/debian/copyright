@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: asdcontrol
+Upstream-Contact: https://github.com/omakasui/asdcontrol
+Source: https://github.com/omakasui/asdcontrol
+
+Files: *
+Copyright: omakasui
+License: GPL-2.0
+ Refer to the upstream repository for the full license text:
+ https://github.com/omakasui/asdcontrol

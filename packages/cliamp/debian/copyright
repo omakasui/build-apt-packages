@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: cliamp
+Upstream-Contact: https://github.com/bjarneo/cliamp
+Source: https://github.com/bjarneo/cliamp
+
+Files: *
+Copyright: Bjarne Oeverli
+License: MIT
+ Refer to the upstream repository for the full license text:
+ https://github.com/bjarneo/cliamp

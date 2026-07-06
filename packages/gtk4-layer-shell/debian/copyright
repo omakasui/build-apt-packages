@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: gtk4-layer-shell
+Upstream-Contact: https://github.com/wmww/gtk4-layer-shell
+Source: https://github.com/wmww/gtk4-layer-shell
+
+Files: *
+Copyright: William Wold
+License: LGPL-3.0
+ Refer to the upstream repository for the full license text:
+ https://github.com/wmww/gtk4-layer-shell

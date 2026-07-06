@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: localsend
+Upstream-Contact: https://github.com/localsend/localsend
+Source: https://github.com/localsend/localsend
+
+Files: *
+Copyright: Tien Do Nam and contributors
+License: Apache-2.0
+ Refer to the upstream repository for the full license text:
+ https://github.com/localsend/localsend

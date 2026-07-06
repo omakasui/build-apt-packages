@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: zoxide
+Upstream-Contact: https://github.com/ajeetdsouza/zoxide
+Source: https://github.com/ajeetdsouza/zoxide
+
+Files: *
+Copyright: Ajeet D'Souza
+License: MIT
+ Refer to the upstream repository for the full license text:
+ https://github.com/ajeetdsouza/zoxide

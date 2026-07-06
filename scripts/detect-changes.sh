@@ -37,7 +37,6 @@ _output() {
 
 if [[ "$MODE" == "distro" ]]; then
   [[ -z "$FILTER_DISTRO" ]] && die "--distro is required for distro mode"
-  # Queue all packages that target this distro.
   PACKAGES=""
   while IFS= read -r pkg; do
     if pkg_distros "$pkg" | grep -qx "$FILTER_DISTRO"; then

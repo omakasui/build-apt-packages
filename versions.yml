@@ -4,9 +4,6 @@
 # stable_release:  set to true to publish directly to stable (skips dev) on every version bump.
 # frozen_suites:   list of suites to exclude from updates (e.g. if a package version is incompatible with an older distro release).
 
-aether:
-  version: "4.27.2"
-  depends_on: []
 alacritty:
   version: "0.17.0"
   depends_on: []
@@ -20,9 +17,6 @@ bitwarden:
 bitwarden-cli:
   version: "2026.6.0"
   stable_release: true
-  depends_on: []
-bluetui:
-  version: "0.8.1"
   depends_on: []
 btop:
   version: "1.4.7"
@@ -51,9 +45,6 @@ eza:
 fastfetch:
   version: "2.65.2"
   depends_on: []
-foot:
-  version: "1.27.0"
-  depends_on: []
 fzf:
   version: "0.73.1"
   depends_on: []
@@ -80,9 +71,6 @@ ia-writer-mono:
   version: "20260310"
   auto_update: false
   depends_on: []
-impala:
-  version: "0.7.4"
-  depends_on: []
 jetbrains-mono:
   version: "2.304"
   depends_on: []
@@ -101,12 +89,6 @@ localsend:
 nautilus-open-any-terminal:
   version: "0.8.1"
   depends_on: []
-netpala:
-  version: "1.3.0"
-  depends_on: []
-niri:
-  version: "26.04"
-  depends_on: []
 nvim:
   version: "0.12.3"
   depends_on: []
@@ -118,10 +100,6 @@ opencode:
   version: "1.17.11"
   stable_release: true
   depends_on: []
-opencode-desktop:
-  version: "1.17.11"
-  stable_release: true
-  depends_on: []
 pinta:
   version: "3.0.5"
   frozen_suites: [noble]
@@ -130,14 +108,6 @@ pinta:
 starship:
   version: "1.26.0"
   depends_on: []
-swaybg:
-  version: "1.2.2-omakasui1"
-  auto_update: false
-  depends_on: []
-swayosd:
-  version: "0.3.2"
-  depends_on:
-    - gtk4-layer-shell
 terminaltexteffects:
   version: "0.15.0"
   depends_on: []
@@ -148,38 +118,16 @@ ufw-docker:
   version: "251123"
   auto_update: false
   depends_on: []
-uwsm:
-  version: "0.26.6"
-  depends_on: []
 walker:
   version: "2.16.2"
   depends_on:
     - gtk4-layer-shell
-waybar:
-  version: "0.15.0"
-  depends_on:
-    - gtk4-layer-shell
-wiremix:
-  version: "0.11.0"
-  depends_on: []
-wl-clip-persist:
-  version: "0.5.0"
-  depends_on: []
-wooz:
-  version: "0.1.0"
-  depends_on: []
 xdg-terminal-exec:
   version: "0.14.2"
-  depends_on: []
-xwayland-satellite:
-  version: "0.8.1"
   depends_on: []
 yaru-theme:
   version: "25.04.1-0ubuntu1"
   auto_update: false
-  depends_on: []
-yazi:
-  version: "26.5.6"
   depends_on: []
 zed:
   version: "1.8.2"

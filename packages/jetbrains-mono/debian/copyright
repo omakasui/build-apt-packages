@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: jetbrains-mono
+Upstream-Contact: https://github.com/JetBrains/JetBrainsMono
+Source: https://github.com/JetBrains/JetBrainsMono
+
+Files: *
+Copyright: JetBrains s.r.o.
+License: SIL Open Font License 1.1
+ Refer to the upstream repository for the full license text:
+ https://github.com/JetBrains/JetBrainsMono

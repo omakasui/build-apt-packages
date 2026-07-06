@@ -1,11 +1,4 @@
-name: opencode
-type: repackage
-section: utils
-homepage: https://github.com/anomalyco/opencode
-description: >
-  OpenCode — AI coding agent CLI and TUI.
-  Supports multiple AI providers, MCP tools, and collaborative sessions.
-
+type: build
 distros:
   - debian13
   - ubuntu2404

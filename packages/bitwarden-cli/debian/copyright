@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: bitwarden-cli
+Upstream-Contact: https://github.com/bitwarden/clients
+Source: https://github.com/bitwarden/clients
+
+Files: *
+Copyright: Bitwarden Inc.
+License: GPL-3.0
+ Refer to the upstream repository for the full license text:
+ https://github.com/bitwarden/clients
