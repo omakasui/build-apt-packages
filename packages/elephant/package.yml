@@ -1,4 +1,3 @@
-name: elephant
 type: repackage
 produces:
   - elephant
