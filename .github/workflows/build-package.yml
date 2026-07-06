@@ -23,6 +23,11 @@ on:
           - debian13
           - ubuntu2404
           - ubuntu2604
+      rebuild_all:
+        description: 'Rebuild ALL packages for ALL distros (ignores package/distro inputs)'
+        required: false
+        type: boolean
+        default: false
       channel:
         description: 'Publishing channel (stable or dev)'
         required: false
@@ -53,7 +58,9 @@ jobs:
         id: resolve
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            if [[ -n "${{ inputs.distro }}" ]]; then
+            if [[ "${{ inputs.rebuild_all }}" == "true" ]]; then
+              bash scripts/detect-changes.sh --mode all
+            elif [[ -n "${{ inputs.distro }}" ]]; then
               bash scripts/detect-changes.sh --mode distro --distro "${{ inputs.distro }}"
             else
               bash scripts/detect-changes.sh --mode dispatch --package "${{ inputs.package }}"

@@ -35,7 +35,10 @@ _output() {
   fi
 }
 
-if [[ "$MODE" == "distro" ]]; then
+if [[ "$MODE" == "all" ]]; then
+  # Rebuild every package across every distro.
+  PACKAGES=$(pkg_all_keys | xargs)
+elif [[ "$MODE" == "distro" ]]; then
   [[ -z "$FILTER_DISTRO" ]] && die "--distro is required for distro mode"
   PACKAGES=""
   while IFS= read -r pkg; do
