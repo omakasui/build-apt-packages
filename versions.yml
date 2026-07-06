@@ -141,5 +141,5 @@ zen-browser:
   stable_release: true
   depends_on: []
 zoxide:
-  version: "0.9.9"
+  version: "0.10.0"
   depends_on: []
