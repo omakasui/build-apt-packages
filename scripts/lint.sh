@@ -98,16 +98,10 @@ lint_one() {
     [[ ! -f "${debian_dir}/copyright" ]] && \
       warn "${key}: debian/copyright missing (required for Debian Policy §12.7)"
   else
-    # Legacy path: validate required package.yml fields for type: build.
+    # No debian/ dir: only valid for type:repackage (Docker-assembled) packages.
     if [[ "$pkg_type" == "build" ]]; then
-      for field in section priority homepage description; do
-        local val
-        val=$(yq e ".${field} // \"\"" "$pkg_yaml")
-        if [[ -z "$val" || "$val" == "null" ]]; then
-          warn "${key}: package.yml missing '${field}' (add debian/control to migrate)"
-          ERRORS=$((ERRORS + 1))
-        fi
-      done
+      warn "${key}: type=build requires a debian/ directory"
+      ERRORS=$((ERRORS + 1))
     fi
   fi
 
