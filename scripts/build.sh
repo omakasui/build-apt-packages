@@ -108,6 +108,7 @@ docker buildx build \
   --load \
   --build-arg "BASE_IMAGE=${BASE_IMAGE}" \
   --build-arg "VERSION=${VERSION}" \
+  --build-arg "SUITE=${SUITE}" \
   --tag "$IMAGE_TAG" \
   "${PKG_DIR}/"
 
@@ -125,13 +126,7 @@ if [[ "$PKG_TYPE" == "repackage" && ! -d "${PKG_DIR}/debian" ]]; then
   docker cp "${CID}:/output/." "$REPACK_TMP/"
   for f in "$REPACK_TMP"/*.deb; do
     [[ -f "$f" ]] || continue
-    base="$(basename "$f")"
-    stripped="${base%_*.deb}"
-    if [[ "$base" == *_all.deb ]]; then
-      mv "$f" "${OUTPUT_DIR}/${stripped}_${DISTRO}_all.deb"
-    else
-      mv "$f" "${OUTPUT_DIR}/${stripped}_${DISTRO}_${ARCH}.deb"
-    fi
+    mv "$f" "${OUTPUT_DIR}/"
   done
   rm -rf "$REPACK_TMP"
   info "Output:"; ls -lh "${OUTPUT_DIR}/"*.deb 2>/dev/null || warn "no .deb files produced"
