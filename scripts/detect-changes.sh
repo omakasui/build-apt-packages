@@ -118,7 +118,7 @@ for PKG in $PACKAGES; do
     done < <(matrix_arches "$distro")
   done < <(pkg_distros "$PKG")
 
-  PRODUCES=$(yq e '.produces // [] | join(",")' "$(repo_root)/packages/${PKG}/package.yml")
+  PRODUCES=$(pkg_produces "$PKG" | paste -sd,)
 
   STABLE_RELEASE=$(yq e ".${PKG}.stable_release // false" "$(repo_root)/versions.yml")
   PKG_CHANNEL="dev"
