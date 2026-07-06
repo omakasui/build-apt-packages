@@ -1,4 +1,4 @@
-type: repackage
+type: build
 distros:
   - debian13
   - ubuntu2404
