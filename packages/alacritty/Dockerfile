@@ -81,12 +81,3 @@ RUN set -e; \
       /output/staged/usr/share/fish/vendor_completions.d/alacritty.fish; \
     \
     echo "Staged: $(du -sh /output/staged)"
-
-# Stage maintainer scripts.
-RUN mkdir -p /output/staged/DEBIAN
-COPY preinst /output/staged/DEBIAN/preinst
-COPY postinst /output/staged/DEBIAN/postinst
-COPY postrm   /output/staged/DEBIAN/postrm
-RUN chmod 0755 /output/staged/DEBIAN/preinst \
-               /output/staged/DEBIAN/postinst \
-               /output/staged/DEBIAN/postrm

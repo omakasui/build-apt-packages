@@ -25,8 +25,3 @@ RUN set -e; \
       -exec install -m 0644 {} /output/staged/usr/share/fonts/truetype/ia-writer-mono/ \;; \
     \
     echo "Staged $(ls /output/staged/usr/share/fonts/truetype/ia-writer-mono/*.ttf | wc -l) TTF files."
-
-# Stage postinst.
-RUN mkdir -p /output/staged/DEBIAN
-COPY postinst /output/staged/DEBIAN/postinst
-RUN chmod 0755 /output/staged/DEBIAN/postinst
