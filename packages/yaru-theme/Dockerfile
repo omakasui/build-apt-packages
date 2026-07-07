@@ -43,7 +43,7 @@ RUN set -e; \
       mkdir -p "extracted/${pkg}/usr/share/doc/${pkg}"; \
       sed \
         -e "s|@PACKAGE@|${pkg}|g" \
-        -e "s|@VERSION@|${VERSION}-1+${SUITE}|g" \
+        -e "s|@VERSION@|${VERSION}|g" \
         -e "s|@SUITE@|${SUITE}|g" \
         -e "s|@DATE@|${DATE}|g" \
         /tmp/pkgmeta/changelog | gzip -9 -n > "extracted/${pkg}/usr/share/doc/${pkg}/changelog.Debian.gz"; \

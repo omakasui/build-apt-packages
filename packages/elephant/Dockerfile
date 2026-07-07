@@ -97,13 +97,14 @@ RUN set -e; \
     DATE=$(date -R); \
     cp /tmp/pkgmeta/control "${ROOT}/DEBIAN/control"; \
     sed -i \
-      -e "s|@VERSION@|${VERSION}-1+${SUITE}|g" \
+      -e "s|@VERSION@|${VERSION}|g" \
+      -e "s|@SUITE@|${SUITE}|g" \
       -e "s|@ARCH@|${ARCH}|g" \
       -e "s|@INSTALLED_SIZE@|${SIZE}|g" \
       "${ROOT}/DEBIAN/control"; \
     sed \
       -e "s|@PACKAGE@|${PKG}|g" \
-      -e "s|@VERSION@|${VERSION}-1+${SUITE}|g" \
+      -e "s|@VERSION@|${VERSION}|g" \
       -e "s|@SUITE@|${SUITE}|g" \
       -e "s|@DATE@|${DATE}|g" \
       /tmp/pkgmeta/changelog | gzip -9 -n > "${ROOT}/usr/share/doc/${PKG}/changelog.Debian.gz"; \
@@ -130,13 +131,14 @@ RUN set -e; \
       cp "$CTRL_SRC" "${ROOT}/DEBIAN/control"; \
       sed -i \
         -e "s|@PACKAGE@|${PKG}|g" \
-        -e "s|@VERSION@|${VERSION}-1+${SUITE}|g" \
+        -e "s|@VERSION@|${VERSION}|g" \
+        -e "s|@SUITE@|${SUITE}|g" \
         -e "s|@ARCH@|${ARCH}|g" \
         -e "s|@INSTALLED_SIZE@|${SIZE}|g" \
         "${ROOT}/DEBIAN/control"; \
       sed \
         -e "s|@PACKAGE@|${PKG}|g" \
-        -e "s|@VERSION@|${VERSION}-1+${SUITE}|g" \
+        -e "s|@VERSION@|${VERSION}|g" \
         -e "s|@SUITE@|${SUITE}|g" \
         -e "s|@DATE@|${DATE}|g" \
         /tmp/pkgmeta/changelog | gzip -9 -n > "${ROOT}/usr/share/doc/${PKG}/changelog.Debian.gz"; \
