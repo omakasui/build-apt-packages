@@ -278,7 +278,7 @@ jobs:
   release:
     name: Create GitHub Release — ${{ matrix.package_entry.package }}
     needs: [detect, build]
-    if: needs.detect.outputs.dependent_builds != '[]'
+    if: "!failure() && !cancelled() && needs.detect.outputs.dependent_builds != '[]'"
     runs-on: ubuntu-latest
     permissions:
       contents: write
