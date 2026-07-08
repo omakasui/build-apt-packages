@@ -210,7 +210,7 @@ jobs:
   build:
     name: Build ${{ matrix.package }} / ${{ matrix.distro }} / ${{ matrix.arch }}
     needs: [detect, release-core]
-    if: needs.detect.outputs.dependent_builds != '[]'
+    if: "!failure() && !cancelled() && needs.detect.outputs.dependent_builds != '[]'"
     runs-on: ubuntu-latest
 
     strategy:
@@ -310,7 +310,7 @@ jobs:
   trigger-apt-update:
     name: Trigger apt-packages (batch)
     needs: [detect, release]
-    if: needs.detect.outputs.builds != '[]'
+    if: "!failure() && !cancelled() && needs.detect.outputs.builds != '[]'"
     runs-on: ubuntu-latest
 
     steps:
