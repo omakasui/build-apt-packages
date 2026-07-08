@@ -46,6 +46,8 @@ jobs:
       build_matrix: ${{ steps.resolve.outputs.build_matrix }}
       core_builds: ${{ steps.core.outputs.core_builds || '[]' }}
       core_build_matrix: ${{ steps.core.outputs.core_build_matrix || '{"include":[]}' }}
+      dependent_builds: ${{ steps.filter.outputs.dependent_builds }}
+      dependent_build_matrix: ${{ steps.filter.outputs.dependent_build_matrix }}
 
     steps:
       - name: Checkout
@@ -71,9 +73,9 @@ jobs:
             bash scripts/detect-changes.sh --mode push
           fi
 
-      - name: Compute core dependency subsets (rebuild_all only)
+      - name: Compute core dependency subsets
         id: core
-        if: inputs.rebuild_all == true
+        if: inputs.package == ''
         run: |
           # Packages listed as depends_on targets — must be released before dependents build.
           CORE_PKGS=$(yq e '.[] | select(.depends_on | length > 0) | .depends_on[]' \
@@ -82,6 +84,7 @@ jobs:
           if [[ -z "$CORE_PKGS" ]]; then
             echo "core_builds=[]"                    >> "$GITHUB_OUTPUT"
             echo 'core_build_matrix={"include":[]}' >> "$GITHUB_OUTPUT"
+            echo 'core_pkg_json=[]'                  >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
@@ -98,12 +101,29 @@ jobs:
             --argjson pkgs "$CORE_PKG_JSON" \
             '{include: [.include[] | select(.package as $p | $pkgs | index($p) != null)]}')" \
             >> "$GITHUB_OUTPUT"
+          echo "core_pkg_json=${CORE_PKG_JSON}" >> "$GITHUB_OUTPUT"
+
+      - name: Filter dependent (non-core) matrices
+        id: filter
+        run: |
+          BUILDS='${{ steps.resolve.outputs.builds }}'
+          BUILD_MATRIX='${{ steps.resolve.outputs.build_matrix }}'
+          CORE_PKG_JSON='${{ steps.core.outputs.core_pkg_json || '[]' }}'
+
+          echo "dependent_builds=$(echo "$BUILDS" | jq -c \
+            --argjson pkgs "$CORE_PKG_JSON" \
+            '[.[] | select(.package as $p | $pkgs | index($p) == null)]')" \
+            >> "$GITHUB_OUTPUT"
+          echo "dependent_build_matrix=$(echo "$BUILD_MATRIX" | jq -c \
+            --argjson pkgs "$CORE_PKG_JSON" \
+            '{include: [.include[] | select(.package as $p | $pkgs | index($p) == null)]}')" \
+            >> "$GITHUB_OUTPUT"
 
   # build and release core dependency packages first
   build-core:
     name: "[core] Build ${{ matrix.package }} / ${{ matrix.distro }} / ${{ matrix.arch }}"
     needs: detect
-    if: inputs.rebuild_all == true && needs.detect.outputs.core_build_matrix != '{"include":[]}'
+    if: inputs.package == '' && needs.detect.outputs.core_build_matrix != '{"include":[]}'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -160,7 +180,7 @@ jobs:
   release-core:
     name: "[core] Release ${{ matrix.package_entry.package }}"
     needs: [detect, build-core]
-    if: inputs.rebuild_all == true && needs.detect.outputs.core_builds != '[]'
+    if: inputs.package == '' && needs.detect.outputs.core_builds != '[]'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -190,12 +210,12 @@ jobs:
   build:
     name: Build ${{ matrix.package }} / ${{ matrix.distro }} / ${{ matrix.arch }}
     needs: [detect, release-core]
-    if: needs.detect.outputs.builds != '[]'
+    if: needs.detect.outputs.dependent_builds != '[]'
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.detect.outputs.build_matrix) }}
+      matrix: ${{ fromJson(needs.detect.outputs.dependent_build_matrix) }}
 
     steps:
       - name: Checkout
@@ -258,14 +278,14 @@ jobs:
   release:
     name: Create GitHub Release — ${{ matrix.package_entry.package }}
     needs: [detect, build]
-    if: needs.detect.outputs.builds != '[]'
+    if: needs.detect.outputs.dependent_builds != '[]'
     runs-on: ubuntu-latest
     permissions:
       contents: write
 
     strategy:
       matrix:
-        package_entry: ${{ fromJson(needs.detect.outputs.builds) }}
+        package_entry: ${{ fromJson(needs.detect.outputs.dependent_builds) }}
 
     steps:
       - name: Download artifacts for this package
