@@ -46,7 +46,7 @@ fastfetch:
   version: "2.65.2"
   depends_on: []
 fzf:
-  version: "0.73.1"
+  version: "0.74.0"
   depends_on: []
 gh:
   version: "2.96.0"
