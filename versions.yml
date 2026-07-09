@@ -40,7 +40,7 @@ elephant-all:
   depends_on:
     - elephant
 eza:
-  version: "0.23.4"
+  version: "0.23.5"
   depends_on: []
 fastfetch:
   version: "2.65.2"
