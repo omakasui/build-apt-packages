@@ -97,7 +97,7 @@ obsidian:
   stable_release: true
   depends_on: []
 opencode:
-  version: "1.18.1"
+  version: "1.18.2"
   stable_release: true
   depends_on: []
 pinta:
