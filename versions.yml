@@ -32,7 +32,7 @@ dbeaver:
   stable_release: true
   depends_on: []
 elephant:
-  version: "2.21.0"
+  version: "2.22.0"
   depends_on: []
 elephant-all:
   version: "2.21.0"
