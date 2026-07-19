@@ -28,7 +28,7 @@ cliamp:
   version: "1.60.1"
   depends_on: []
 dbeaver:
-  version: "26.1.2"
+  version: "26.1.3"
   stable_release: true
   depends_on: []
 elephant:
