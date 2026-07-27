@@ -1,5 +1,7 @@
 type: build
 arch: all
+produces:
+  - python3-terminaltexteffects
 distros:
   - debian13
   - ubuntu2404
