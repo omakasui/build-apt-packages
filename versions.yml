@@ -75,7 +75,7 @@ jetbrains-mono:
   version: "2.304"
   depends_on: []
 kitty:
-  version: "0.48.1"
+  version: "0.48.2"
   depends_on: []
 lazygit:
   version: "0.63.1"
