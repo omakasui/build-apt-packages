@@ -112,7 +112,7 @@ terminaltexteffects:
   version: "0.15.0"
   depends_on: []
 tmux:
-  version: "3.7b"
+  version: "3.7c"
   depends_on: []
 ufw-docker:
   version: "251123"
