@@ -65,7 +65,7 @@ gtk4-layer-shell:
   auto_update: false
   depends_on: []
 gum:
-  version: "0.17.0"
+  version: "2.0.0"
   depends_on: []
 ia-writer-mono:
   version: "20260310"
