@@ -134,7 +134,7 @@ zed:
   stable_release: true
   depends_on: []
 zellij:
-  version: "0.44.3"
+  version: "0.45.0"
   depends_on: []
 zen-browser:
   version: "1.21.15b"
