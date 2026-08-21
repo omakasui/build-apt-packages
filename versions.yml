@@ -22,7 +22,7 @@ btop:
   version: "1.4.7"
   depends_on: []
 cascadia-mono-nf:
-  version: "3.5.0"
+  version: "3.5.1"
   depends_on: []
 cliamp:
   version: "1.63.2"
