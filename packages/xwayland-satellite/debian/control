@@ -3,7 +3,7 @@ Version: @VERSION@-1+@SUITE@
 Architecture: @ARCH@
 Maintainer: omakasui <packages@omakasui.org>
 Installed-Size: @INSTALLED_SIZE@
-Depends: libc6, libsystemd0, libxcb1, libxcb-cursor0, xwayland
+Depends: libc6, libgcc-s1, libxcb1, libxcb-cursor0, xwayland
 Section: x11
 Priority: optional
 Homepage: https://github.com/Supreeeme/xwayland-satellite

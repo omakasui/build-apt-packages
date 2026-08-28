@@ -16,7 +16,6 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     clang \
     libxcb1-dev \
     libxcb-cursor-dev \
-    libsystemd-dev \
   && rm -rf /var/lib/apt/lists/*
 
 # Install Rust via rustup.
