@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: xwayland-satellite
+Upstream-Contact: https://github.com/Supreeeme/xwayland-satellite
+Source: https://github.com/Supreeeme/xwayland-satellite
+
+Files: *
+Copyright: Supreeeme and contributors
+License: MPL-2.0
+ Refer to the upstream repository for the full license text:
+ https://github.com/Supreeeme/xwayland-satellite

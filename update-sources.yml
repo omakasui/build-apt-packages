@@ -120,6 +120,9 @@ xdg-terminal-exec:
   upstream: "github:Vladimir-csp/xdg-terminal-exec"
   tag_prefix: "v"
   use_tags: true
+xwayland-satellite:
+  upstream: "github:Supreeeme/xwayland-satellite"
+  tag_prefix: "v"
 yaru-theme:
   upstream: ""
   tag_prefix: ""
