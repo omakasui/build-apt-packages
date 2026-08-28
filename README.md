@@ -25,44 +25,58 @@ package-name:
 
 ## package.yml
 
+Build metadata only. All Debian control fields live in `debian/control`, not here.
+
 ```yaml
-name: package-example
 type: build
-arch: any
-section: utils
-priority: optional
-homepage: https://...
-description: Short description.
-produces: [package-example]
-runtime_depends: []
 distros: [debian13, ubuntu2404]
 ```
 
 | Field | Default | Description |
 | --- | --- | --- |
-| `type` | `build` | Either `build` or `repackage`. See below. |
-| `arch` | `any` | Use `all` for amd64-only packages. |
-| `produces` | required | Installed names, used for filenames and `Depends:`. |
-| `runtime_depends` | `[]` | `Depends:` entries, given as package names rather than keys. |
-| `distros` | required | Target distributions. |
-
-Optional Debian control fields: `conflicts`, `replaces`, `provides`.
+| `type` | `build` | One of `build`, `repackage`, `passthrough`. See below. |
+| `distros` | required | Target distributions. Keys must exist in `build-matrix.yml`. |
+| `arch` | unset | Restrict the build. `amd64` builds amd64 only; `all` also marks the package `Architecture: all` (use it for arch-independent content, not for compiled binaries). |
+| `produces` | key name | Installed names, used for `.deb` filenames. Only needed when they differ from the `versions.yml` key. |
+| `source` | — | `passthrough` only: `url` or `url_<arch>` of the upstream `.deb`. |
 
 ### Build types
 
-* **`type: build`**: the Dockerfile stages files under `/output/staged/` and the workflow assembles the `.deb`.
+* **`type: build`**: the Dockerfile stages files under `/output/staged/` and `scripts/build.sh` assembles the `.deb` from `debian/`.
 * **`type: repackage`**: the Dockerfile writes complete `.deb` files to `/output/` and the workflow tags the filenames.
+* **`type: passthrough`**: no Dockerfile. The upstream `.deb` is downloaded and `debian/control` is applied as an overlay.
 
 ### Dockerfile arguments
 
 * `ARG VERSION` must be declared in every Dockerfile.
 * `BASE_IMAGE` and `TARGETARCH` are also available.
 
+## debian/
+
+Required for `build` and `passthrough` packages. `scripts/build.sh` substitutes
+`@VERSION@`, `@SUITE@`, `@ARCH@`, `@INSTALLED_SIZE@`, `@PACKAGE@` and `@DATE@` into
+`control` and `changelog`.
+
+| File | Description |
+| --- | --- |
+| `control` | Required. Full control template — this is where `Depends`, `Section`, `Homepage`, `Description` and friends go. Must contain `@VERSION@`. |
+| `changelog` | Installed as `changelog.Debian.gz` (Debian Policy §12.7). |
+| `copyright` | Installed to `usr/share/doc/<pkg>/` (Debian Policy §12.7). |
+| `postinst`, `preinst`, `prerm`, `postrm` | Optional maintainer scripts. |
+| `control.<produce>` | Optional per-output control file for packages with multiple `produces`. |
+| `lintian-overrides` | Optional. |
+
+Use `packages/alacritty/debian/` as a reference.
+
 ## Adding a package
 
-1. Add an entry to `versions.yml` with the short upstream name.
-2. Create `packages/<name>/Dockerfile` and `packages/<name>/package.yml`.
-3. Push. The workflow detects the new entry and builds it automatically.
+1. Add an entry to `versions.yml` with the short upstream name. This is the package
+   registry — a directory without an entry here is invisible to the build workflow.
+2. Add an entry to `update-sources.yml` so the daily check can bump it.
+3. Create `packages/<name>/Dockerfile`, `packages/<name>/package.yml` and
+   `packages/<name>/debian/`.
+4. Run `make lint PKG=<name>` and `make build PKG=<name>`.
+5. Push. The workflow detects the new entry and builds it automatically.
 
 Manual trigger: GitHub > Actions > **Build package** > Run workflow.
 
