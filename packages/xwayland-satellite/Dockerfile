@@ -13,6 +13,7 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
     pkg-config \
+    dpkg-dev \
     clang \
     libxcb1-dev \
     libxcb-cursor-dev \

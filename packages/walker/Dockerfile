@@ -7,6 +7,7 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
     git \
+    dpkg-dev \
     pkg-config \
     build-essential \
     libgtk-4-dev \

@@ -8,6 +8,7 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
     git \
+    dpkg-dev \
     meson \
     ninja-build \
     pkg-config \

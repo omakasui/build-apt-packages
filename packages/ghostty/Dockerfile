@@ -18,6 +18,7 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     git \
     curl \
     ca-certificates \
+    dpkg-dev \
     build-essential \
     debhelper \
     devscripts \

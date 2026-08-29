@@ -17,6 +17,7 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
     git \
+    dpkg-dev \
     cmake \
     pkg-config \
     build-essential \

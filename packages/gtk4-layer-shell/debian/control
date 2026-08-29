@@ -3,7 +3,7 @@ Version: @VERSION@-1+@SUITE@
 Architecture: @ARCH@
 Maintainer: omakasui <packages@omakasui.org>
 Installed-Size: @INSTALLED_SIZE@
-Depends: libgtk-4-1, libwayland-client0, libglib2.0-0
+Depends: @SHLIBS_DEPENDS@
 Conflicts: gtk4-layer-shell, libgtk4-layer-shell-0, libgtk4-layer-shell-dev
 Replaces: gtk4-layer-shell, libgtk4-layer-shell-0, libgtk4-layer-shell-dev, gir1.2-gtk4layershell-1.0
 Provides: gtk4-layer-shell, libgtk4-layer-shell-0, gir1.2-gtk4layershell-1.0

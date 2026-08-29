@@ -3,7 +3,7 @@ Version: @VERSION@-1+@SUITE@
 Architecture: @ARCH@
 Maintainer: omakasui <packages@omakasui.org>
 Installed-Size: @INSTALLED_SIZE@
-Depends: libgtk-4-1, libadwaita-1-0, libgtk4-layer-shell0 (>= 1.1.0)
+Depends: @SHLIBS_DEPENDS@
 Section: x11
 Priority: optional
 Homepage: https://github.com/ghostty-org/ghostty

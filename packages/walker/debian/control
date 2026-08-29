@@ -3,7 +3,7 @@ Version: @VERSION@-1+@SUITE@
 Architecture: @ARCH@
 Maintainer: omakasui <packages@omakasui.org>
 Installed-Size: @INSTALLED_SIZE@
-Depends: libgtk-4-1, libcairo2, libpoppler-glib8, elephant, libgtk4-layer-shell0 (>= 1.1.0)
+Depends: @SHLIBS_DEPENDS@, elephant
 Section: utils
 Priority: optional
 Homepage: https://github.com/abenz1267/walker
