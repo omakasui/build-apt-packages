@@ -12,6 +12,7 @@ ARG TARGETARCH
 RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
+    dpkg-dev \
     build-essential \
     pkg-config \
     bison \

@@ -6,6 +6,7 @@ FROM ${BASE_IMAGE:-debian:trixie-slim}
 RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
+    dpkg-dev \
   && rm -rf /var/lib/apt/lists/*
 
 ARG VERSION
