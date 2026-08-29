@@ -89,6 +89,9 @@ localsend:
 nautilus-open-any-terminal:
   version: "0.8.3"
   depends_on: []
+niri:
+  version: "26.04"
+  depends_on: []
 nvim:
   version: "0.12.5"
   depends_on: []
