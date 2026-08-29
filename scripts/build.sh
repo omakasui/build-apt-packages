@@ -151,6 +151,44 @@ if [[ ${#PRODUCE_NAMES[@]} -eq 0 ]]; then
   [[ ${#PRODUCE_NAMES[@]} -eq 0 ]] && PRODUCE_NAMES=("${PKG}")
 fi
 
+# Resolve library dependencies
+
+# Opt-in via @SHLIBS_DEPENDS@. Runs inside the build image: dpkg-shlibdeps needs
+# the target suite's dpkg database.
+# Note: only resolves NEEDED entries. dlopen'd libraries must stay in the
+# template by hand.
+SHLIBS_DEPENDS=""
+if grep -q '@SHLIBS_DEPENDS@' "${DEBIAN_DIR}/control"; then
+  step "Resolving library dependencies with dpkg-shlibdeps..."
+  SHLIBS_DEPENDS=$(docker run --rm -i --platform "linux/${ARCH}" "$IMAGE_TAG" \
+    bash -s <<'SHLIBS_EOF'
+set -eu
+command -v dpkg-shlibdeps >/dev/null 2>&1 || {
+  echo "dpkg-shlibdeps not found" >&2
+  exit 1
+}
+# dpkg-shlibdeps insists on running from a source tree.
+mkdir -p /tmp/shlibdeps/debian
+cd /tmp/shlibdeps
+printf 'Source: pkg\nPackage: pkg\nArchitecture: any\n' > debian/control
+mapfile -t BINS < <(find /output/staged -type f \
+  -exec sh -c 'head -c4 "$1" | grep -qa ELF' _ {} \; -print)
+if [ "${#BINS[@]}" -eq 0 ]; then
+  exit 0
+fi
+# -l resolves libraries the package ships itself. Without --ignore-missing-info
+# an unresolvable library fails the build instead of dropping out of Depends.
+dpkg-shlibdeps -O \
+  -l/output/staged/usr/lib \
+  -l"/output/staged/usr/lib/$(dpkg-architecture -qDEB_HOST_MULTIARCH)" \
+  "${BINS[@]}" \
+  | sed 's/^shlibs:Depends=//'
+SHLIBS_EOF
+  ) || die "dpkg-shlibdeps failed for ${PKG} — add dpkg-dev to its Dockerfile build deps"
+  [[ -n "$SHLIBS_DEPENDS" ]] || die "dpkg-shlibdeps produced no dependencies for ${PKG}"
+  info "Resolved: ${SHLIBS_DEPENDS}"
+fi
+
 # Assemble .deb(s)
 
 step "Assembling from debian/ template..."
@@ -175,6 +213,7 @@ for DEB_NAME in "${PRODUCE_NAMES[@]}"; do
     -e "s|@INSTALLED_SIZE@|${INSTALLED_SIZE}|g" \
     -e "s|@PACKAGE@|${DEB_NAME}|g" \
     -e "s|@DATE@|${RFC2822_DATE}|g" \
+    -e "s|@SHLIBS_DEPENDS@|${SHLIBS_DEPENDS}|g" \
     "${CTRL_TEMPLATE}" > "${DEB_ROOT}/DEBIAN/control"
 
   for script in postinst preinst prerm postrm; do
@@ -198,6 +237,25 @@ for DEB_NAME in "${PRODUCE_NAMES[@]}"; do
     gzip -9 -n -c "$CHANGELOG_TMP" > "${DOC_DIR}/changelog.Debian.gz"
   fi
   [[ -f "${DEBIAN_DIR}/copyright" ]] && cp "${DEBIAN_DIR}/copyright" "${DOC_DIR}/copyright"
+
+  # Control metadata that debhelper would generate (dh_installdeb, dh_makeshlibs,
+  # dh_md5sums). sort keeps the output reproducible.
+
+  # dpkg only preserves config files across upgrades if they are listed here.
+  if [[ -d "${DEB_ROOT}/etc" ]]; then
+    ( cd "$DEB_ROOT" && find etc -type f -printf '/%p\n' | sort ) \
+      > "${DEB_ROOT}/DEBIAN/conffiles"
+  fi
+
+  # Only for libraries in directories ldconfig scans, not private subdirs.
+  if compgen -G "${DEB_ROOT}/usr/lib/*.so.*" > /dev/null || \
+     compgen -G "${DEB_ROOT}/usr/lib/*-linux-*/*.so.*" > /dev/null; then
+    echo 'activate-noawait ldconfig' > "${DEB_ROOT}/DEBIAN/triggers"
+  fi
+
+  # Last, so it covers the two files above.
+  ( cd "$DEB_ROOT" && find . -type f ! -path './DEBIAN/*' -printf '%P\0' \
+      | sort -z | xargs -0 --no-run-if-empty md5sum ) > "${DEB_ROOT}/DEBIAN/md5sums"
 
   echo "--- control ---"
   cat "${DEB_ROOT}/DEBIAN/control"

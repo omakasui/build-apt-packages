@@ -93,6 +93,12 @@ lint_one() {
       warn "${key}: debian/control has no @VERSION@ placeholder"
       ERRORS=$((ERRORS + 1))
     fi
+    # @SHLIBS_DEPENDS@ is resolved by running dpkg-shlibdeps inside the image.
+    if grep -q '@SHLIBS_DEPENDS@' "${debian_dir}/control" && \
+       ! grep -q 'dpkg-dev' "${pkg_dir}/Dockerfile" 2>/dev/null; then
+      warn "${key}: debian/control uses @SHLIBS_DEPENDS@ but Dockerfile lacks dpkg-dev"
+      ERRORS=$((ERRORS + 1))
+    fi
     [[ ! -f "${debian_dir}/changelog" ]] && \
       warn "${key}: debian/changelog missing (required for Debian Policy §12.7)"
     [[ ! -f "${debian_dir}/copyright" ]] && \
