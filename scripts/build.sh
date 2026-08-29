@@ -151,17 +151,47 @@ if [[ ${#PRODUCE_NAMES[@]} -eq 0 ]]; then
   [[ ${#PRODUCE_NAMES[@]} -eq 0 ]] && PRODUCE_NAMES=("${PKG}")
 fi
 
-# Resolve library dependencies
+# Split staged files across outputs
 
-# Opt-in via @SHLIBS_DEPENDS@. Runs inside the build image: dpkg-shlibdeps needs
-# the target suite's dpkg database.
-# Note: only resolves NEEDED entries. dlopen'd libraries must stay in the
-# template by hand.
-SHLIBS_DEPENDS=""
-if grep -q '@SHLIBS_DEPENDS@' "${DEBIAN_DIR}/control"; then
-  step "Resolving library dependencies with dpkg-shlibdeps..."
-  SHLIBS_DEPENDS=$(docker run --rm -i --platform "linux/${ARCH}" "$IMAGE_TAG" \
-    bash -s <<'SHLIBS_EOF'
+# debian/<output>.install lists that output's paths, one glob per line, relative
+# to the staged tree. Outputs without a list get whatever no sibling claimed.
+expand_install() {
+  local list pattern m
+  # Absolute: the subshell below cd's into the staged tree.
+  list="$(cd "$(dirname "$1")" && pwd)/$(basename "$1")"
+  ( cd "$STAGED_TMP" && shopt -s nullglob globstar dotglob
+    while IFS= read -r pattern || [[ -n "$pattern" ]]; do
+      pattern="${pattern%%#*}"
+      pattern="${pattern#"${pattern%%[![:space:]]*}"}"
+      pattern="${pattern%"${pattern##*[![:space:]]}"}"
+      [[ -z "$pattern" ]] && continue
+      for m in $pattern; do printf '%s\n' "$m"; done
+    done < "$list" )
+}
+
+CLAIMED="${BUILD_TMP}/claimed"
+: > "$CLAIMED"
+for name in "${PRODUCE_NAMES[@]}"; do
+  [[ -f "${DEBIAN_DIR}/${name}.install" ]] || continue
+  expand_install "${DEBIAN_DIR}/${name}.install" >> "$CLAIMED"
+done
+sort -u -o "$CLAIMED" "$CLAIMED"
+
+# Resolves one output's ELF files. Runs inside the build image: dpkg-shlibdeps
+# needs the target suite's dpkg database.
+# Only covers NEEDED entries — dlopen'd libraries stay in the template by hand.
+resolve_shlibs() {
+  local root="$1" name="$2"
+  local -a rel=()
+  mapfile -t rel < <( cd "$root" && find . -type f ! -path './DEBIAN/*' \
+    -exec sh -c 'head -c4 "$1" | grep -qa ELF' _ {} \; -print | sed 's|^\./||' )
+  [[ ${#rel[@]} -gt 0 ]] || die "${name}: no ELF files, but debian/control uses @SHLIBS_DEPENDS@"
+
+  local -a args=()
+  for f in "${rel[@]}"; do args+=("/output/staged/${f}"); done
+
+  docker run --rm -i --platform "linux/${ARCH}" "$IMAGE_TAG" \
+    bash -s -- "${args[@]}" <<'SHLIBS_EOF'
 set -euo pipefail
 command -v dpkg-shlibdeps >/dev/null 2>&1 || {
   echo "dpkg-shlibdeps not found" >&2
@@ -171,29 +201,20 @@ command -v dpkg-shlibdeps >/dev/null 2>&1 || {
 mkdir -p /tmp/shlibdeps/debian
 cd /tmp/shlibdeps
 printf 'Source: pkg\nPackage: pkg\nArchitecture: any\n' > debian/control
-mapfile -t BINS < <(find /output/staged -type f \
-  -exec sh -c 'head -c4 "$1" | grep -qa ELF' _ {} \; -print)
-if [ "${#BINS[@]}" -eq 0 ]; then
-  exit 0
-fi
-# -l resolves libraries the package ships itself. Without --ignore-missing-info
-# an unresolvable library fails the build instead of dropping out of Depends.
+# -l resolves libraries the package ships itself. No --ignore-missing-info: an
+# unresolvable library fails the build instead of dropping out of Depends.
 dpkg-shlibdeps -O \
   -l/output/staged/usr/lib \
   -l"/output/staged/usr/lib/$(dpkg-architecture -qDEB_HOST_MULTIARCH)" \
-  "${BINS[@]}" \
+  "$@" \
   | grep '^shlibs:Depends=' | sed 's/^shlibs:Depends=//'
 SHLIBS_EOF
-  ) || die "dpkg-shlibdeps failed for ${PKG} — add dpkg-dev to its Dockerfile build deps"
-  [[ -n "$SHLIBS_DEPENDS" ]] || die "dpkg-shlibdeps produced no dependencies for ${PKG}"
-  info "Resolved: ${SHLIBS_DEPENDS}"
-fi
+}
 
 # Assemble .deb(s)
 
 step "Assembling from debian/ template..."
 
-INSTALLED_SIZE=$(du -sk --exclude=DEBIAN "$STAGED_TMP" | cut -f1)
 RFC2822_DATE=$(date -R)
 
 for DEB_NAME in "${PRODUCE_NAMES[@]}"; do
@@ -202,9 +223,32 @@ for DEB_NAME in "${PRODUCE_NAMES[@]}"; do
   [[ -f "${DEBIAN_DIR}/control.${DEB_NAME}" ]] && CTRL_TEMPLATE="${DEBIAN_DIR}/control.${DEB_NAME}"
 
   DEB_ROOT="${BUILD_TMP}/${DEB_NAME}"
+  mkdir -p "$DEB_ROOT"
+  if [[ -f "${DEBIAN_DIR}/${DEB_NAME}.install" ]]; then
+    while IFS= read -r p; do
+      mkdir -p "${DEB_ROOT}/$(dirname "$p")"
+      cp -a "${STAGED_TMP}/${p}" "${DEB_ROOT}/${p}"
+    done < <(expand_install "${DEBIAN_DIR}/${DEB_NAME}.install")
+  else
+    cp -r "${STAGED_TMP}/." "${DEB_ROOT}/"
+    while IFS= read -r p; do
+      [[ -n "$p" ]] && rm -rf "${DEB_ROOT:?}/${p}"
+    done < "$CLAIMED"
+    find "$DEB_ROOT" -mindepth 1 -type d -empty -delete 2>/dev/null || true
+  fi
   mkdir -p "${DEB_ROOT}/DEBIAN"
-  cp -r "${STAGED_TMP}/." "${DEB_ROOT}/"
   rm -f "${DEB_ROOT}/DEBIAN/control"
+
+  SHLIBS_DEPENDS=""
+  if grep -q '@SHLIBS_DEPENDS@' "$CTRL_TEMPLATE"; then
+    step "Resolving library dependencies for ${DEB_NAME}..."
+    SHLIBS_DEPENDS=$(resolve_shlibs "$DEB_ROOT" "$DEB_NAME") \
+      || die "dpkg-shlibdeps failed for ${DEB_NAME} — add dpkg-dev to its Dockerfile build deps"
+    [[ -n "$SHLIBS_DEPENDS" ]] || die "dpkg-shlibdeps produced no dependencies for ${DEB_NAME}"
+    info "Resolved: ${SHLIBS_DEPENDS}"
+  fi
+
+  INSTALLED_SIZE=$(du -sk --exclude=DEBIAN "$DEB_ROOT" | cut -f1)
 
   sed \
     -e "s|@VERSION@|${VERSION}|g" \
