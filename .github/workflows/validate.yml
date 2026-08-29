@@ -1,0 +1,44 @@
+# Validates package definitions and shell scripts. The build workflow assumes
+# these already pass.
+name: Validate
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/**'
+      - 'packages/**'
+      - 'versions.yml'
+      - 'build-matrix.yml'
+      - '.github/workflows/validate.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/**'
+      - 'packages/**'
+      - 'versions.yml'
+      - 'build-matrix.yml'
+
+jobs:
+  validate:
+    name: Lint and test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install yq
+        run: bash scripts/install-yq.sh
+
+      - name: Validate package definitions
+        run: bash scripts/lint.sh
+
+      - name: Test lib/ functions
+        run: bash scripts/lib/test-lib.sh
+
+      - name: ShellCheck
+        uses: ludeeus/action-shellcheck@master
+        env:
+          SHELLCHECK_OPTS: -x -S warning
+        with:
+          scandir: ./scripts
