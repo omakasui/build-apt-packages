@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: niri
+Upstream-Contact: https://github.com/niri-wm/niri
+Source: https://github.com/niri-wm/niri
+
+Files: *
+Copyright: Ivan Molodetskikh and contributors
+License: GPL-3.0
+ Refer to the upstream repository for the full license text:
+ https://github.com/niri-wm/niri
