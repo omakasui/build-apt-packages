@@ -1,0 +1,3 @@
+usr/include/ghostty
+usr/lib/libghostty-vt.so
+usr/share/pkgconfig/libghostty-vt.pc

@@ -3,7 +3,7 @@ Version: @VERSION@-1+@SUITE@
 Architecture: @ARCH@
 Maintainer: omakasui <packages@omakasui.org>
 Installed-Size: @INSTALLED_SIZE@
-Depends: @SHLIBS_DEPENDS@
+Depends: @SHLIBS_DEPENDS@, libegl1, libgl1
 Section: x11
 Priority: optional
 Homepage: https://github.com/ghostty-org/ghostty
