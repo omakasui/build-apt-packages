@@ -162,7 +162,7 @@ if grep -q '@SHLIBS_DEPENDS@' "${DEBIAN_DIR}/control"; then
   step "Resolving library dependencies with dpkg-shlibdeps..."
   SHLIBS_DEPENDS=$(docker run --rm -i --platform "linux/${ARCH}" "$IMAGE_TAG" \
     bash -s <<'SHLIBS_EOF'
-set -eu
+set -euo pipefail
 command -v dpkg-shlibdeps >/dev/null 2>&1 || {
   echo "dpkg-shlibdeps not found" >&2
   exit 1
@@ -182,7 +182,7 @@ dpkg-shlibdeps -O \
   -l/output/staged/usr/lib \
   -l"/output/staged/usr/lib/$(dpkg-architecture -qDEB_HOST_MULTIARCH)" \
   "${BINS[@]}" \
-  | sed 's/^shlibs:Depends=//'
+  | grep '^shlibs:Depends=' | sed 's/^shlibs:Depends=//'
 SHLIBS_EOF
   ) || die "dpkg-shlibdeps failed for ${PKG} — add dpkg-dev to its Dockerfile build deps"
   [[ -n "$SHLIBS_DEPENDS" ]] || die "dpkg-shlibdeps produced no dependencies for ${PKG}"
@@ -251,6 +251,17 @@ for DEB_NAME in "${PRODUCE_NAMES[@]}"; do
   if compgen -G "${DEB_ROOT}/usr/lib/*.so.*" > /dev/null || \
      compgen -G "${DEB_ROOT}/usr/lib/*-linux-*/*.so.*" > /dev/null; then
     echo 'activate-noawait ldconfig' > "${DEB_ROOT}/DEBIAN/triggers"
+
+    # shlibs is what lets other packages resolve a dependency on these libraries.
+    if command -v objdump >/dev/null 2>&1; then
+      for so in "${DEB_ROOT}"/usr/lib/*.so.* "${DEB_ROOT}"/usr/lib/*-linux-*/*.so.*; do
+        [[ -f "$so" && ! -L "$so" ]] || continue
+        SONAME=$(objdump -p "$so" 2>/dev/null | awk '/SONAME/{print $2; exit}')
+        [[ "$SONAME" == *.so.* ]] || continue
+        echo "${SONAME%%.so.*} ${SONAME#*.so.} ${DEB_NAME} (>= ${VERSION})"
+      done | sort -u > "${DEB_ROOT}/DEBIAN/shlibs"
+      [[ -s "${DEB_ROOT}/DEBIAN/shlibs" ]] || rm -f "${DEB_ROOT}/DEBIAN/shlibs"
+    fi
   fi
 
   # Last, so it covers the two files above.
