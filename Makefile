@@ -59,12 +59,14 @@ shell: ## Shell into the build container  (PKG= required, DISTRO= ARCH= optional
 	VERSION=$$(yq e '.$(PKG).version' versions.yml); \
 	DISTRO_VAL=$${DISTRO:-$$(yq e '.distros | keys | .[0]' build-matrix.yml)}; \
 	BASE=$$(yq e ".distros.$${DISTRO_VAL}.base_image" build-matrix.yml); \
+	SUITE=$$(yq e ".distros.$${DISTRO_VAL}.suite" build-matrix.yml); \
 	IMAGE="omakasui-build-$(PKG):local"; \
 	docker buildx build \
 		--platform "linux/$(ARCH)" \
 		--load \
 		--build-arg "BASE_IMAGE=$${BASE}" \
 		--build-arg "VERSION=$${VERSION}" \
+		--build-arg "SUITE=$${SUITE}" \
 		--tag "$${IMAGE}" \
 		"packages/$(PKG)/"; \
 	docker run --rm -it --platform "linux/$(ARCH)" "$${IMAGE}" /bin/bash

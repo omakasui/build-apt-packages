@@ -11,31 +11,16 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=lib/common.sh
 source "${SCRIPT_DIR}/lib/common.sh"
+# shellcheck source=lib/metadata.sh
+source "${SCRIPT_DIR}/lib/metadata.sh"
+# shellcheck source=lib/deb.sh
+source "${SCRIPT_DIR}/lib/deb.sh"
 
 require_cmd yq fakeroot dpkg-deb curl awk
 
-PKG=""
-DISTRO=""
-ARCH="amd64"
-OUTPUT_DIR_OVERRIDE=""
+parse_pkg_args "$0" "$@"
 
-while [[ $# -gt 0 ]]; do
-  case "$1" in
-    --distro)     DISTRO="$2";              shift 2 ;;
-    --arch)       ARCH="$2";                shift 2 ;;
-    --output-dir) OUTPUT_DIR_OVERRIDE="$2"; shift 2 ;;
-    --help|-h)
-      sed -n '2,/^$/{ s/^# //; s/^#$//; p }' "$0"
-      exit 0
-      ;;
-    -*) die "unknown flag: $1" ;;
-    *)  PKG="$1"; shift ;;
-  esac
-done
-
-[[ -z "$PKG" ]] && die "Usage: passthrough.sh <package> [--distro <distro>] [--arch <arch>] [--output-dir <dir>]"
-
-cd "${REPO_ROOT}"
+cd "${REPO_ROOT}" || die "cannot enter ${REPO_ROOT}"
 
 # Read metadata
 
@@ -47,42 +32,21 @@ DEBIAN_DIR="${PKG_DIR}/debian"
 [[ -d "$DEBIAN_DIR" ]] || die "${DEBIAN_DIR}/ not found — passthrough packages require a debian/ directory"
 [[ -f "${DEBIAN_DIR}/control" ]] || die "${DEBIAN_DIR}/control not found"
 
-VERSION=$(yq e ".${PKG}.version // \"\"" versions.yml)
-[[ -n "$VERSION" && "$VERSION" != "null" ]] || die "${PKG} not found in versions.yml"
+VERSION=$(pkg_version "$PKG")
 
-[[ -z "$DISTRO" ]] && DISTRO=$(yq e '.distros | keys | .[0]' build-matrix.yml)
-SUITE=$(yq e ".distros.${DISTRO}.suite // \"\"" build-matrix.yml)
-[[ -n "$SUITE" && "$SUITE" != "null" ]] || die "distro '${DISTRO}' not found in build-matrix.yml"
+[[ -z "$DISTRO" ]] && DISTRO=$(matrix_default_distro)
+SUITE=$(matrix_suite "$DISTRO")
 
-PKG_ARCH=$(yq e '.arch // ""' "$PKG_YAML")
-
-# Skip builds this package doesn't target.
-if [[ "$PKG_ARCH" == "all" && "$ARCH" == "arm64" ]]; then
-  info "arch: all — skipping arm64 build."; exit 0
-elif [[ -n "$PKG_ARCH" && "$PKG_ARCH" != "all" && "$PKG_ARCH" != "$ARCH" ]]; then
+PKG_ARCH=$(pkg_arch "$PKG")
+if ! CTRL_ARCH=$(deb_control_arch "$PKG_ARCH" "$ARCH"); then
   info "arch: ${PKG_ARCH} — skipping ${ARCH} build."; exit 0
 fi
 
-CTRL_ARCH="$ARCH"
-[[ "$PKG_ARCH" == "all" ]] && CTRL_ARCH="all"
-
-# Resolve source URL
-
-# Try arch-specific URL first, fall back to generic URL.
-SOURCE_URL=$(yq e ".source.url_${ARCH} // \"\"" "$PKG_YAML")
-[[ -z "$SOURCE_URL" || "$SOURCE_URL" == "null" ]] && \
-  SOURCE_URL=$(yq e '.source.url // ""' "$PKG_YAML")
-[[ -z "$SOURCE_URL" || "$SOURCE_URL" == "null" ]] && \
-  die "No source URL in ${PKG_YAML}. Set source.url or source.url_${ARCH}."
-
+SOURCE_URL=$(pkg_source_url "$PKG" "$ARCH")
 SOURCE_URL="${SOURCE_URL//@VERSION@/${VERSION}}"
 SOURCE_URL="${SOURCE_URL//@ARCH@/${ARCH}}"
 
-mapfile -t PRODUCE_NAMES < <(yq e '.produces // [] | .[]' "$PKG_YAML")
-if [[ ${#PRODUCE_NAMES[@]} -eq 0 ]]; then
-  mapfile -t PRODUCE_NAMES < <(grep '^Package:' "${DEBIAN_DIR}/control" | awk '{print $2}')
-  [[ ${#PRODUCE_NAMES[@]} -eq 0 ]] && PRODUCE_NAMES=("${PKG}")
-fi
+mapfile -t PRODUCE_NAMES < <(resolve_produces "$PKG" "$PKG_YAML" "${DEBIAN_DIR}/control")
 
 echo "═══════════════════════════════════════════════════════════"
 echo "  Package : ${PKG}"
@@ -95,9 +59,12 @@ echo "════════════════════════�
 OUTPUT_DIR="${OUTPUT_DIR_OVERRIDE:-${REPO_ROOT}/output/${PKG}}"
 mkdir -p "$OUTPUT_DIR"
 
-WORK_TMP="$(mktemp -d)"
-BUILD_TMP="$(mktemp -d)"
-trap 'rm -rf "$WORK_TMP" "$BUILD_TMP"' EXIT
+CLEANUP_PATHS=()
+cleanup() { [[ ${#CLEANUP_PATHS[@]} -gt 0 ]] && rm -rf "${CLEANUP_PATHS[@]}"; return 0; }
+trap cleanup EXIT
+
+WORK_TMP="$(mktemp -d)"; CLEANUP_PATHS+=("$WORK_TMP")
+BUILD_TMP="$(mktemp -d)"; CLEANUP_PATHS+=("$BUILD_TMP")
 
 # Download upstream .deb
 
@@ -173,46 +140,21 @@ for DEB_NAME in "${PRODUCE_NAMES[@]}"; do
     fi
   fi
 
-  # changelog.Debian.gz + copyright are required by Debian Policy §12.7.
-  DOC_DIR="${DEB_ROOT}/usr/share/doc/${DEB_NAME}"
-  mkdir -p "$DOC_DIR"
-  if [[ -f "${DEBIAN_DIR}/changelog" ]]; then
-    CHANGELOG_TMP="${BUILD_TMP}/changelog.${DEB_NAME}"
-    sed \
-      -e "s|@VERSION@|${VERSION}|g" \
-      -e "s|@SUITE@|${SUITE}|g" \
-      -e "s|@PACKAGE@|${DEB_NAME}|g" \
-      -e "s|@DATE@|${RFC2822_DATE}|g" \
-      "${DEBIAN_DIR}/changelog" > "$CHANGELOG_TMP"
-    gzip -9 -n -c "$CHANGELOG_TMP" > "${DOC_DIR}/changelog.Debian.gz"
-  fi
-  [[ -f "${DEBIAN_DIR}/copyright" ]] && cp "${DEBIAN_DIR}/copyright" "${DOC_DIR}/copyright"
+  stage_docs "$DEB_ROOT" "$DEB_NAME" "$DEBIAN_DIR" "$VERSION" "$SUITE" "$RFC2822_DATE"
+  stage_maintainer_scripts "$DEB_ROOT" "$DEBIAN_DIR"
 
-  for script in postinst preinst prerm postrm; do
-    src="${DEBIAN_DIR}/${script}"
-    [[ -f "$src" ]] || continue
-    cp "$src" "${DEB_ROOT}/DEBIAN/${script}"
-    chmod 755 "${DEB_ROOT}/DEBIAN/${script}"
-  done
+  # The upstream md5sums no longer match: we added docs and may have renamed the
+  # doc dir. Regenerate rather than ship a stale list.
+  write_deb_metadata "$DEB_ROOT" "$DEB_NAME" "$VERSION"
 
   echo "--- control ---"
   cat "${DEB_ROOT}/DEBIAN/control"
   echo "---------------"
 
-  DEB_FILE="${OUTPUT_DIR}/${DEB_NAME}_${VERSION}-1+${SUITE}_${CTRL_ARCH}.deb"
-  fakeroot dpkg-deb --build "${DEB_ROOT}" "${DEB_FILE}"
-  step "Built: $(ls -lh "${DEB_FILE}" | awk '{print $5, $9}')"
+  finish_deb "$DEB_ROOT" "${OUTPUT_DIR}/${DEB_NAME}_${VERSION}-1+${SUITE}_${CTRL_ARCH}.deb"
 done
 
-# Lintian
-
-if command -v lintian >/dev/null 2>&1; then
-  step "Running lintian..."
-  LINTIAN_OPTS=(--info --display-info)
-  [[ -f "${DEBIAN_DIR}/lintian-overrides" ]] && \
-    LINTIAN_OPTS+=(--overrides "${DEBIAN_DIR}/lintian-overrides")
-  lintian "${LINTIAN_OPTS[@]}" "${OUTPUT_DIR}/"*.deb 2>/dev/null || true
-fi
+run_lintian "$OUTPUT_DIR" "$DEBIAN_DIR"
 
 echo ""
 info "Done. Output in ${OUTPUT_DIR}/"

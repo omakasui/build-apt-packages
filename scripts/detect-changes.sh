@@ -25,7 +25,7 @@ done
 
 [[ -z "$MODE" ]] && die "--mode is required (push, dispatch, or distro)"
 
-cd "$(repo_root)"
+cd "$(repo_root)" || die "cannot enter repo root"
 
 _output() {
   if [[ -n "${GITHUB_OUTPUT:-}" ]]; then

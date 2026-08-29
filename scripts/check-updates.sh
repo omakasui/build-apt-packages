@@ -1,18 +1,20 @@
 #!/usr/bin/env bash
 # check-updates.sh — Check upstream releases for all packages and open one PR per update.
 
-set -euo pipefail
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=lib/common.sh
+source "${SCRIPT_DIR}/lib/common.sh"
 
 # Ensure mikefarah yq v4 takes precedence over Python yq or other variants.
 export PATH="/usr/local/bin:$PATH"
 
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 VERSIONS_FILE="$REPO_ROOT/versions.yml"
 SOURCES_FILE="$REPO_ROOT/update-sources.yml"
 
+# Prefixed variants; note() rather than info() so it doesn't shadow common.sh.
 log()  { echo "[check-updates] $*"; }
 skip() { echo "[check-updates] SKIP $1 — $2"; }
-info() { echo "[check-updates] INFO $1 — $2"; }
+note() { echo "[check-updates] INFO $1 — $2"; }
 
 github_latest_release() {
   gh api "repos/$1/releases/latest" 2>/dev/null | jq -r '.tag_name // empty' 2>/dev/null || true
@@ -204,19 +206,19 @@ for pkg in $PACKAGES; do
   fi
 
   if [[ -z "$raw_tag" || "$raw_tag" == "null" ]]; then
-    info "$pkg" "could not fetch latest release tag"
+    note "$pkg" "could not fetch latest release tag"
     continue
   fi
 
   new_ver="${raw_tag#"$tag_prefix"}"
 
   if [[ -z "$new_ver" ]]; then
-    info "$pkg" "tag '${raw_tag}' with prefix '${tag_prefix}' yielded empty version — skipping"
+    note "$pkg" "tag '${raw_tag}' with prefix '${tag_prefix}' yielded empty version — skipping"
     continue
   fi
 
   if [[ "$new_ver" == "$current" ]]; then
-    info "$pkg" "already at latest (${current})"
+    note "$pkg" "already at latest (${current})"
     continue
   fi
 

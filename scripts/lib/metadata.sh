@@ -17,7 +17,8 @@ pkg_all_keys() {
 }
 
 _pkg_yaml() {
-  local f="$(repo_root)/packages/${1}/package.yml"
+  local f
+  f="$(repo_root)/packages/${1}/package.yml"
   [[ -f "$f" ]] || die "packages/${1}/package.yml not found"
   echo "$f"
 }
@@ -52,9 +53,27 @@ pkg_distros() {
   yq e '.distros[]' "$yaml"
 }
 
+# Arch-specific URL wins over the generic one. Passthrough packages only.
+pkg_source_url() {
+  local yaml url
+  yaml=$(_pkg_yaml "$1")
+  url=$(yq e ".source.url_${2} // \"\"" "$yaml")
+  [[ -z "$url" || "$url" == "null" ]] && url=$(yq e '.source.url // ""' "$yaml")
+  [[ -n "$url" && "$url" != "null" ]] || \
+    die "No source URL in ${yaml}. Set source.url or source.url_${2}."
+  echo "$url"
+}
+
 matrix_base_image() {
   local val
   val=$(yq e ".distros.${1}.base_image // \"\"" "$(repo_root)/build-matrix.yml")
+  [[ -n "$val" && "$val" != "null" ]] || die "distro '${1}' not found in build-matrix.yml"
+  echo "$val"
+}
+
+matrix_suite() {
+  local val
+  val=$(yq e ".distros.${1}.suite // \"\"" "$(repo_root)/build-matrix.yml")
   [[ -n "$val" && "$val" != "null" ]] || die "distro '${1}' not found in build-matrix.yml"
   echo "$val"
 }

@@ -5,29 +5,16 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=lib/common.sh
 source "${SCRIPT_DIR}/lib/common.sh"
+# shellcheck source=lib/metadata.sh
+source "${SCRIPT_DIR}/lib/metadata.sh"
+# shellcheck source=lib/deb.sh
+source "${SCRIPT_DIR}/lib/deb.sh"
 
 require_cmd docker yq fakeroot dpkg-deb
 
-PKG=""
-DISTRO=""
-ARCH="amd64"
-OUTPUT_DIR_OVERRIDE=""
+parse_pkg_args "$0" "$@"
 
-while [[ $# -gt 0 ]]; do
-  case "$1" in
-    --distro)     DISTRO="$2";              shift 2 ;;
-    --arch)       ARCH="$2";                shift 2 ;;
-    --output-dir) OUTPUT_DIR_OVERRIDE="$2"; shift 2 ;;
-    --help|-h)
-      sed -n '2,/^$/{ s/^# //; s/^#$//; p }' "$0"; exit 0 ;;
-    -*) die "unknown flag: $1" ;;
-    *)  PKG="$1"; shift ;;
-  esac
-done
-
-[[ -z "$PKG" ]] && die "Usage: build.sh <package> [--distro <distro>] [--arch <arch>] [--output-dir <dir>]"
-
-cd "${REPO_ROOT}"
+cd "${REPO_ROOT}" || die "cannot enter ${REPO_ROOT}"
 
 # Read metadata
 
@@ -36,28 +23,20 @@ PKG_DIR="packages/${PKG}"
 PKG_YAML="${PKG_DIR}/package.yml"
 [[ -f "$PKG_YAML" ]] || die "${PKG_YAML} not found"
 
-VERSION=$(yq e ".${PKG}.version // \"\"" versions.yml)
-[[ -n "$VERSION" && "$VERSION" != "null" ]] || die "${PKG} not found in versions.yml"
+VERSION=$(pkg_version "$PKG")
 
-[[ -z "$DISTRO" ]] && DISTRO=$(yq e '.distros | keys | .[0]' build-matrix.yml)
-BASE_IMAGE=$(yq e ".distros.${DISTRO}.base_image // \"\"" build-matrix.yml)
-[[ -n "$BASE_IMAGE" && "$BASE_IMAGE" != "null" ]] || die "distro '${DISTRO}' not found in build-matrix.yml"
-SUITE=$(yq e ".distros.${DISTRO}.suite // \"\"" build-matrix.yml)
+[[ -z "$DISTRO" ]] && DISTRO=$(matrix_default_distro)
+BASE_IMAGE=$(matrix_base_image "$DISTRO")
+SUITE=$(matrix_suite "$DISTRO")
 
-DEPENDS_ON=$(yq e ".${PKG}.depends_on | join(\",\")" versions.yml)
-PKG_TYPE=$(yq e '.type // "build"' "$PKG_YAML")
-PKG_ARCH=$(yq e '.arch // ""' "$PKG_YAML")
-
-# Skip builds this package doesn't target.
-if [[ "$PKG_ARCH" == "all" && "$ARCH" == "arm64" ]]; then
-  info "arch: all — skipping arm64 build."; exit 0
-elif [[ -n "$PKG_ARCH" && "$PKG_ARCH" != "all" && "$PKG_ARCH" != "$ARCH" ]]; then
-  info "arch: ${PKG_ARCH} — skipping ${ARCH} build."; exit 0
-fi
+DEPENDS_ON=$(pkg_depends_on "$PKG")
+PKG_TYPE=$(pkg_type "$PKG")
+PKG_ARCH=$(pkg_arch "$PKG")
 
 # CTRL_ARCH is the value for Architecture: in the control file.
-CTRL_ARCH="$ARCH"
-[[ "$PKG_ARCH" == "all" ]] && CTRL_ARCH="all"
+if ! CTRL_ARCH=$(deb_control_arch "$PKG_ARCH" "$ARCH"); then
+  info "arch: ${PKG_ARCH} — skipping ${ARCH} build."; exit 0
+fi
 
 OUTPUT_DIR="${OUTPUT_DIR_OVERRIDE:-${REPO_ROOT}/output/${PKG}}"
 mkdir -p "$OUTPUT_DIR"
@@ -114,15 +93,21 @@ docker buildx build \
 
 # Extract output from container
 
+CLEANUP_PATHS=()
+cleanup() {
+  [[ -n "${CID:-}" ]] && docker rm "$CID" >/dev/null 2>&1
+  [[ ${#CLEANUP_PATHS[@]} -gt 0 ]] && rm -rf "${CLEANUP_PATHS[@]}"
+  return 0
+}
+trap cleanup EXIT
+
 CID=$(docker create --platform "linux/${ARCH}" "$IMAGE_TAG")
-trap 'docker rm "$CID" >/dev/null 2>&1 || true' EXIT
 
 # Legacy repackage path: .deb assembled inside Docker (elephant, yaru-theme).
 # These packages have no debian/ directory and produce .deb directly in /output/.
 if [[ "$PKG_TYPE" == "repackage" && ! -d "${PKG_DIR}/debian" ]]; then
   step "Extracting pre-assembled .deb(s) from container..."
-  REPACK_TMP="$(mktemp -d)"
-  trap 'docker rm "$CID" >/dev/null 2>&1 || true; rm -rf "$REPACK_TMP"' EXIT
+  REPACK_TMP="$(mktemp -d)"; CLEANUP_PATHS+=("$REPACK_TMP")
   docker cp "${CID}:/output/." "$REPACK_TMP/"
   for f in "$REPACK_TMP"/*.deb; do
     [[ -f "$f" ]] || continue
@@ -136,20 +121,15 @@ fi
 # Extract staged tree
 
 step "Extracting staged tree from container..."
-STAGED_TMP="$(mktemp -d)"
-BUILD_TMP="$(mktemp -d)"
-trap 'docker rm "$CID" >/dev/null 2>&1 || true; rm -rf "$STAGED_TMP" "$BUILD_TMP"' EXIT
+STAGED_TMP="$(mktemp -d)"; CLEANUP_PATHS+=("$STAGED_TMP")
+BUILD_TMP="$(mktemp -d)";  CLEANUP_PATHS+=("$BUILD_TMP")
 docker cp "${CID}:/output/staged/." "$STAGED_TMP/"
 
 DEBIAN_DIR="${PKG_DIR}/debian"
 [[ -d "$DEBIAN_DIR" && -f "${DEBIAN_DIR}/control" ]] || \
   die "debian/control not found for ${PKG} — add a debian/ directory"
 
-mapfile -t PRODUCE_NAMES < <(yq e '.produces // [] | .[]' "$PKG_YAML")
-if [[ ${#PRODUCE_NAMES[@]} -eq 0 ]]; then
-  mapfile -t PRODUCE_NAMES < <(grep '^Package:' "${DEBIAN_DIR}/control" | awk '{print $2}')
-  [[ ${#PRODUCE_NAMES[@]} -eq 0 ]] && PRODUCE_NAMES=("${PKG}")
-fi
+mapfile -t PRODUCE_NAMES < <(resolve_produces "$PKG" "$PKG_YAML" "${DEBIAN_DIR}/control")
 
 # Split staged files across outputs
 
@@ -260,76 +240,18 @@ for DEB_NAME in "${PRODUCE_NAMES[@]}"; do
     -e "s|@SHLIBS_DEPENDS@|${SHLIBS_DEPENDS}|g" \
     "${CTRL_TEMPLATE}" > "${DEB_ROOT}/DEBIAN/control"
 
-  for script in postinst preinst prerm postrm; do
-    src="${DEBIAN_DIR}/${script}"
-    [[ -f "$src" ]] || continue
-    cp "$src" "${DEB_ROOT}/DEBIAN/${script}"
-    chmod 755 "${DEB_ROOT}/DEBIAN/${script}"
-  done
-
-  # changelog.Debian.gz + copyright are required by Debian Policy §12.7.
-  DOC_DIR="${DEB_ROOT}/usr/share/doc/${DEB_NAME}"
-  mkdir -p "$DOC_DIR"
-  if [[ -f "${DEBIAN_DIR}/changelog" ]]; then
-    CHANGELOG_TMP="${BUILD_TMP}/changelog.${DEB_NAME}"
-    sed \
-      -e "s|@VERSION@|${VERSION}|g" \
-      -e "s|@SUITE@|${SUITE}|g" \
-      -e "s|@PACKAGE@|${DEB_NAME}|g" \
-      -e "s|@DATE@|${RFC2822_DATE}|g" \
-      "${DEBIAN_DIR}/changelog" > "$CHANGELOG_TMP"
-    gzip -9 -n -c "$CHANGELOG_TMP" > "${DOC_DIR}/changelog.Debian.gz"
-  fi
-  [[ -f "${DEBIAN_DIR}/copyright" ]] && cp "${DEBIAN_DIR}/copyright" "${DOC_DIR}/copyright"
-
-  # Control metadata that debhelper would generate (dh_installdeb, dh_makeshlibs,
-  # dh_md5sums). sort keeps the output reproducible.
-
-  # dpkg only preserves config files across upgrades if they are listed here.
-  if [[ -d "${DEB_ROOT}/etc" ]]; then
-    ( cd "$DEB_ROOT" && find etc -type f -printf '/%p\n' | sort ) \
-      > "${DEB_ROOT}/DEBIAN/conffiles"
-  fi
-
-  # Only for libraries in directories ldconfig scans, not private subdirs.
-  if compgen -G "${DEB_ROOT}/usr/lib/*.so.*" > /dev/null || \
-     compgen -G "${DEB_ROOT}/usr/lib/*-linux-*/*.so.*" > /dev/null; then
-    echo 'activate-noawait ldconfig' > "${DEB_ROOT}/DEBIAN/triggers"
-
-    # shlibs is what lets other packages resolve a dependency on these libraries.
-    if command -v objdump >/dev/null 2>&1; then
-      for so in "${DEB_ROOT}"/usr/lib/*.so.* "${DEB_ROOT}"/usr/lib/*-linux-*/*.so.*; do
-        [[ -f "$so" && ! -L "$so" ]] || continue
-        SONAME=$(objdump -p "$so" 2>/dev/null | awk '/SONAME/{print $2; exit}')
-        [[ "$SONAME" == *.so.* ]] || continue
-        echo "${SONAME%%.so.*} ${SONAME#*.so.} ${DEB_NAME} (>= ${VERSION})"
-      done | sort -u > "${DEB_ROOT}/DEBIAN/shlibs"
-      [[ -s "${DEB_ROOT}/DEBIAN/shlibs" ]] || rm -f "${DEB_ROOT}/DEBIAN/shlibs"
-    fi
-  fi
-
-  # Last, so it covers the two files above.
-  ( cd "$DEB_ROOT" && find . -type f ! -path './DEBIAN/*' -printf '%P\0' \
-      | sort -z | xargs -0 --no-run-if-empty md5sum ) > "${DEB_ROOT}/DEBIAN/md5sums"
+  stage_maintainer_scripts "$DEB_ROOT" "$DEBIAN_DIR"
+  stage_docs "$DEB_ROOT" "$DEB_NAME" "$DEBIAN_DIR" "$VERSION" "$SUITE" "$RFC2822_DATE"
+  write_deb_metadata "$DEB_ROOT" "$DEB_NAME" "$VERSION"
 
   echo "--- control ---"
   cat "${DEB_ROOT}/DEBIAN/control"
   echo "---------------"
 
-  DEB_FILE="${OUTPUT_DIR}/${DEB_NAME}_${VERSION}-1+${SUITE}_${CTRL_ARCH}.deb"
-  fakeroot dpkg-deb --build "${DEB_ROOT}" "${DEB_FILE}"
-  step "Built: $(ls -lh "${DEB_FILE}" | awk '{print $5, $9}')"
+  finish_deb "$DEB_ROOT" "${OUTPUT_DIR}/${DEB_NAME}_${VERSION}-1+${SUITE}_${CTRL_ARCH}.deb"
 done
 
-# Lintian
-
-if command -v lintian >/dev/null 2>&1; then
-  step "Running lintian..."
-  LINTIAN_OPTS=(--info --display-info)
-  [[ -f "${DEBIAN_DIR}/lintian-overrides" ]] && \
-    LINTIAN_OPTS+=(--overrides "${DEBIAN_DIR}/lintian-overrides")
-  lintian "${LINTIAN_OPTS[@]}" "${OUTPUT_DIR}/"*.deb 2>/dev/null || true
-fi
+run_lintian "$OUTPUT_DIR" "$DEBIAN_DIR"
 
 echo ""
 info "Done. Output in ${OUTPUT_DIR}/"
