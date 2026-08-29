@@ -8,6 +8,7 @@
 #   /usr/share/wayland-sessions/niri.desktop
 #   /usr/share/xdg-desktop-portal/niri-portals.conf
 #   shell completions
+#   default-config.kdl + README.md under /usr/share/doc/niri/
 
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE:-debian:trixie-slim}
@@ -25,7 +26,9 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     git \
     gcc \
     clang \
+    libclang-dev \
     pkg-config \
+    dpkg-dev \
     libudev-dev \
     libgbm-dev \
     libxkbcommon-dev \
@@ -36,6 +39,8 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     libsystemd-dev \
     libseat-dev \
     libpipewire-0.3-dev \
+    libglib2.0-dev \
+    libcairo2-dev \
     libpango1.0-dev \
     libdisplay-info-dev \
   && rm -rf /var/lib/apt/lists/*
@@ -86,6 +91,11 @@ RUN install -Dm644 resources/niri.desktop \
 # Stage xdg-desktop-portal config.
 RUN install -Dm644 resources/niri-portals.conf \
       /output/staged/usr/share/xdg-desktop-portal/niri-portals.conf
+
+# default-config.kdl is embedded in the binary; ship a readable copy.
+RUN install -Dm644 resources/default-config.kdl \
+      /output/staged/usr/share/doc/niri/default-config.kdl && \
+    install -Dm644 README.md /output/staged/usr/share/doc/niri/README.md
 
 # Stage shell completions.
 RUN NIRI=/output/staged/usr/bin/niri; \
