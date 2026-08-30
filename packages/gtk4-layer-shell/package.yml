@@ -1,4 +1,5 @@
 type: build
+layer_cache: true
 produces:
   - libgtk4-layer-shell0
 distros:

@@ -1,4 +1,5 @@
 type: build
+layer_cache: true
 produces:
   - ghostty
   - libghostty-vt0
