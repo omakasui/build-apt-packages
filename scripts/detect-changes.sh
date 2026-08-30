@@ -36,12 +36,17 @@ _output() {
 }
 
 if [[ "$MODE" == "all" ]]; then
-  # Rebuild every package across every distro.
-  PACKAGES=$(pkg_all_keys | xargs)
+  PACKAGES=""
+  while IFS= read -r pkg; do
+    [[ "$(is_external "$pkg")" == "true" ]] && continue
+    PACKAGES="$PACKAGES $pkg"
+  done < <(pkg_all_keys)
+  PACKAGES=$(echo "$PACKAGES" | xargs)
 elif [[ "$MODE" == "distro" ]]; then
   [[ -z "$FILTER_DISTRO" ]] && die "--distro is required for distro mode"
   PACKAGES=""
   while IFS= read -r pkg; do
+    [[ "$(is_external "$pkg")" == "true" ]] && continue
     if pkg_distros "$pkg" | grep -qx "$FILTER_DISTRO"; then
       PACKAGES="$PACKAGES $pkg"
     fi
@@ -49,6 +54,8 @@ elif [[ "$MODE" == "distro" ]]; then
   PACKAGES=$(echo "$PACKAGES" | xargs)
 elif [[ "$MODE" == "dispatch" ]]; then
   [[ -z "$MANUAL_PKG" ]] && die "--package is required for dispatch mode"
+  [[ "$(is_external "$MANUAL_PKG")" == "true" ]] && \
+    die "${MANUAL_PKG} is external — it is built in the sibling repo, not here."
   PACKAGES="$MANUAL_PKG"
 else
   OLD_VERSIONS=$(mktemp)
@@ -58,6 +65,7 @@ else
 
   PACKAGES=""
   while IFS= read -r pkg; do
+    [[ "$(is_external "$pkg")" == "true" ]] && continue
     OLD_VER=$(yq e ".${pkg}.version // \"\"" "$OLD_VERSIONS")
     NEW_VER=$(yq e ".${pkg}.version // \"\"" versions.yml)
     if [[ "$OLD_VER" != "$NEW_VER" ]]; then

@@ -48,6 +48,20 @@ codeberg_latest_release() {
     | jq -r '.[0].tag_name // empty' 2>/dev/null || true
 }
 
+codeberg_latest_tag() {
+  curl -fsSL "https://codeberg.org/api/v1/repos/$1/tags?limit=1" \
+    | jq -r '.[0].name // empty' 2>/dev/null || true
+}
+
+# For entries marked external: true
+sibling_repo_latest_release() {
+  local owner_repo="$1" prefix="$2"
+  gh release list --repo "$owner_repo" \
+    --exclude-drafts --exclude-pre-releases -L 200 \
+    --json tagName -q '.[].tagName' 2>/dev/null \
+    | grep -m1 "^${prefix}" || true
+}
+
 ensure_label() {
   gh label create "auto-update" --color "0075ca" --description "Automated version bump" \
     2>/dev/null || true
@@ -105,8 +119,35 @@ create_pr() {
   elif [[ "$upstream" == codeberg:* ]]; then
     owner_repo="${upstream#codeberg:}"
     release_url="https://codeberg.org/${owner_repo}/releases"
+  elif [[ "$upstream" == sibling:* ]]; then
+    owner_repo="${upstream#sibling:}"
+    release_url="https://github.com/${owner_repo}/releases"
   else
     release_url="(unknown)"
+  fi
+
+  local is_external body
+  is_external=$(yq e ".${pkg}.external // false" "$VERSIONS_FILE")
+
+  if [[ "$is_external" == "true" ]]; then
+    body="Tracks the latest \`${pkg}-*\` release published in \`${owner_repo}\`: \`${current}\` → \`${new_ver}\`.
+
+This only updates the tracking field in \`versions.yml\` — \`${pkg}\` is \`external: true\` and is never built here.
+
+**Action needed:** dependents of \`${pkg}\` (see \`depends_on\`) are NOT rebuilt by this PR. Trigger **Build package** manually for them after merging.
+
+**Release notes:** ${release_url}
+
+---
+*Created automatically by the [update check](../../actions/workflows/check-updates.yml).*"
+  else
+    body="Automated version bump for \`${pkg}\`: \`${current}\` → \`${new_ver}\`.
+
+**Release notes:** ${release_url}
+
+---
+*Created automatically by the [daily update check](../../actions/workflows/check-updates.yml).*
+*Only \`versions.yml\` is changed — merging triggers the build workflow.*"
   fi
 
   # Retry PR creation; apply the label separately to avoid label-fetch timeouts.
@@ -114,13 +155,7 @@ create_pr() {
   for attempt in 1 2 3; do
     if pr_url=$(gh pr create \
           --title "chore(${pkg}): update to ${new_ver}" \
-          --body "Automated version bump for \`${pkg}\`: \`${current}\` → \`${new_ver}\`.
-
-**Release notes:** ${release_url}
-
----
-*Created automatically by the [daily update check](../../actions/workflows/check-updates.yml).*
-*Only \`versions.yml\` is changed — merging triggers the build workflow.*" \
+          --body "$body" \
           --head "$branch" \
           --base main 2>&1); then
       pr_created=true
@@ -199,7 +234,14 @@ for pkg in $PACKAGES; do
     raw_tag=$(gitlab_latest_release "$owner_repo")
   elif [[ "$upstream" == codeberg:* ]]; then
     owner_repo="${upstream#codeberg:}"
-    raw_tag=$(codeberg_latest_release "$owner_repo")
+    if [[ "$use_tags" == "true" ]]; then
+      raw_tag=$(codeberg_latest_tag "$owner_repo")
+    else
+      raw_tag=$(codeberg_latest_release "$owner_repo")
+    fi
+  elif [[ "$upstream" == sibling:* ]]; then
+    owner_repo="${upstream#sibling:}"
+    raw_tag=$(sibling_repo_latest_release "$owner_repo" "$tag_prefix")
   else
     skip "$pkg" "unknown upstream scheme: ${upstream}"
     continue

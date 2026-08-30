@@ -16,6 +16,11 @@ pkg_all_keys() {
   yq e 'keys | .[]' "$(repo_root)/versions.yml"
 }
 
+# external: version-tracked here, built and released in the sibling repo.
+is_external() {
+  yq e ".${1}.external // false" "$(repo_root)/versions.yml" 2>/dev/null || echo false
+}
+
 _pkg_yaml() {
   local f
   f="$(repo_root)/packages/${1}/package.yml"
@@ -32,8 +37,9 @@ pkg_field() {
   echo "$val"
 }
 
-pkg_type() { pkg_field "$1" '.type // "build"'; }
-pkg_arch() { pkg_field "$1" '.arch // ""'; }
+pkg_type()        { pkg_field "$1" '.type // "build"'; }
+pkg_arch()        { pkg_field "$1" '.arch // ""'; }
+pkg_layer_cache() { pkg_field "$1" '.layer_cache // false' "false"; }
 
 pkg_produces() {
   local yaml

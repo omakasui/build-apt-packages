@@ -81,6 +81,17 @@ fi
 
 IMAGE_TAG="omakasui-build-${PKG}:local"
 
+# Layer caching is opt-in per package, and only useful on GitHub's cache backend.
+CACHE_ARGS=()
+if [[ -n "${GITHUB_ACTIONS:-}" && "$(pkg_layer_cache "$PKG")" == "true" ]]; then
+  CACHE_SCOPE="${PKG}-${DISTRO}-${ARCH}"
+  CACHE_ARGS=(
+    --cache-from "type=gha,scope=${CACHE_SCOPE}"
+    --cache-to   "type=gha,mode=max,scope=${CACHE_SCOPE}"
+  )
+  step "Layer cache enabled (scope: ${CACHE_SCOPE})"
+fi
+
 info "Building Docker image..."
 docker buildx build \
   --platform "linux/${ARCH}" \
@@ -88,6 +99,7 @@ docker buildx build \
   --build-arg "BASE_IMAGE=${BASE_IMAGE}" \
   --build-arg "VERSION=${VERSION}" \
   --build-arg "SUITE=${SUITE}" \
+  "${CACHE_ARGS[@]}" \
   --tag "$IMAGE_TAG" \
   "${PKG_DIR}/"
 
