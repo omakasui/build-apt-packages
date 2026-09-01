@@ -43,7 +43,7 @@ eza:
   version: "0.23.5"
   depends_on: []
 fastfetch:
-  version: "2.67.1"
+  version: "2.68.1"
   depends_on: []
 fzf:
   version: "0.74.3"
