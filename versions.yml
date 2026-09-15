@@ -24,6 +24,10 @@ btop:
 cascadia-mono-nf:
   version: "3.5.1"
   depends_on: []
+chezmoi:
+  version: "2.72.2"
+  stable_release: true
+  depends_on: []
 cliamp:
   version: "2.2.0"
   depends_on: []

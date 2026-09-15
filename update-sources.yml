@@ -28,6 +28,9 @@ btop:
 cascadia-mono-nf:
   upstream: "github:ryanoasis/nerd-fonts"
   tag_prefix: "v"
+chezmoi:
+  upstream: "github:twpayne/chezmoi"
+  tag_prefix: "v"
 cliamp:
   upstream: "github:bjarneo/cliamp"
   tag_prefix: "v"

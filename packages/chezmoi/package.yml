@@ -1,0 +1,6 @@
+type: passthrough
+distros:
+  - ubuntu2404
+  - ubuntu2604
+source:
+  url: "https://github.com/twpayne/chezmoi/releases/download/v@VERSION@/chezmoi_@VERSION@_linux_@ARCH@.deb"
