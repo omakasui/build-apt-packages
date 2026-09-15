@@ -53,7 +53,7 @@ fzf:
   version: "0.74.4"
   depends_on: []
 gh:
-  version: "2.100.0"
+  version: "2.101.0"
   stable_release: true
   depends_on: []
 ghostty:
