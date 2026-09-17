@@ -194,36 +194,45 @@ jobs:
           path: artifacts/
           pattern: ${{ matrix.package_entry.package }}-*
           merge-multiple: true
-      - name: Create or update Release
-        id: release
-        continue-on-error: true
+      - name: Create or update draft Release
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ matrix.package_entry.package }}-${{ matrix.package_entry.version }}
           name: "${{ matrix.package_entry.package }} v${{ matrix.package_entry.version }}"
-          files: artifacts/*.deb
-          fail_on_unmatched_files: true
-          make_latest: true
-          overwrite_files: true
-          preserve_order: true
+          draft: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # The action does not retry upload failures, so retry them here.
-      - name: Retry asset upload
-        if: steps.release.outcome == 'failure'
+      - name: Upload assets
+        timeout-minutes: 20
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ matrix.package_entry.package }}-${{ matrix.package_entry.version }}
         run: |
-          for attempt in 1 2 3; do
-            if gh release upload "$TAG" artifacts/*.deb --clobber --repo "$GITHUB_REPOSITORY"; then
-              exit 0
-            fi
-            echo "Upload attempt ${attempt} failed, retrying..."
-            sleep $((attempt * 15))
+          shopt -s nullglob
+          debs=(artifacts/*.deb)
+          if [[ ${#debs[@]} -eq 0 ]]; then
+            echo "::error::no .deb found in artifacts/"
+            exit 1
+          fi
+          for deb in "${debs[@]}"; do
+            for attempt in 1 2 3; do
+              if gh release upload "$TAG" "$deb" --clobber --repo "$GITHUB_REPOSITORY"; then
+                echo "uploaded $(basename "$deb")"
+                continue 2
+              fi
+              echo "upload of $(basename "$deb") failed (attempt ${attempt})"
+              sleep $((attempt * 10))
+            done
+            echo "::error::upload of $(basename "$deb") failed after 3 attempts"
+            exit 1
           done
-          exit 1
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ matrix.package_entry.package }}-${{ matrix.package_entry.version }}
+        run: gh release edit "$TAG" --draft=false --latest --repo "$GITHUB_REPOSITORY"
 
   # other packages
   build:
@@ -314,35 +323,45 @@ jobs:
           pattern: ${{ matrix.package_entry.package }}-*
           merge-multiple: true
 
-      - name: Create or update Release
-        id: release
-        continue-on-error: true
+      - name: Create or update draft Release
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ matrix.package_entry.package }}-${{ matrix.package_entry.version }}
           name: "${{ matrix.package_entry.package }} v${{ matrix.package_entry.version }}"
-          files: artifacts/*.deb
-          fail_on_unmatched_files: true
-          make_latest: true
-          overwrite_files: true
-          preserve_order: true
+          draft: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Retry asset upload
-        if: steps.release.outcome == 'failure'
+      - name: Upload assets
+        timeout-minutes: 20
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ matrix.package_entry.package }}-${{ matrix.package_entry.version }}
         run: |
-          for attempt in 1 2 3; do
-            if gh release upload "$TAG" artifacts/*.deb --clobber --repo "$GITHUB_REPOSITORY"; then
-              exit 0
-            fi
-            echo "Upload attempt ${attempt} failed, retrying..."
-            sleep $((attempt * 15))
+          shopt -s nullglob
+          debs=(artifacts/*.deb)
+          if [[ ${#debs[@]} -eq 0 ]]; then
+            echo "::error::no .deb found in artifacts/"
+            exit 1
+          fi
+          for deb in "${debs[@]}"; do
+            for attempt in 1 2 3; do
+              if gh release upload "$TAG" "$deb" --clobber --repo "$GITHUB_REPOSITORY"; then
+                echo "uploaded $(basename "$deb")"
+                continue 2
+              fi
+              echo "upload of $(basename "$deb") failed (attempt ${attempt})"
+              sleep $((attempt * 10))
+            done
+            echo "::error::upload of $(basename "$deb") failed after 3 attempts"
+            exit 1
           done
-          exit 1
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ matrix.package_entry.package }}-${{ matrix.package_entry.version }}
+        run: gh release edit "$TAG" --draft=false --latest --repo "$GITHUB_REPOSITORY"
 
   trigger-apt-update:
     name: Trigger apt-packages (batch)
