@@ -195,7 +195,7 @@ jobs:
           pattern: ${{ matrix.package_entry.package }}-*
           merge-multiple: true
       - name: Create or update Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ matrix.package_entry.package }}-${{ matrix.package_entry.version }}
           name: "${{ matrix.package_entry.package }} v${{ matrix.package_entry.version }}"
@@ -296,7 +296,7 @@ jobs:
           merge-multiple: true
 
       - name: Create or update Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@
         with:
           tag_name: ${{ matrix.package_entry.package }}-${{ matrix.package_entry.version }}
           name: "${{ matrix.package_entry.package }} v${{ matrix.package_entry.version }}"
