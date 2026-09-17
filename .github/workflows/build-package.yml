@@ -195,6 +195,8 @@ jobs:
           pattern: ${{ matrix.package_entry.package }}-*
           merge-multiple: true
       - name: Create or update Release
+        id: release
+        continue-on-error: true
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ matrix.package_entry.package }}-${{ matrix.package_entry.version }}
@@ -203,8 +205,25 @@ jobs:
           fail_on_unmatched_files: true
           make_latest: true
           overwrite_files: true
+          preserve_order: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # The action does not retry upload failures, so retry them here.
+      - name: Retry asset upload
+        if: steps.release.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ matrix.package_entry.package }}-${{ matrix.package_entry.version }}
+        run: |
+          for attempt in 1 2 3; do
+            if gh release upload "$TAG" artifacts/*.deb --clobber --repo "$GITHUB_REPOSITORY"; then
+              exit 0
+            fi
+            echo "Upload attempt ${attempt} failed, retrying..."
+            sleep $((attempt * 15))
+          done
+          exit 1
 
   # other packages
   build:
@@ -296,6 +315,8 @@ jobs:
           merge-multiple: true
 
       - name: Create or update Release
+        id: release
+        continue-on-error: true
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ matrix.package_entry.package }}-${{ matrix.package_entry.version }}
@@ -304,8 +325,24 @@ jobs:
           fail_on_unmatched_files: true
           make_latest: true
           overwrite_files: true
+          preserve_order: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Retry asset upload
+        if: steps.release.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ matrix.package_entry.package }}-${{ matrix.package_entry.version }}
+        run: |
+          for attempt in 1 2 3; do
+            if gh release upload "$TAG" artifacts/*.deb --clobber --repo "$GITHUB_REPOSITORY"; then
+              exit 0
+            fi
+            echo "Upload attempt ${attempt} failed, retrying..."
+            sleep $((attempt * 15))
+          done
+          exit 1
 
   trigger-apt-update:
     name: Trigger apt-packages (batch)
