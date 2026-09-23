@@ -140,7 +140,7 @@ yaru-theme:
   auto_update: false
   depends_on: []
 zed:
-  version: "1.20.2"
+  version: "1.21.0"
   stable_release: true
   depends_on: []
 zellij:
