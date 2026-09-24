@@ -126,7 +126,7 @@ ufw-docker:
   auto_update: false
   depends_on: []
 walker:
-  version: "2.17.0"
+  version: "2.17.1"
   depends_on:
     - gtk4-layer-shell
 xdg-terminal-exec:
