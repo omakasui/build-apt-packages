@@ -1,0 +1,5 @@
+type: build
+arch: all
+distros:
+  - debian13
+  - ubuntu2604

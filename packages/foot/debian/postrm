@@ -1,0 +1,16 @@
+#!/bin/sh
+# postrm for foot
+
+set -e
+
+case "$1" in
+    purge)
+        # Drop foot-server units still enabled by the Debian foot package.
+        if [ -z "$DPKG_ROOT" ] && [ -x /usr/bin/deb-systemd-helper ]; then
+            deb-systemd-helper --user purge \
+                foot-server.service foot-server.socket >/dev/null || true
+        fi
+        ;;
+esac
+
+exit 0

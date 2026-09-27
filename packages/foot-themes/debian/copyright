@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: foot
+Upstream-Contact: https://codeberg.org/dnkl/foot
+Source: https://codeberg.org/dnkl/foot
+
+Files: *
+Copyright: Daniel Eklöf and contributors
+License: MIT
+ Refer to the upstream repository for the full license text:
+ https://codeberg.org/dnkl/foot

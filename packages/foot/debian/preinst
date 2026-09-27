@@ -1,0 +1,18 @@
+#!/bin/sh
+# preinst for foot
+
+set -e
+
+case "$1" in
+    install|upgrade)
+        # Pre-emptively remove the x-terminal-emulator alternatives registered
+        # by the Debian foot package, whose prerm would otherwise fail on
+        # alternatives that no longer exist. See alacritty's preinst.
+        update-alternatives --remove x-terminal-emulator /usr/bin/foot \
+            2>/dev/null || true
+        update-alternatives --remove x-terminal-emulator /usr/bin/footclient \
+            2>/dev/null || true
+        ;;
+esac
+
+exit 0

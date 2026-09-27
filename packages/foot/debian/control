@@ -1,0 +1,15 @@
+Package: foot
+Version: @VERSION@-1+@SUITE@
+Architecture: @ARCH@
+Maintainer: omakasui <packages@omakasui.org>
+Installed-Size: @INSTALLED_SIZE@
+Depends: @SHLIBS_DEPENDS@, ncurses-term
+Recommends: libutempter0, xdg-utils
+Suggests: foot-themes, foot-extra-terminfo, libnotify-bin
+Provides: x-terminal-emulator
+Section: x11
+Priority: optional
+Homepage: https://codeberg.org/dnkl/foot
+Description: Fast, lightweight and minimalistic Wayland terminal emulator.
+ Supports server/client mode, sixel graphics, scrollback search,
+ URL detection and grapheme shaping.

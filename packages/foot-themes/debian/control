@@ -1,0 +1,14 @@
+Package: foot-themes
+Version: @VERSION@-1+@SUITE@
+Architecture: all
+Maintainer: omakasui <packages@omakasui.org>
+Installed-Size: @INSTALLED_SIZE@
+Enhances: foot
+Section: x11
+Priority: optional
+Homepage: https://codeberg.org/dnkl/foot
+Description: Color themes for the foot terminal emulator.
+ Predefined color schemes for foot. To use one, include it from foot.ini:
+ .
+  [main]
+  include=/usr/share/foot/themes/<theme>
