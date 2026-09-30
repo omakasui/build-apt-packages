@@ -30,6 +30,7 @@ chezmoi:
   depends_on: []
 cliamp:
   version: "2.3.0"
+  stable_release: true
   depends_on: []
 dbeaver:
   version: "26.2.1"
@@ -95,6 +96,7 @@ lazydocker:
   depends_on: []
 localsend:
   version: "1.18.2"
+  stable_release: true
   depends_on: []
 nautilus-open-any-terminal:
   version: "0.8.3"
