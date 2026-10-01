@@ -111,6 +111,10 @@ obsidian:
   version: "1.13.8"
   stable_release: true
   depends_on: []
+omakasui-archive-keyring:
+  version: "1.1.0"
+  stable_release: true
+  depends_on: []
 opencode:
   version: "1.18.34"
   stable_release: true

@@ -1,0 +1,7 @@
+type: repackage
+arch: all
+layer_cache: true
+distros:
+  - debian13
+  - ubuntu2404
+  - ubuntu2604
