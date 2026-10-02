@@ -112,7 +112,7 @@ obsidian:
   stable_release: true
   depends_on: []
 omakasui-archive-keyring:
-  version: "1.2.0"
+  version: "1.2.1"
   stable_release: true
   depends_on: []
 opencode:
