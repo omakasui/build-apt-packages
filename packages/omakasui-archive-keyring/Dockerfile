@@ -1,6 +1,4 @@
-# Builds omakasui-archive-keyring (packages.omakasui.org key) from the
-# omakasui/keyrings repo. omakasui-core-archive-keyring comes from the same
-# source but is published by omakasui/build-apt-omakasui.
+# Upstream: https://github.com/omakasui/omakasui-archive-keyring
 
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE:-debian:trixie-slim}
@@ -21,7 +19,7 @@ ARG SUITE
 WORKDIR /build
 
 RUN git clone --depth=1 --branch "v${VERSION}" \
-      https://github.com/omakasui/keyrings.git keyrings
+      https://github.com/omakasui/omakasui-archive-keyring.git keyrings
 
 WORKDIR /build/keyrings
 

@@ -105,7 +105,7 @@ obsidian:
   upstream: "github:obsidianmd/obsidian-releases"
   tag_prefix: "v"
 omakasui-archive-keyring:
-  upstream: "github:omakasui/keyrings"
+  upstream: "github:omakasui/omakasui-archive-keyring"
   tag_prefix: "v"
   use_tags: true
 opencode:
