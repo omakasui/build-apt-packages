@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: television
+Upstream-Contact: https://github.com/alexpasmantier/television
+Source: https://github.com/alexpasmantier/television
+
+Files: *
+Copyright: Alexandre Pasmantier
+License: MIT
+ Refer to the upstream repository for the full license text:
+ https://github.com/alexpasmantier/television

@@ -1,0 +1,5 @@
+@PACKAGE@ (@VERSION@-1+@SUITE@) @SUITE@; urgency=low
+
+  * Package version @VERSION@
+
+ -- omakasui <packages@omakasui.org>  @DATE@

@@ -133,6 +133,9 @@ terminaltexteffects:
 tmux:
   version: "3.7c"
   depends_on: []
+television:
+  version: "0.15.9"
+  depends_on: []
 ufw-docker:
   version: "251123"
   auto_update: false

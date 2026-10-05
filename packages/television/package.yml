@@ -1,0 +1,8 @@
+type: passthrough
+distros:
+  - debian13
+  - ubuntu2404
+  - ubuntu2604
+source:
+  url_amd64: "https://github.com/alexpasmantier/television/releases/download/@VERSION@/tv-@VERSION@4-x86_64-unknown-linux-musl.deb"
+  url_arm64: "https://github.com/alexpasmantier/television/releases/download/@VERSION@/tv-@VERSION@4-aarch64-unknown-linux-gnu.deb"

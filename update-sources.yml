@@ -126,6 +126,9 @@ terminaltexteffects:
 tmux:
   upstream: "github:tmux/tmux"
   tag_prefix: ""
+television:
+  upstream: "github:alexpasmantier/television"
+  tag_prefix: ""
 ufw-docker:
   upstream: "github:chaifeng/ufw-docker"
   tag_prefix: ""
