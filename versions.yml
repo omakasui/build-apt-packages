@@ -116,7 +116,7 @@ omakasui-archive-keyring:
   stable_release: true
   depends_on: []
 opencode:
-  version: "1.18.34"
+  version: "1.18.35"
   stable_release: true
   depends_on: []
 pinta:
