@@ -131,7 +131,7 @@ terminaltexteffects:
   version: "0.15.0"
   depends_on: []
 tmux:
-  version: "3.7c"
+  version: "3.8"
   depends_on: []
 television:
   version: "0.15.9"
