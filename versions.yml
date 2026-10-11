@@ -57,7 +57,7 @@ foot-themes:
   version: "1.28.0"
   depends_on: []
 fzf:
-  version: "0.74.4"
+  version: "0.74.5"
   depends_on: []
 gh:
   version: "2.102.0"
