@@ -125,7 +125,7 @@ pinta:
   auto_update: false
   depends_on: []
 starship:
-  version: "1.26.0"
+  version: "1.27.0"
   depends_on: []
 terminaltexteffects:
   version: "0.15.0"
