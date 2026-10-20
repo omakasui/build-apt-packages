@@ -56,6 +56,10 @@ foot:
 foot-themes:
   version: "1.28.0"
   depends_on: []
+forgejo-cli:
+  version: "0.7.0"
+  stable_release: true
+  depends_on: []
 fzf:
   version: "0.74.5"
   depends_on: []

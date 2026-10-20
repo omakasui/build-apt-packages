@@ -1,0 +1,15 @@
+Package: forgejo-cli
+Version: @VERSION@-1+@SUITE@
+Architecture: @ARCH@
+Maintainer: omakasui <packages@omakasui.org>
+Installed-Size: @INSTALLED_SIZE@
+Depends: @SHLIBS_DEPENDS@
+Conflicts: forgejo-cli
+Replaces: forgejo-cli
+Provides: forgejo-cli
+Section: devel
+Priority: optional
+Homepage: https://codeberg.org/forgejo-contrib/forgejo-cli
+Description: CLI client for Forgejo.
+ Manage issues, pull requests, repositories, organizations and releases
+ on Forgejo instances (e.g. Codeberg) from the command line with fj.

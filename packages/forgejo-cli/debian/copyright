@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: forgejo-cli
+Upstream-Contact: https://codeberg.org/forgejo-contrib/forgejo-cli
+Source: https://codeberg.org/forgejo-contrib/forgejo-cli
+
+Files: *
+Copyright: forgejo-cli contributors
+License: Apache-2.0 or MIT
+ Refer to the upstream repository for the full license text:
+ https://codeberg.org/forgejo-contrib/forgejo-cli
