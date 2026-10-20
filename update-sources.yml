@@ -55,6 +55,9 @@ foot:
 foot-themes:
   upstream: "codeberg:dnkl/foot"
   tag_prefix: ""
+forgejo-cli:
+  upstream: "codeberg:forgejo-contrib/forgejo-cli"
+  tag_prefix: "v"
 fzf:
   upstream: "github:junegunn/fzf"
   tag_prefix: "v"
