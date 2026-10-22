@@ -120,7 +120,7 @@ omakasui-archive-keyring:
   stable_release: true
   depends_on: []
 opencode:
-  version: "1.19.3"
+  version: "1.19.4"
   stable_release: true
   depends_on: []
 pinta:
