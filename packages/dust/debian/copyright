@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: dust
+Upstream-Contact: https://github.com/bootandy/dust
+Source: https://github.com/bootandy/dust
+
+Files: *
+Copyright: bootandy
+License: Apache-2.0
+ Refer to the upstream repository for the full license text:
+ https://github.com/bootandy/dust
