@@ -1,0 +1,14 @@
+Package: dust
+Version: @VERSION@-1+@SUITE@
+Architecture: @ARCH@
+Maintainer: omakasui <packages@omakasui.org>
+Installed-Size: @INSTALLED_SIZE@
+Conflicts: du-dust
+Replaces: du-dust
+Provides: du-dust
+Section: utils
+Priority: optional
+Homepage: https://github.com/bootandy/dust
+Description: A more intuitive version of du.
+ Gives an instant overview of which directories are using disk space,
+ without requiring sort or head.

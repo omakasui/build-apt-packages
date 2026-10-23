@@ -37,6 +37,9 @@ cliamp:
 dbeaver:
   upstream: "github:dbeaver/dbeaver"
   tag_prefix: ""
+dust:
+  upstream: "github:bootandy/dust"
+  tag_prefix: "v"
 elephant:
   upstream: "github:abenz1267/elephant"
   tag_prefix: "v"
