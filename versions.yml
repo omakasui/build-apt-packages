@@ -19,7 +19,7 @@ bitwarden-cli:
   stable_release: true
   depends_on: []
 btop:
-  version: "1.4.7"
+  version: "1.4.8"
   depends_on: []
 cascadia-mono-nf:
   version: "3.5.1"
