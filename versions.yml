@@ -152,7 +152,7 @@ walker:
   depends_on:
     - gtk4-layer-shell
 xdg-terminal-exec:
-  version: "0.14.3"
+  version: "0.14.4"
   depends_on: []
 xwayland-satellite:
   version: "0.8.3"
