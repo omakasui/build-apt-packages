@@ -75,7 +75,7 @@ ghostty:
   depends_on:
     - gtk4-layer-shell
 glab:
-  version: "1.124.0"
+  version: "1.125.0"
   stable_release: true
   depends_on: []
 gtk4-layer-shell:
