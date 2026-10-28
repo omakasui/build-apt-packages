@@ -36,14 +36,14 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     python3-gi \
   && rm -rf /var/lib/apt/lists/*
 
-# Install blueprint-compiler >= 0.16.0 from source.
-# The apt version on noble/trixie (0.12.0) is too old for ghostty 1.3.1+.
+# Install blueprint-compiler >= 0.20.0 from source.
+# The apt versions are too old for ghostty 1.4.0+.
 RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     meson \
     ninja-build \
     python3-packaging \
   && rm -rf /var/lib/apt/lists/* && \
-    git clone --depth 1 --branch v0.16.0 \
+    git clone --depth 1 --branch v0.20.4 \
       https://gitlab.gnome.org/GNOME/blueprint-compiler.git /tmp/blueprint-compiler && \
     cd /tmp/blueprint-compiler && \
     meson setup --prefix=/usr _build && \
@@ -64,17 +64,17 @@ RUN set -e; \
     apt-get install -y --no-install-recommends "$DEB"; \
     ldconfig
 
-# Install zig 0.15.2 from ziglang.org
+# Install zig 0.17.0 from ziglang.org
 RUN set -e; \
     case "${TARGETARCH}" in \
       amd64) ZIG_ARCH="x86_64" ;; \
       arm64) ZIG_ARCH="aarch64" ;; \
       *) echo "Unsupported arch: ${TARGETARCH}"; exit 1 ;; \
     esac; \
-    curl -fsSL "https://ziglang.org/download/0.15.2/zig-${ZIG_ARCH}-linux-0.15.2.tar.xz" \
+    curl -fsSL "https://ziglang.org/download/0.17.0/zig-${ZIG_ARCH}-linux-0.17.0.tar.xz" \
       -o /tmp/zig.tar.xz && \
     tar -xf /tmp/zig.tar.xz -C /usr/local && \
-    ln -sf "/usr/local/zig-${ZIG_ARCH}-linux-0.15.2/zig" /usr/local/bin/zig && \
+    ln -sf "/usr/local/zig-${ZIG_ARCH}-linux-0.17.0/zig" /usr/local/bin/zig && \
     rm /tmp/zig.tar.xz
 
 WORKDIR /build
@@ -91,13 +91,8 @@ RUN zig build \
     -Dcpu=baseline \
     -Dpie=true \
     -Demit-docs \
+    -Dinstalled-exe-path=/usr/bin/ghostty \
     -Dversion-string=${VERSION}
-
-# Fix absolute paths left by zig-out in service/desktop/dbus files.
-RUN sed -i 's|\./zig-out||g' \
-      ./zig-out/usr/share/systemd/user/app-com.mitchellh.ghostty.service \
-      ./zig-out/usr/share/applications/com.mitchellh.ghostty.desktop \
-      ./zig-out/usr/share/dbus-1/services/com.mitchellh.ghostty.service
 
 # Compress man pages.
 RUN gzip -n -9 ./zig-out/usr/share/man/man1/ghostty.1
