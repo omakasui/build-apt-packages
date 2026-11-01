@@ -37,7 +37,7 @@ dbeaver:
   stable_release: true
   depends_on: []
 dust:
-  version: "1.2.6"
+  version: "1.2.7"
   depends_on: []
 elephant:
   version: "2.22.1"
