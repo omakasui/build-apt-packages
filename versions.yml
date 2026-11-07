@@ -64,7 +64,7 @@ forgejo-cli:
   stable_release: true
   depends_on: []
 fzf:
-  version: "0.74.5"
+  version: "0.75.0"
   depends_on: []
 gh:
   version: "2.103.3"
