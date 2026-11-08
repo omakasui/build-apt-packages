@@ -97,7 +97,7 @@ kitty:
   version: "0.50.0"
   depends_on: []
 lazygit:
-  version: "0.66.2"
+  version: "0.66.3"
   depends_on: []
 lazydocker:
   version: "0.25.2"
