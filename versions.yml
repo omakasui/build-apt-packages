@@ -71,7 +71,7 @@ gh:
   stable_release: true
   depends_on: []
 ghostty:
-  version: "1.4.0"
+  version: "t-1.0.1"
   frozen_suites: [noble]
   depends_on:
     - gtk4-layer-shell
