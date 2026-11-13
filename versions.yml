@@ -29,7 +29,7 @@ chezmoi:
   stable_release: true
   depends_on: []
 cliamp:
-  version: "2.4.0"
+  version: "2.4.1"
   stable_release: true
   depends_on: []
 dbeaver:
