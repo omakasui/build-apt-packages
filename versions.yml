@@ -116,7 +116,7 @@ nvim:
   version: "0.12.6"
   depends_on: []
 obsidian:
-  version: "1.15.0"
+  version: "1.15.1"
   stable_release: true
   depends_on: []
 omakasui-archive-keyring:
