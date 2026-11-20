@@ -5,4 +5,4 @@ distros:
   - ubuntu2404
   - ubuntu2604
 source:
-  url: "https://github.com/bitwarden/clients/releases/download/desktop-v@VERSION@/Bitwarden-@VERSION@-amd64.deb"
+  url: "https://github.com/bitwarden/clients/releases/download/desktop-v@VERSION@/bit-Bitwarden-@VERSION@-amd64.deb"
