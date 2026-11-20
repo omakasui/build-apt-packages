@@ -18,8 +18,8 @@ WORKDIR /work
 
 RUN set -e; \
     case "${TARGETARCH}" in \
-      amd64) BW_ZIP="bw-linux-${VERSION}.zip"        ;; \
-      arm64) BW_ZIP="bw-linux-arm64-${VERSION}.zip"  ;; \
+      amd64) BW_ZIP="bw-bit-linux-${VERSION}.zip"        ;; \
+      arm64) BW_ZIP="bw-bit-linux-arm64-${VERSION}.zip"  ;; \
       *)     echo "Unsupported arch: ${TARGETARCH}"; exit 1 ;; \
     esac; \
     \
