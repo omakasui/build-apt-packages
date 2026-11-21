@@ -1,9 +1,5 @@
 type: build
 layer_cache: true
-produces:
-  - ghostty
-  - libghostty-vt0
-  - libghostty-vt-dev
 distros:
   - debian13
   - ubuntu2404

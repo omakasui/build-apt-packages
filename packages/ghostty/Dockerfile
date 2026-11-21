@@ -105,6 +105,13 @@ RUN mv ./zig-out/usr/share/zsh/site-functions \
 # Remove bundled terminfo (conflicts with system ncurses).
 RUN rm -rf ./zig-out/usr/share/terminfo/g || true
 
+# The app build always installs libghostty-vt, which the ghostty binary doesn't
+# link. Upstream versions and releases it separately (vt-X.Y.Z), so it's not shipped.
+RUN rm -rf ./zig-out/usr/lib/libghostty-vt.* \
+           ./zig-out/usr/share/pkgconfig/libghostty-vt*.pc \
+           ./zig-out/usr/include/ghostty && \
+    find ./zig-out/usr -type d -empty -delete
+
 # Stage output for assembly by build.sh
 RUN mkdir -p /output/staged && \
     cp -r ./zig-out/usr /output/staged/ && \
