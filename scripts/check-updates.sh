@@ -34,8 +34,19 @@ github_latest_release_filtered() {
 }
 
 # For repos that publish tags instead of GitHub Releases.
+# Only tags made of the prefix followed by a digit count, so other tag series
+# in the same repo (e.g. ghostty's "vt-*" for libghostty-vt) are ignored.
+# The API lists tags in reverse lexicographic order, hence the version sort.
 github_latest_tag() {
-  gh api "repos/$1/tags?per_page=1" 2>/dev/null | jq -r '.[0].name // empty' 2>/dev/null || true
+  local owner_repo="$1" prefix="$2"
+
+  gh api "repos/${owner_repo}/tags?per_page=100" 2>/dev/null \
+    | jq -r --arg p "$prefix" \
+      '.[].name | select(startswith($p) and (.[($p | length):] | test("^[0-9]")))' \
+      2>/dev/null \
+    | sort -V \
+    | tail -n 1 \
+    || true
 }
 
 gitlab_latest_release() {
@@ -223,7 +234,7 @@ for pkg in $PACKAGES; do
     if [[ "$filter_releases" == "true" ]]; then
       raw_tag=$(github_latest_release_filtered "$owner_repo" "$tag_prefix")
     elif [[ "$use_tags" == "true" ]]; then
-      raw_tag=$(github_latest_tag "$owner_repo")
+      raw_tag=$(github_latest_tag "$owner_repo" "$tag_prefix")
     elif [[ "$use_prerelease" == "true" ]]; then
       raw_tag=$(github_latest_release_prerelease "$owner_repo")
     else
